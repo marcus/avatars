@@ -1,0 +1,24 @@
+class Avatars < Formula
+  desc "Deterministic pen-and-ink avatar and profile icon generator"
+  homepage "https://github.com/marcus/avatars"
+  url "https://github.com/marcus/avatars/archive/refs/tags/@VERSION@.tar.gz"
+  sha256 "@SHA256@"
+  license "MIT"
+  head "https://github.com/marcus/avatars.git", branch: "main"
+
+  depends_on "go" => :build
+
+  def install
+    ldflags = [
+      "-s",
+      "-w",
+      "-X github.com/marcus/avatars/internal/buildinfo.Version=@VERSION@",
+      "-X github.com/marcus/avatars/internal/buildinfo.Commit=homebrew",
+    ].join(" ")
+    system "go", "build", *std_go_args(output: bin/"avatars", ldflags:), "./cmd/avatars"
+  end
+
+  test do
+    assert_match "avatars @VERSION@ (homebrew)", shell_output("#{bin}/avatars --version")
+  end
+end

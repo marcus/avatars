@@ -1,0 +1,39 @@
+version: 2
+
+project_name: avatars
+
+builds:
+  - id: avatars
+    main: ./cmd/avatars
+    binary: avatars
+    env: [CGO_ENABLED=0]
+    goos: [darwin, linux]
+    goarch: [amd64, arm64]
+    ldflags:
+      - >-
+        -s -w
+        -X github.com/marcus/avatars/internal/buildinfo.Version=v{{ .Version }}
+        -X github.com/marcus/avatars/internal/buildinfo.Commit={{ .Commit }}
+
+archives:
+  - id: release
+    ids: [avatars]
+    formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    files:
+      - README.md
+      - LICENSE
+      - CHANGELOG.md
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^chore:"

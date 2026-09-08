@@ -1,0 +1,22 @@
+# Build and release output
+/bin/
+/dist/
+coverage.out
+
+# Local tools and runtime state
+.autocommit.log
+.todos/
+.sidecar/
+.sidecar-agent
+.sidecar-task
+.sidecar-pr
+.sidecar-start.sh
+.sidecar-base
+.td-root
+
+# Editor / OS
+.DS_Store
+*.swp
+*~
+\#*\#
+.\#*
