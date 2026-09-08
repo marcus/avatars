@@ -22,7 +22,10 @@ func waitSocket(t *testing.T, path string) {
 	t.Helper()
 	for deadline := time.Now().Add(time.Second); time.Now().Before(deadline); {
 		if _, err := os.Stat(path); err == nil {
-			return
+			if conn, dialErr := net.DialTimeout("unix", path, 20*time.Millisecond); dialErr == nil {
+				conn.Close()
+				return
+			}
 		}
 		time.Sleep(5 * time.Millisecond)
 	}
@@ -69,7 +72,7 @@ func TestControllerRestrictsSocketAndPinsShutdownIdentity(t *testing.T) {
 	body, _ = json.Marshal(map[string]string{"instance_id": status.InstanceID})
 	res, err = unixClient(path).Post("http://unix/v1/shutdown", "application/json", bytes.NewReader(body))
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal("accepted shutdown must return its response before closing:", err)
 	}
 	res.Body.Close()
 	if res.StatusCode != http.StatusAccepted {

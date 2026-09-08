@@ -134,8 +134,11 @@ func (c *Controller) serve(ctx context.Context, path string, ln net.Listener) er
 			writeJSON(w, 409, map[string]any{"error": map[string]string{"code": "service_not_owned", "message": "only an auto-started service can be stopped here"}})
 			return
 		}
-		c.once.Do(func() { close(c.done) })
 		writeJSON(w, 202, map[string]any{"status": "stopping", "instance_id": c.status.InstanceID})
+		if flusher, ok := w.(http.Flusher); ok {
+			flusher.Flush()
+		}
+		time.AfterFunc(10*time.Millisecond, func() { c.once.Do(func() { close(c.done) }) })
 	})
 	srv := &http.Server{Handler: mux, ReadHeaderTimeout: 2 * time.Second}
 	go func() {
