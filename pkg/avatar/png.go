@@ -38,6 +38,7 @@ func (PNGExporter) Export(ctx context.Context, a Artwork, o Options) ([]byte, er
 	icon.SetTarget(x, y, float64(a.Width)*scale, float64(a.Height)*scale)
 	scanner := rasterx.NewScannerGV(o.Width, o.Height, canvas, canvas.Bounds())
 	icon.Draw(rasterx.NewDasher(o.Width, o.Height, scanner), 1)
+	clipViewport(canvas, x, y, float64(a.Width)*scale, float64(a.Height)*scale)
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -58,6 +59,28 @@ func maskCircle(img *image.RGBA) {
 		for x := 0; x < width; x++ {
 			// One-pixel analytic coverage keeps the mask smooth at icon sizes.
 			coverage := max(0, min(1, radius+.5-math.Hypot(float64(x)+.5-cx, float64(y)+.5-cy)))
+			if coverage == 1 {
+				continue
+			}
+			i := img.PixOffset(x, y)
+			for c := 0; c < 4; c++ {
+				img.Pix[i+c] = uint8(math.Round(float64(img.Pix[i+c]) * coverage))
+			}
+		}
+	}
+}
+
+// clipViewport preserves SVG's native viewport boundary. A path centered on an
+// edge may extend outside it; those strokes must not leak into letterboxing.
+func clipViewport(img *image.RGBA, left, top, width, height float64) {
+	right, bottom := left+width, top+height
+	if left <= 0 && top <= 0 && right >= float64(img.Bounds().Dx()) && bottom >= float64(img.Bounds().Dy()) {
+		return
+	}
+	for y := 0; y < img.Bounds().Dy(); y++ {
+		vertical := max(0, min(float64(y+1), bottom)-max(float64(y), top))
+		for x := 0; x < img.Bounds().Dx(); x++ {
+			coverage := vertical * max(0, min(float64(x+1), right)-max(float64(x), left))
 			if coverage == 1 {
 				continue
 			}

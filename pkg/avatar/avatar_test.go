@@ -283,3 +283,31 @@ func TestSVGAdapterFramesSelfClosingRoot(t *testing.T) {
 		}
 	}
 }
+
+func TestPNGClipsNativeViewportBeforeLetterboxing(t *testing.T) {
+	data, err := New().Render(context.Background(), "gorey", "marcus", "png", Options{Width: 64, Height: 100})
+	if err != nil {
+		t.Fatal(err)
+	}
+	img, err := png.Decode(bytes.NewReader(data))
+	if err != nil {
+		t.Fatal(err)
+	}
+	// At native scale the 72px-high artwork occupies exactly rows 14..85.
+	// Coat strokes centered on native y=72 must not spill into row 86.
+	for y := 0; y < 100; y++ {
+		if y >= 14 && y < 86 {
+			continue
+		}
+		for x := 0; x < 64; x++ {
+			_, _, _, alpha := img.At(x, y).RGBA()
+			if alpha != 0 {
+				t.Fatalf("native viewport leaked at (%d,%d): alpha %d", x, y, alpha)
+			}
+		}
+	}
+	_, _, _, alpha := img.At(32, 85).RGBA()
+	if alpha == 0 {
+		t.Fatal("clipping removed the final artwork row")
+	}
+}
