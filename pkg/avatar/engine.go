@@ -19,15 +19,49 @@ type Artwork struct {
 }
 
 type Style struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	Inputs      *StyleInputs `json:"inputs,omitempty"`
+}
+
+// Inputs identifies the appearance choices that are part of a generated
+// avatar's recipe. Export dimensions and cropping remain in Options.
+type Inputs struct {
+	Color string `json:"color,omitempty"`
+}
+
+func (i Inputs) Empty() bool { return i.Color == "" }
+
+// StyleInputs publishes the small set of generation inputs supported by a
+// style. The descriptors are shared by validation, clients, and renderers.
+type StyleInputs struct {
+	Color *ColorInput `json:"color,omitempty"`
+}
+
+type ColorInput struct {
+	Default string        `json:"default"`
+	Values  []ColorChoice `json:"values"`
+}
+
+type ColorChoice struct {
+	Value    string `json:"value"`
+	Label    string `json:"label"`
+	Swatch   string `json:"swatch"`
+	EyeColor string `json:"-"`
 }
 
 // Generator implementations must support concurrent calls.
 type Generator interface {
 	Style() Style
 	Generate(context.Context, string) (Artwork, error)
+}
+
+// InputGenerator is the optional extension for generators with appearance
+// inputs. Generate remains the stable input-free path and uses style defaults.
+type InputGenerator interface {
+	Generator
+	GenerateWithInputs(context.Context, string, Inputs) (Artwork, error)
 }
 
 // Exporter implementations must support concurrent calls and reject unsupported
@@ -49,6 +83,7 @@ const MaxDimension = 2048
 
 var (
 	ErrInvalidOptions     = errors.New("invalid output options")
+	ErrInvalidInputs      = errors.New("invalid generation inputs")
 	ErrUnknownStyle       = errors.New("unknown avatar style")
 	ErrUnknownFormat      = errors.New("unknown export format")
 	ErrUnsupportedArtwork = errors.New("unsupported artwork")
@@ -100,6 +135,7 @@ func New() *Engine {
 	_ = e.RegisterGenerator(Gorey{})
 	_ = e.RegisterGenerator(GoreyExpanded{})
 	_ = e.RegisterGenerator(Picasso{})
+	_ = e.RegisterGenerator(Pebble{})
 	_ = e.RegisterExporter(SVGExporter{})
 	_ = e.RegisterExporter(PNGExporter{})
 	return e
@@ -115,6 +151,11 @@ func (e *Engine) RegisterGenerator(g Generator) error {
 	id := g.Style().ID
 	if !adapterID.MatchString(id) {
 		return fmt.Errorf("invalid style ID %q", id)
+	}
+	if g.Style().Inputs != nil {
+		if _, ok := g.(InputGenerator); !ok {
+			return fmt.Errorf("style %q publishes inputs but does not implement InputGenerator", id)
+		}
 	}
 	e.mu.Lock()
 	defer e.mu.Unlock()
@@ -171,7 +212,43 @@ func (e *Engine) Formats() []string {
 	return formats
 }
 
+// ResolveInputs applies a style's defaults and validates supported values.
+// It has no style-specific branches: each generator publishes its own typed
+// descriptor through Style.
+func (e *Engine) ResolveInputs(style string, inputs Inputs) (Inputs, error) {
+	if style == "" {
+		style = "gorey"
+	}
+	e.mu.RLock()
+	g, ok := e.generators[style]
+	e.mu.RUnlock()
+	if !ok {
+		return Inputs{}, fmt.Errorf("%w: %q", ErrUnknownStyle, style)
+	}
+	spec := g.Style().Inputs
+	if spec == nil || spec.Color == nil {
+		if inputs.Color != "" {
+			return Inputs{}, fmt.Errorf("%w: style %q does not support color", ErrInvalidInputs, style)
+		}
+		return Inputs{}, nil
+	}
+	if inputs.Color == "" {
+		inputs.Color = spec.Color.Default
+	}
+	for _, choice := range spec.Color.Values {
+		if choice.Value == inputs.Color {
+			return inputs, nil
+		}
+	}
+	return Inputs{}, fmt.Errorf("%w: invalid color %q for style %q", ErrInvalidInputs, inputs.Color, style)
+}
+
 func (e *Engine) Render(ctx context.Context, style, seed, format string, options Options) ([]byte, error) {
+	return e.RenderWithInputs(ctx, style, seed, format, Inputs{}, options)
+}
+
+// RenderWithInputs renders a recipe with validated generation inputs.
+func (e *Engine) RenderWithInputs(ctx context.Context, style, seed, format string, inputs Inputs, options Options) ([]byte, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -191,11 +268,20 @@ func (e *Engine) Render(ctx context.Context, style, seed, format string, options
 	if !xok {
 		return nil, fmt.Errorf("%w: %q", ErrUnknownFormat, format)
 	}
+	resolved, err := e.ResolveInputs(style, inputs)
+	if err != nil {
+		return nil, err
+	}
 	// Reject excessive requested dimensions before asking a potentially costly generator.
 	if options.Width < 0 || options.Height < 0 || options.Width > MaxDimension || options.Height > MaxDimension {
 		return nil, fmt.Errorf("%w: dimensions must be between 1 and %d", ErrInvalidOptions, MaxDimension)
 	}
-	artwork, err := g.Generate(ctx, seed)
+	var artwork Artwork
+	if inputGenerator, ok := g.(InputGenerator); ok {
+		artwork, err = inputGenerator.GenerateWithInputs(ctx, seed, resolved)
+	} else {
+		artwork, err = g.Generate(ctx, seed)
+	}
 	if err != nil {
 		return nil, err
 	}

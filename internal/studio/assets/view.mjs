@@ -17,3 +17,22 @@ export function writeExportView(params, view) {
   for (const [key, value] of Object.entries(normalized)) result.set(key, String(value));
   return result;
 }
+
+export function colorInputFor(styles, styleId) {
+  const input = styles.find((style) => style.id === styleId)?.inputs?.color;
+  if (!input || !Array.isArray(input.values) || !input.values.length) return null;
+  return input;
+}
+
+export function colorValueForStyle(styles, styleId, requested) {
+  const input = colorInputFor(styles, styleId);
+  if (!input) return null;
+  return input.values.some((choice) => choice.value === requested) ? requested : input.default;
+}
+
+export function colorChoiceForRecipe(styles, avatar) {
+  const input = colorInputFor(styles, avatar?.style);
+  if (!input) return null;
+  const value = colorValueForStyle(styles, avatar.style, avatar.inputs?.color);
+  return input.values.find((choice) => choice.value === value) || null;
+}

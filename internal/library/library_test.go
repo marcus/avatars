@@ -136,6 +136,8 @@ func TestInvalidRequestsNeverSave(t *testing.T) {
 		{"invalid name", library.CreateRequest{Name: "\xff"}},
 		{"long seed", library.CreateRequest{Seed: strings.Repeat("s", 4097)}},
 		{"invalid seed", library.CreateRequest{Seed: "\xff"}},
+		{"invalid Pebble color", library.CreateRequest{Style: "pebble", Inputs: &avatar.Inputs{Color: "missing"}}},
+		{"color unsupported by style", library.CreateRequest{Style: "gorey", Inputs: &avatar.Inputs{Color: "sage"}}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			storage := &memoryStore{}
@@ -149,6 +151,68 @@ func TestInvalidRequestsNeverSave(t *testing.T) {
 				t.Fatal("invalid request reached persistence")
 			}
 		})
+	}
+}
+
+func TestPebbleInputsPersistAndOldRecipesUseDefault(t *testing.T) {
+	ctx := context.Background()
+	storage := &memoryStore{}
+	service := library.New(avatar.New(), storage)
+	collection, err := service.Create(ctx, library.CreateRequest{Style: "pebble", Seed: "saved", Count: 2, Inputs: &avatar.Inputs{Color: "sage"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, item := range collection.Avatars {
+		if item.Inputs == nil || item.Inputs.Color != "sage" {
+			t.Fatalf("resolved color missing from saved recipe: %+v", item)
+		}
+	}
+	defaults, err := service.Create(ctx, library.CreateRequest{Style: "pebble", Seed: "default"})
+	if err != nil || defaults.Avatars[0].Inputs == nil || defaults.Avatars[0].Inputs.Color != "walnut" {
+		t.Fatalf("Pebble default was not persisted: %+v, %v", defaults, err)
+	}
+
+	now := time.Now().UTC()
+	old := library.Avatar{ID: "av_old", CollectionID: "col_old", Style: "pebble", Seed: "legacy", CreatedAt: now}
+	storage.collections = append(storage.collections, library.Collection{ID: "col_old", Style: "pebble", CreatedAt: now, Avatars: []library.Avatar{old}})
+	fromOldRecipe, err := service.Render(ctx, old.ID, "svg", avatar.Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	explicitDefault, err := avatar.New().RenderWithInputs(ctx, "pebble", old.Seed, "svg", avatar.Inputs{Color: "walnut"}, avatar.Options{})
+	if err != nil || !bytes.Equal(fromOldRecipe, explicitDefault) {
+		t.Fatal("old input-free Pebble recipe did not resolve to Walnut", err)
+	}
+}
+
+func TestPebbleRecipeSurvivesStoreRestart(t *testing.T) {
+	ctx := context.Background()
+	path := filepath.Join(t.TempDir(), "library.jsonl")
+	persistent, err := store.New(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	service := library.New(avatar.New(), persistent)
+	collection, err := service.Create(ctx, library.CreateRequest{Style: "pebble", Seed: "restart", Inputs: &avatar.Inputs{Color: "lavender"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	before, err := service.Render(ctx, collection.Avatars[0].ID, "png", avatar.Options{Width: 96, Height: 96})
+	if err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := store.New(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	restarted := library.New(avatar.New(), reopened)
+	loaded, err := restarted.Avatar(ctx, collection.Avatars[0].ID)
+	if err != nil || loaded.Inputs == nil || loaded.Inputs.Color != "lavender" {
+		t.Fatalf("saved inputs did not survive restart: %+v, %v", loaded, err)
+	}
+	after, err := restarted.Render(ctx, loaded.ID, "png", avatar.Options{Width: 96, Height: 96})
+	if err != nil || !bytes.Equal(before, after) {
+		t.Fatal("appearance changed after restart", err)
 	}
 }
 

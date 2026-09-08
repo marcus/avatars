@@ -2,13 +2,14 @@
 
 A local avatar generator with a CLI, HTTP API, and creative studio. Generate a collection, pick a portrait, and export it as SVG or PNG. Avatars created by agents appear in the same library as those created in the studio.
 
-Three styles are available:
+Four styles are available:
 
 | Style | Character |
 | --- | --- |
 | **Gorey** (`gorey`) | The original engraved pen-and-ink portraits, preserved exactly. |
 | **Gorey Expanded** (`gorey-expanded`) | A wider cast with more face shapes, ages, hairstyles, clothes, and accessories. |
 | **Picasso** (`picasso`) | Recognizable faces drawn with bold contours, muted color, and restrained cubist planes. |
+| **Pebble** (`pebble`) | Pudgy, softly irregular characters with two tiny eyes and 15 selectable colors. |
 
 Generation is random by default. Programs can provide a seed to reproduce a portrait exactly. Each style uses the same SVG/PNG exporters and library workflow.
 
@@ -33,6 +34,7 @@ In another terminal:
 # Save random portraits and return links to the collection and each avatar.
 ./bin/avatars generate --count 12 --name "First cast" --json
 ./bin/avatars generate --style picasso --count 12 --name "Picasso studies" --json
+./bin/avatars generate --style pebble --color sage --count 12 --name "Sage pebbles" --json
 
 # Browse the same library shown in the studio.
 ./bin/avatars list --json
@@ -52,7 +54,7 @@ Replace `AVATAR_ID` with an ID returned by `generate` or `list`. Each saved avat
 
 `generate` works while the service is stopped. To use a running service's library through HTTP, add `--url http://127.0.0.1:7447` or set `AVATARS_URL`. Otherwise the CLI opens the local library through the same application core used by the API.
 
-SVG is the default export format. `--size 256` requests a square canvas; `--size 256x288` sets both dimensions. Native portraits are 64 × 72. Rectangular exports preserve the artwork's aspect ratio, with transparent margins when needed. Circular exports crop the center and leave transparent corners. Each dimension supports 1–2048 pixels.
+SVG is the default export format. `--size 256` requests a square canvas; `--size 256x288` sets both dimensions. Gorey and Picasso portraits use a 64 × 72 native canvas, while Pebble uses 64 × 64. Rectangular exports preserve the artwork's aspect ratio, with transparent margins when needed. Circular exports crop the center and leave transparent corners. Each dimension supports 1–2048 pixels.
 
 `render` and `export` write image bytes to stdout when `--out` is omitted. With `--json`, they return base64 data and its media type instead. `--out FILE` creates a new file and refuses to overwrite an existing one.
 
@@ -114,7 +116,7 @@ Generator adapters produce native artwork; exporter adapters convert it to the r
 
 Saved collections live in `$XDG_DATA_HOME/avatars/collections.jsonl`, or `~/.local/share/avatars/collections.jsonl` when `XDG_DATA_HOME` is unset. Use `--data-dir PATH` or `AVATARS_DATA_DIR` to select another library, and use the same setting when starting the studio. This setting cannot be combined with `--url`, because the server owns the selected library.
 
-The JSONL file stores one collection per line, including stable IDs, style, and seeds. File locking coordinates CLI and HTTP writes. Back it up or inspect it with ordinary file tools; stop writers before editing or replacing it. An incomplete or corrupt record is reported with its location and is preserved for repair.
+The JSONL file stores one collection per line, including stable IDs, style, seeds, and resolved generation inputs. File locking coordinates CLI and HTTP writes. Back it up or inspect it with ordinary file tools; stop writers before editing or replacing it. An incomplete or corrupt record is reported with its location and is preserved for repair.
 
 The service listens on loopback. To reach it from other devices on your tailnet, use Tailscale Serve and configure its HTTPS origin:
 
@@ -124,7 +126,7 @@ avatars serve --public-url https://YOUR_HOST.YOUR_TAILNET.ts.net:7447
 tailscale serve --bg --https=7447 http://127.0.0.1:7447
 ```
 
-Use the Tailscale URL in the browser and with CLI `--url` when sharing links. `AVATARS_PUBLIC_URL` can supply the serve flag's default. The proxy host and browser origin are accepted only when configured explicitly. Accounts, public hosting, AI providers, and appearance steering are outside this version.
+Use the Tailscale URL in the browser and with CLI `--url` when sharing links. `AVATARS_PUBLIC_URL` can supply the serve flag's default. The proxy host and browser origin are accepted only when configured explicitly. Pebble color is the first style-owned appearance input. Accounts, public hosting, and AI providers are outside this version.
 
 ## Development
 

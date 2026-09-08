@@ -17,7 +17,7 @@ Describe what the user should see and the shortest generation-to-export journey.
 
 ## Input contract
 
-List every input, machine values, labels, defaults, discovery shape, CLI syntax, HTTP shape, and persistence behavior. Explicitly say when there are no inputs. Separate generation inputs from export controls. State compatibility requirements.
+List every input, machine values, labels, defaults, discovery shape, CLI syntax, HTTP shape, and persistence behavior. Explicitly say when there are no inputs. Separate generation inputs from export controls. State compatibility requirements for omitted fields and old saved records. For studio inputs, define style switching, saved-recipe restoration, and background refresh behavior.
 
 ## Scope and ownership
 
