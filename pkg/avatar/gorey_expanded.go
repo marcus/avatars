@@ -22,6 +22,9 @@ func (GoreyExpanded) Generate(ctx context.Context, seed string) (Artwork, error)
 type portraitPen struct{ strings.Builder }
 
 func (p *portraitPen) path(d, fill string, width float64, color string) {
+	if fill != "none" && width >= .65 {
+		width = max(width, .9)
+	}
 	fmt.Fprintf(&p.Builder, `<path d="%s" fill="%s" stroke="%s" stroke-width="%g" stroke-linecap="round" stroke-linejoin="round"/>`, d, fill, color, width)
 }
 func (p *portraitPen) ellipse(x, y, rx, ry float64, fill string) {
@@ -102,7 +105,7 @@ func expandedSVG(seed string) string {
 	p(f("M%d 72L%d 59Q17 %d 26 49L38 49Q49 %d %d 59L%d 72Z", 4+shoulder, 8+shoulder, 51+shoulder, 51+shoulder, 56-shoulder, 60-shoulder), cloth, .85, ink)
 	for i := 0; i < 17; i++ {
 		x := 8 + i*3
-		p(f("M%d 71l%d -%d", x, next(3)-1, 6+next(8)), "none", .35, paper)
+		p(f("M%d 71l%d -%d", x, next(3)-1, 6+next(8)), "none", .42, paper)
 	}
 	p("M27 41L26 52L32 58L39 52L37 41", paper, .8, ink)
 	switch outfit {
@@ -205,13 +208,13 @@ func expandedSVG(seed string) string {
 		browLeft++
 		browRight--
 	}
-	p(f("M%d %dq3 -1 6 0M%d %dq3 -1 6 0", left+3, browLeft, right-9, browRight), "none", .8, ink)
-	p(f("M%d %dq3 -2 6 0M%d %dq3 -2 6 0", left+3, eyeY, right-9, eyeY), "none", .65, ink)
+	p(f("M%d %dl6 -1M%d %dl6 2", left+3, browLeft, right-9, browRight-1), "none", 1, ink)
+	p(f("M%d %dq3 -2 6 0M%d %dq3 -2 6 0", left+3, eyeY, right-9, eyeY), "none", .8, ink)
 	pen.ellipse(float64(left+6), float64(eyeY), .7, 1, ink)
 	pen.ellipse(float64(right-6), float64(eyeY), .7, 1, ink)
-	p(f("M32 %dL%d %dQ31 %d 35 %d", eyeY-2, 29+next(2), nose, nose+2, nose), "none", .7, ink)
+	p(f("M32 %dL%d %dQ31 %d 35 %d", eyeY-2, 29-next(2), nose, nose+2, nose), "none", .8, ink)
 	mouthY := nose + 5
-	mouth := []string{f("M29 %dq3 -1 6 0", mouthY), f("M29 %dq3 2 7-1", mouthY), f("M29 %dq3 -2 6 0", mouthY), f("M29 %dl6 1", mouthY), f("M28 %dq4 1 8-1", mouthY)}[expression]
+	mouth := []string{f("M29 %dq3 -1 6 0", mouthY), f("M29 %dq3 .5 7-1", mouthY), f("M29 %dq3 -2 6 0", mouthY), f("M29 %dl6 1", mouthY), f("M28 %dq4 .3 8-1", mouthY)}[expression]
 	p(mouth, "none", .65, ink)
 	p(f("M31 %dh3", mouthY+2), "none", .3, ink)
 	// Accessories stay on the face; no novelty props compete with the portrait.
