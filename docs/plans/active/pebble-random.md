@@ -1,6 +1,6 @@
 # Random palette colors for Pebble
 
-Status: implementation and isolated browser proof complete; awaiting final card integration and checks. Task: `td-2734a4`.
+Status: implementation, integration, and validation complete; awaiting coordinator delivery. Task: `td-2734a4`.
 
 ## Assignment
 
@@ -26,10 +26,12 @@ Implementation: Random is appended to Pebble discovery after the unchanged 15 pa
 
 Studio decisions: successful generation preserves the draft, including Random for a one-avatar batch. Ordinary refresh preserves it too. Explicit avatar navigation restores the saved concrete color. Explicit navigation to a mixed-color collection selects Random; uniform collections restore their concrete color, including legacy Walnut defaults. Animal controls and copied shape/dimension/background state remain separate. There is no store migration and no new request field.
 
-Validation so far: focused race checks for Pebble/core, library, and CLI pass; studio Node tests and changed JavaScript syntax checks pass. The fixed 256-seed core sample reaches all 15 colors; saved seeded batches contain concrete colors. Changed README, changelog, API guide, style-authoring guide, and generated instructions all pass gated `naturally scan`.
+Validation: focused race checks for Pebble/core, library, and CLI pass. After merging the completed card grid, `make fmt-check vet test-race build`, all 29 tests in `node --test internal/studio/*.test.mjs port/agent-portrait.test.ts`, syntax checks for changed JavaScript, and `git diff --check` pass. The fixed 256-seed core sample reaches all 15 colors; saved seeded batches contain concrete colors. Changed README, changelog, API guide, style-authoring guide, and generated instructions all pass gated `naturally scan`.
 
 Independent review: `companions_astra` found no blockers in the merged implementation or documentation. Its real-process evidence at `/var/folders/9z/_hxsyhcx59d_cbrbhxfk9j000000gn/T/avatars-random-independent.bk28aqwi/result.json` records 30 unchanged explicit-color SVG/PNG comparisons, all 15 colors in a seeded 100-avatar batch, 40 Random/concrete/saved export comparisons, HTTP creation, local/HTTP parity, fresh server restart, refusal before writes, saved override refusal, and malicious/Unicode/empty seed safety.
 
 Browser evidence: isolated library `/tmp/avatars-pebble-random-proof/library`, loopback port 60239. A 12-avatar Random batch followed by a one-avatar Random batch both retained Random. Manual refresh retained the choice; opening the mixed collection selected Random; opening two saved avatars restored Sage and Teal respectively. A copied Teal portrait link restored its concrete color, Light surround, circle crop, and 128 × 128 dimensions. Desktop and 390 × 844 screenshots were visually inspected. The mobile Random control and Generate button fit, and switching from Random to Cats generated a valid one-cat collection without stale color input. The proof tab viewport override was reset. Collections: `col_0993b372837b1775ec095d21bfd19bc3`, `col_15a6db305cf5593018ddc450e1fa38bc`, and `col_db83a18d3e1ddb3994812d89bb4f012c`.
 
-Final integration and full required checks: pending the coordinator's card-grid landing. The Companions completion is merged through `da4c078`. Git inferred an active-to-implemented directory rename during that merge; the Random brief was deliberately kept active. No operational clarification was required. No live service, installed binary, or Tailscale route was changed.
+Final integration: main `5badeff`, including the completed Companions and tactile card grid, is merged at `ab90834`. The only card integration conflict was the import list; both Random's collection-input helper and the card controller were retained. A rebuilt isolated server was checked again: the mixed collection restored Random, refresh preserved it, desktop and mobile card layouts remained intact, and no browser console errors were recorded. The earlier Companions merge is `da4c078`; Git inferred an active-to-implemented directory rename during that merge, so the Random brief was deliberately kept active.
+
+No operational clarification was required and no known concern remains. The isolated proof server was stopped after verification. No live service, installed binary, or Tailscale route was changed. The coordinator owns landing, the live mixed-color sample collection, and final task approval.
