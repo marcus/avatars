@@ -28,6 +28,14 @@ Send `Content-Type: application/json` and an object:
 
 All fields are optional. Defaults are style `gorey`, count 1, and a name derived from the style. Count must be 1–100. A name supports up to 120 Unicode characters. The optional `seed` supports up to 4096 UTF-8 bytes. Omit it or leave it empty to generate random seeds. Unknown fields are refused.
 
+Pebble accepts one style-owned input. The default is Walnut, and saved recipes always contain the resolved value:
+
+```json
+{"style":"pebble","inputs":{"color":"sage"},"count":12}
+```
+
+Use `GET /api/v1/styles` to discover the accepted color values, labels, swatches, and default. Other styles reject a nonempty color input.
+
 For one avatar, a supplied seed is used verbatim. For a batch, seeds are `SEED:0`, `SEED:1`, and so on. A batch is saved as one record; callers never see a partially saved collection. A successful retry creates another collection with new IDs, even when it reuses a seed.
 
 The response shape is:
@@ -35,16 +43,17 @@ The response shape is:
 ```json
 {
   "id": "col_...",
-  "name": "First cast",
-  "style": "gorey",
+  "name": "Sage pebbles",
+  "style": "pebble",
   "created_at": "2026-09-08T00:00:00Z",
   "url": "/?collection=col_...",
   "avatars": [
     {
       "id": "av_...",
       "collection_id": "col_...",
-      "style": "gorey",
+      "style": "pebble",
       "seed": "generated-seed",
+      "inputs": {"color":"sage"},
       "created_at": "2026-09-08T00:00:00Z",
       "url": "/?avatar=av_...",
       "svg_url": "/api/v1/avatars/av_....svg",
@@ -58,16 +67,17 @@ API URLs are relative to the service origin. CLI JSON expands them into absolute
 
 ## Export images
 
-Saved image routes accept `width`, `height`, and `circle`. Omitted dimensions preserve the native 64 × 72 portrait ratio. If only one dimension is provided, the other is derived from the native ratio. A circular export defaults to 72 × 72, and one supplied dimension sets both sides. With both dimensions supplied, the circle is inscribed in the requested canvas. Each dimension must be 1–2048.
+Saved image routes accept `width`, `height`, and `circle`. Omitted dimensions preserve the artwork's native ratio, which is 64 × 72 for the portrait styles and 64 × 64 for Pebble. If only one dimension is provided, the other is derived from the native ratio. A circular export defaults to the larger native dimension, and one supplied dimension sets both sides. With both dimensions supplied, the circle is inscribed in the requested canvas. Each dimension must be 1–2048.
 
 ```text
 /api/v1/avatars/av_ID.png?width=256&height=256&circle=true
 ```
 
-Stateless rendering additionally accepts required `seed` and optional `style` and `format` (`svg` by default). It never writes a collection. An empty seed is valid for stateless rendering and has the same deterministic meaning as in the TypeScript reference. URL-encode seeds with your HTTP client's query parameter support.
+Stateless rendering additionally accepts required `seed` and optional `style`, `color`, and `format` (`svg` by default). It never writes a collection. An empty seed is valid for stateless rendering and has the same deterministic meaning as in the TypeScript reference. URL-encode seeds with your HTTP client's query parameter support.
 
 ```text
 /api/v1/render?seed=agent-42&style=gorey&format=svg
+/api/v1/render?seed=agent-42&style=pebble&color=sage&format=svg
 ```
 
 SVG uses `image/svg+xml`; PNG uses `image/png`. The filename appears in Content-Disposition. The service does not cache mutable library queries.
@@ -85,6 +95,16 @@ Invalid input returns 400, absent records return 404, and persistence or unexpec
 ## Extension boundaries
 
 `pkg/avatar.Engine` owns separate registries for `Generator` and `Exporter`. Generators receive context and a seed, and return `Artwork` with bytes, media type, and native dimensions. Exporters receive that artwork and normalized size/crop options. Adapters must support concurrent calls and keep artwork self-contained. The built-in exporters accept SVG artwork; a future raster-native provider will need a compatible exporter.
+
+A generator that supports a typed appearance input publishes its choices through `Style.Inputs` and implements the optional `InputGenerator` extension. Existing input-free generators and `Engine.Render` remain unchanged. Input-aware Go callers use the same validation and defaults as the other surfaces:
+
+```go
+image, err := engine.RenderWithInputs(ctx, "pebble", "agent-42", "png",
+    avatar.Inputs{Color: "sage"},
+    avatar.Options{Width: 256, Height: 256})
+```
+
+`Engine.ResolveInputs` is the shared validation boundary. It resolves the style default before a recipe is saved and rejects an input unsupported by the selected style. Saved exports pass the stored recipe to `RenderWithInputs` and expose no appearance override.
 
 The saved library lives behind `library.Store`. The JSONL adapter handles paths, locks, append ordering, and sync. The application handles creation rules and lookup. The HTTP adapter and CLI call that application; the embedded studio calls the public HTTP API.
 

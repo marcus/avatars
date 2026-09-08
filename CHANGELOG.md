@@ -12,3 +12,4 @@
 - Loopback HTTP API over the same application core used by local CLI commands.
 - Gorey Expanded adds a wider cast of engraved characters; Picasso adds restrained cubist portraits through the same generator interface.
 - Portrait links preserve export shape and dimensions, and the service supports an explicit Tailscale HTTPS proxy origin.
+- Pebble adds softly irregular two-eye characters with 15 stable colors across the Go library, CLI, HTTP API, saved recipes, and studio.
