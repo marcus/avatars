@@ -9,7 +9,7 @@ Five styles are available:
 | **Gorey** (`gorey`) | The original engraved pen-and-ink portraits, preserved exactly. |
 | **Gorey Expanded** (`gorey-expanded`) | A wider cast with more face shapes, ages, hairstyles, clothes, and accessories. |
 | **Picasso** (`picasso`) | Recognizable faces drawn with bold contours, muted color, and restrained cubist planes. |
-| **Pebble** (`pebble`) | Pudgy, softly irregular characters with two tiny eyes and 15 selectable colors. |
+| **Pebble** (`pebble`) | Pudgy, softly irregular characters with two tiny eyes and 15 palette colors and a Random choice. |
 | **Companions** (`companions`) | Playful dogs and cats with expressive ears, warm coats, and lively ink contours. |
 
 Generation is random by default. Programs can provide a seed to reproduce a portrait exactly. Each style uses the same SVG/PNG exporters and library workflow.
@@ -37,7 +37,7 @@ In another terminal:
 # Save random portraits and return links to the collection and each avatar.
 ./bin/avatars generate --count 12 --name "First cast" --json
 ./bin/avatars generate --style picasso --count 12 --name "Picasso studies" --json
-./bin/avatars generate --style pebble --color sage --count 12 --name "Sage pebbles" --json
+./bin/avatars generate --style pebble --color random --count 12 --name "Mixed pebbles" --json
 ./bin/avatars generate --style companions --animal cat --count 12 --name "Curious cats" --json
 
 # Browse the same library shown in the studio.
@@ -58,6 +58,8 @@ In another terminal:
 Replace `AVATAR_ID` with an ID returned by `generate` or `list`. Each saved avatar and collection has a direct studio URL. The studio refreshes when another process creates a collection.
 
 `generate` works while the service is stopped. To use a running service's library through HTTP, add `--url http://127.0.0.1:7447` or set `AVATARS_URL`. Otherwise the CLI opens the local library through the same application core used by the API.
+
+Pebble defaults to Walnut. `--color random` picks from all 15 palette colors independently for each avatar; a fixed seed repeats its color. Saved recipes contain the chosen palette value, so later exports keep that color. In the studio, Random stays selected after generation and ordinary refresh. Opening a saved portrait selects its concrete color; opening a mixed-color collection selects Random.
 
 SVG is the default export format. `--size 256` requests a square canvas; `--size 256x288` sets both dimensions. Gorey and Picasso portraits use a 64 × 72 native canvas; Pebble uses 64 × 64, and Companions uses 128 × 128. Style discovery reports these as `native_width` and `native_height`. Rectangular exports preserve the artwork's aspect ratio, with transparent margins when needed. Circular exports crop the center and leave transparent corners. Each dimension supports 1–2048 pixels.
 

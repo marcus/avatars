@@ -4,6 +4,8 @@
 
 ### Features
 
+- Pebble Random selects from all 15 palette colors per avatar, with deterministic seeds and concrete saved colors across the studio, CLI, and HTTP API.
+
 - Go Gorey generator with byte-for-byte TypeScript parity and extensible style and export adapters.
 - SVG and pure Go PNG export with custom dimensions and circular cropping.
 - Random saved collections, optional reproducible seeds, and a shared JSONL library.
