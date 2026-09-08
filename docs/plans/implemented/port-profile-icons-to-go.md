@@ -1,6 +1,6 @@
 # Avatar generator and studio
 
-Status: active. Tracking: `td-7c3910`.
+Status: implemented. Tracking: `td-7c3910`.
 
 ## Outcome
 
@@ -40,14 +40,23 @@ Generate an avatar or a batch from the CLI or studio, see the same saved collect
 - [x] Build compact studio with grid, collection navigation, inspector, generation, downloads, and deep links.
 - [x] Run focused tests, race suite, vet, formatting, build, and actual CLI/API/browser journeys.
 - [x] Independently review meaningful changes and repair findings.
-- [ ] Update usage docs, run external prose through `naturally`, land on main, push private backup, install, and leave studio running.
+- [x] Update usage docs, run external prose through `naturally`, land on main, push private backup, install, and leave studio running.
 
-- [ ] Add Gorey Expanded and Picasso adapters, visually inspect collections, and verify all surfaces.
-- [ ] Preserve portrait/circle mode and dimensions in copied portrait URLs.
-- [ ] Add Tailscale link guidance to AGENTS.md, configure private HTTPS, and verify the remote journey.
+- [x] Add Gorey Expanded and Picasso adapters, visually inspect collections, and verify all surfaces.
+- [x] Preserve portrait/circle mode and dimensions in copied portrait URLs.
+- [x] Add Tailscale link guidance to AGENTS.md, configure private HTTPS, and verify the remote journey.
 
-## Current handoff
+## Completion evidence
 
-The initial implementation is merged into local main and installed, with the studio running in Sidecar shell `sidecar-sh-avatars-2`. It has passed independent reviews, the Go race/vet/format/build suite, TypeScript fixtures, desktop/mobile browser workflows, downloads, and connection recovery. Four CGO-free target builds succeeded. The repository remains private; no release tag is part of this work.
+- `make fmt-check vet test-race build` passes. Node reference and URL-state tests pass. The original Gorey SVG matches 108 TypeScript fixtures exactly; both new styles retain deterministic numeric SVG and use the same PNG/SVG exporters.
+- CLI-to-HTTP tests create and export each of the three styles, verify shared metadata, and compare saved images with stateless render output. Store tests cover concurrent subprocesses, restarts, corrupt records, and cancellation.
+- Independent reviews by the generator, library, and studio agents covered code they did not implement. Findings about export framing, cancellation, literal seeds, proxy origins, image recovery, and URL state were repaired and rechecked.
+- Browser proof covers desktop and 390-pixel layouts, generation, live collection refresh, SVG/PNG downloads, copy links, browser history, failed-image recovery, and shape/dimension restoration. Opening a collection selects its style for subsequent generation; refresh preserves an explicit manual choice.
+- Original Gorey, Gorey Expanded, and Picasso each have a 24-portrait collection in the local library. Both new contact sheets received author and independent visual review.
+- The canonical main checkout is installed at `/opt/homebrew/bin/avatars`; the serving code build is `fe8c3cb`. The studio runs in Sidecar shell `sidecar-sh-avatars-2`, using `avatars serve --public-url https://aerie.tail53fd54.ts.net:7447`.
+- Tailscale HTTPS health, CLI collection creation, browser loading, image rendering, and circle links are verified at `https://aerie.tail53fd54.ts.net:7447`. Existing Tailscale routes were preserved. A separate laptop SSH probe timed out, so no second-machine proof is claimed.
+- Before/after Tailscale Serve snapshots are retained in `~/.local/state/avatars/rollback/`. Remove only this proxy with `tailscale serve --https=7447 off` if rollback is needed.
 
-User review expanded the scope: add Gorey variety, a recognizable Picasso style, shape-preserving portrait links, and Tailscale handoff URLs. Generator agent owns the new Gorey adapter; library agent owns the Picasso adapter; studio agent owns URL state. Primary owns proxy configuration, registration, docs, installation, and final proof. Continue in `/Users/marcus/code/avatars-avatar-studio`, committing only owned files.
+## Handoff
+
+The implementation is complete and merged into main. The repository remains private, with no release tag. Agent usage and integration contracts live in `docs/guides/active/api-and-integration.md` and `avatars instructions`. Shared links use Tailscale as directed in AGENTS.md. Future nondeterministic providers must persist their artwork before they join the saved library; existing style output contracts remain stable.
