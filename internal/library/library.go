@@ -18,14 +18,15 @@ import (
 // Avatar stores the recipe for a portrait. The style's deterministic generator
 // recreates export bytes; generated image files are not the source of truth.
 type Avatar struct {
-	ID           string    `json:"id"`
-	CollectionID string    `json:"collection_id"`
-	Style        string    `json:"style"`
-	Seed         string    `json:"seed"`
-	CreatedAt    time.Time `json:"created_at"`
-	URL          string    `json:"url"`
-	SVGURL       string    `json:"svg_url"`
-	PNGURL       string    `json:"png_url"`
+	ID           string         `json:"id"`
+	CollectionID string         `json:"collection_id"`
+	Style        string         `json:"style"`
+	Seed         string         `json:"seed"`
+	Inputs       *avatar.Inputs `json:"inputs,omitempty"`
+	CreatedAt    time.Time      `json:"created_at"`
+	URL          string         `json:"url"`
+	SVGURL       string         `json:"svg_url"`
+	PNGURL       string         `json:"png_url"`
 }
 
 type Collection struct {
@@ -41,10 +42,11 @@ type Collection struct {
 // supplied seed is used verbatim for one avatar, or as "seed:index" (zero-based)
 // for each avatar in a batch. An empty seed requests fresh cryptographic seeds.
 type CreateRequest struct {
-	Style string `json:"style"`
-	Count int    `json:"count"`
-	Name  string `json:"name"`
-	Seed  string `json:"seed"`
+	Style  string         `json:"style"`
+	Count  int            `json:"count"`
+	Name   string         `json:"name"`
+	Seed   string         `json:"seed"`
+	Inputs *avatar.Inputs `json:"inputs,omitempty"`
 }
 
 // Store saves a whole collection atomically. Callers do not depend on its
@@ -103,6 +105,14 @@ func (s *Service) Create(ctx context.Context, request CreateRequest) (Collection
 	if selected == nil {
 		return Collection{}, invalid(fmt.Sprintf("unknown style %q", request.Style))
 	}
+	requestedInputs := avatar.Inputs{}
+	if request.Inputs != nil {
+		requestedInputs = *request.Inputs
+	}
+	resolvedInputs, err := s.engine.ResolveInputs(request.Style, requestedInputs)
+	if err != nil {
+		return Collection{}, invalid(err.Error())
+	}
 	name := strings.TrimSpace(request.Name)
 	if name == "" {
 		name = selected.Name + " collection"
@@ -132,6 +142,7 @@ func (s *Service) Create(ctx context.Context, request CreateRequest) (Collection
 		}
 		collection.Avatars = append(collection.Avatars, Avatar{
 			ID: id, CollectionID: collection.ID, Style: request.Style, Seed: seed,
+			Inputs:    generationInputs(resolvedInputs),
 			CreatedAt: now, URL: "/?avatar=" + id,
 			SVGURL: "/api/v1/avatars/" + id + ".svg", PNGURL: "/api/v1/avatars/" + id + ".png",
 		})
@@ -194,14 +205,26 @@ func (s *Service) Render(ctx context.Context, id, format string, options avatar.
 	if err != nil {
 		return nil, err
 	}
-	data, err := s.engine.Render(ctx, item.Style, item.Seed, format, options)
+	inputs := avatar.Inputs{}
+	if item.Inputs != nil {
+		inputs = *item.Inputs
+	}
+	data, err := s.engine.RenderWithInputs(ctx, item.Style, item.Seed, format, inputs, options)
 	if err != nil {
-		if errors.Is(err, avatar.ErrInvalidOptions) || errors.Is(err, avatar.ErrUnknownFormat) {
+		if errors.Is(err, avatar.ErrInvalidOptions) || errors.Is(err, avatar.ErrInvalidInputs) || errors.Is(err, avatar.ErrUnknownFormat) {
 			return nil, invalid(err.Error())
 		}
 		return nil, internal("render avatar", err)
 	}
 	return data, nil
+}
+
+func generationInputs(inputs avatar.Inputs) *avatar.Inputs {
+	if inputs.Empty() {
+		return nil
+	}
+	copy := inputs
+	return &copy
 }
 
 func invalid(message string) error {

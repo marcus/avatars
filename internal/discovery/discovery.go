@@ -13,11 +13,11 @@ type Operation struct {
 }
 
 var Operations = []Operation{
-	{"generate", "Generate and save a collection of random avatars", "generate [SEED] [--count 12] [--style gorey] [--name TEXT] [--seed TEXT] [--out FILE] [--format svg|png] [--size WxH] [--circle]", "POST", "/api/v1/collections"},
+	{"generate", "Generate and save a collection of random avatars", "generate [SEED] [--count 12] [--style gorey] [--color COLOR] [--name TEXT] [--seed TEXT] [--out FILE] [--format svg|png] [--size WxH] [--circle]", "POST", "/api/v1/collections"},
 	{"list", "List saved collections, newest first", "list", "GET", "/api/v1/collections"},
 	{"show", "Inspect a saved avatar or collection", "show ID", "GET", "/api/v1/collections/{id} or /api/v1/avatars/{id}"},
 	{"export", "Export a saved avatar as SVG or PNG", "export AVATAR_ID [--format svg|png] [--size 256x288] [--circle] [--out FILE|-]", "GET", "/api/v1/avatars/{id}.{format}"},
-	{"render", "Render a reproducible avatar without saving it", "render [SEED] [--seed TEXT] [--style gorey] [--format svg|png] [--size WxH] [--circle] [--out FILE|-]", "GET", "/api/v1/render"},
+	{"render", "Render a reproducible avatar without saving it", "render [SEED] [--seed TEXT] [--style gorey] [--color COLOR] [--format svg|png] [--size WxH] [--circle] [--out FILE|-]", "GET", "/api/v1/render"},
 	{"styles", "List installed styles and export formats", "styles", "GET", "/api/v1/styles"},
 	{"serve", "Run the HTTP API and studio on loopback", "serve [--listen 127.0.0.1:7447] [--public-url HTTPS_ORIGIN] [--open]", "", ""},
 	{"instructions", "Print operational guidance for agents", "instructions", "GET", "/api/v1/instructions"},
@@ -37,14 +37,17 @@ these defaults. With --url, the server owns the library; --data-dir is refused.
 
 No seed is required. Omit --seed to use fresh random seeds. For reproducibility,
 use --seed TEXT; a single avatar uses that exact seed, while batches use
-TEXT:0, TEXT:1, and so on. The studio has no appearance or prompt steering.
+TEXT:0, TEXT:1, and so on. Pebble supports a color selected with --color;
+avatars styles --json lists its stable values and Walnut default.
 
 List: avatars list --json
 Inspect: avatars show ID --json
 Export: avatars export AVATAR_ID --format png --size 256 --circle --out icon.png
-Stateless: avatars render --seed agent-42 --format svg --out icon.svg
+Pebble: avatars generate --style pebble --color sage --count 12 --json
+Stateless: avatars render --style pebble --color sage --seed agent-42 --format svg --out icon.svg
 SVG is the default format. --size N requests an N by N canvas; --size WxH sets
-both dimensions. Native portraits are 64 by 72. A circle crops the center and
+both dimensions. Native dimensions depend on the style: Gorey portraits are
+64 by 72 and Pebble artwork is 64 by 64. A circle crops the center and
 leaves transparent corners. Each dimension must be 1..2048. Output files are
 created exclusively: an existing file is never overwritten. Without --out,
 render and export write image bytes to stdout. With --json they instead return
@@ -54,8 +57,8 @@ Generate --out supports one avatar and still saves its collection.
 HTTP: GET /api/v1/styles, GET/POST /api/v1/collections,
 GET /api/v1/collections/ID, GET /api/v1/avatars/ID,
 GET /api/v1/avatars/ID.svg or .png, and GET /api/v1/render?seed=TEXT.
-Export queries: format (render only), style and seed (render only), width,
-height, and circle. POST JSON: {"style":"gorey","count":12,"name":"Exploration"}.
+Export queries: format, style, seed, and color (render only), plus width,
+height, and circle. POST JSON: {"style":"pebble","inputs":{"color":"sage"},"count":12}.
 Unknown fields and invalid values are refused. Errors use
 {"error":{"code":"invalid_request|not_found|internal","message":"..."}}.
 CLI exit codes: 0 success, 1 operation failure, 2 invalid invocation.

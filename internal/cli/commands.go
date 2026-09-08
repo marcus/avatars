@@ -37,13 +37,14 @@ func (a *app) styles(ctx context.Context) error {
 func (a *app) generate(ctx context.Context, args []string) error {
 	f := a.flags("generate")
 	req := library.CreateRequest{Style: "gorey", Count: 1}
-	var file, format, size string
+	var file, format, size, color string
 	var circle bool
 	f.StringVar(&req.Style, "style", "gorey", "style")
 	f.IntVar(&req.Count, "count", 1, "batch size")
 	f.StringVar(&req.Name, "name", "", "collection name")
 	f.StringVar(&req.Seed, "seed", "", "seed")
 	f.StringVar(&req.Seed, "s", "", "seed")
+	f.StringVar(&color, "color", "", "style color")
 	f.StringVar(&file, "out", "", "file")
 	f.StringVar(&file, "o", "", "file")
 	f.StringVar(&format, "format", "svg", "format")
@@ -78,6 +79,9 @@ func (a *app) generate(ctx context.Context, args []string) error {
 	}
 	if file != "" && req.Count != 1 {
 		return bad("generate --out requires --count 1")
+	}
+	if color != "" {
+		req.Inputs = &avatar.Inputs{Color: color}
 	}
 	if file == "-" && a.json {
 		return bad("generate --out - cannot be combined with --json")
@@ -231,7 +235,7 @@ func (a *app) renderSaved(ctx context.Context, id, format string, o avatar.Optio
 }
 func (a *app) image(ctx context.Context, command string, args []string) error {
 	f := a.flags(command)
-	var seed, style, format, size, file string
+	var seed, style, format, size, file, color string
 	var circle bool
 	f.StringVar(&format, "format", "svg", "format")
 	f.StringVar(&format, "f", "svg", "format")
@@ -244,6 +248,7 @@ func (a *app) image(ctx context.Context, command string, args []string) error {
 		f.StringVar(&seed, "seed", "", "seed")
 		f.StringVar(&seed, "s", "", "seed")
 		f.StringVar(&style, "style", "gorey", "style")
+		f.StringVar(&color, "color", "", "style color")
 	}
 	if e := parse(f, args); e != nil {
 		return e
@@ -289,9 +294,12 @@ func (a *app) image(ctx context.Context, command string, args []string) error {
 			q.Set("seed", seed)
 			q.Set("style", style)
 			q.Set("format", format)
+			if color != "" {
+				q.Set("color", color)
+			}
 			b, e = a.request(ctx, "GET", "/api/v1/render?"+q.Encode(), nil, nil)
 		} else {
-			b, e = a.engine.Render(ctx, style, seed, format, o)
+			b, e = a.engine.RenderWithInputs(ctx, style, seed, format, avatar.Inputs{Color: color}, o)
 			if e != nil {
 				e = bad(e.Error())
 			}

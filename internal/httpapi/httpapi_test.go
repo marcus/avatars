@@ -116,6 +116,64 @@ func TestRejectInvalidAndCrossOrigin(t *testing.T) {
 	}
 }
 
+func TestPebbleInputsAcrossHTTPRecipesAndRendering(t *testing.T) {
+	h := handler(t)
+	styles := call(h, "GET", "/api/v1/styles", "", nil)
+	if styles.Code != 200 || !strings.Contains(styles.Body.String(), `"id":"pebble"`) || !strings.Contains(styles.Body.String(), `"default":"walnut"`) || !strings.Contains(styles.Body.String(), `"swatch":"#A5B59A"`) {
+		t.Fatalf("Pebble discovery missing: %d %s", styles.Code, styles.Body.String())
+	}
+
+	created := call(h, "POST", "/api/v1/collections", `{"style":"pebble","seed":"http-pebble","inputs":{"color":"sage"}}`, nil)
+	if created.Code != 201 {
+		t.Fatal(created.Code, created.Body.String())
+	}
+	var collection library.Collection
+	if err := json.Unmarshal(created.Body.Bytes(), &collection); err != nil {
+		t.Fatal(err)
+	}
+	item := collection.Avatars[0]
+	if item.Inputs == nil || item.Inputs.Color != "sage" {
+		t.Fatalf("saved recipe lost its color: %+v", item)
+	}
+	defaulted := call(h, "POST", "/api/v1/collections", `{"style":"pebble","seed":"default-pebble"}`, nil)
+	var defaultCollection library.Collection
+	if defaulted.Code != 201 || json.Unmarshal(defaulted.Body.Bytes(), &defaultCollection) != nil || defaultCollection.Avatars[0].Inputs == nil || defaultCollection.Avatars[0].Inputs.Color != "walnut" {
+		t.Fatalf("HTTP omitted color did not resolve to Walnut: %d %s", defaulted.Code, defaulted.Body.String())
+	}
+	saved := call(h, "GET", item.SVGURL, "", nil)
+	stateless := call(h, "GET", "/api/v1/render?style=pebble&seed=http-pebble&color=sage", "", nil)
+	if saved.Code != 200 || stateless.Code != 200 || !bytes.Equal(saved.Body.Bytes(), stateless.Body.Bytes()) {
+		t.Fatal("saved and stateless Pebble renderings differ")
+	}
+	for _, path := range []string{
+		item.SVGURL + "?color=walnut",
+		"/api/v1/render?style=pebble&seed=x&color=sage&color=walnut",
+		"/api/v1/render?style=gorey&seed=x&color=sage",
+		"/api/v1/render?style=pebble&seed=x&color=missing",
+	} {
+		w := call(h, "GET", path, "", nil)
+		if w.Code != 400 {
+			t.Fatalf("accepted invalid appearance request %s: %d %s", path, w.Code, w.Body.String())
+		}
+	}
+
+	rejecting := handler(t)
+	for _, body := range []string{
+		`{"style":"pebble","inputs":{"color":"missing"}}`,
+		`{"style":"gorey","inputs":{"color":"sage"}}`,
+		`{"style":"pebble","inputs":{"color":"sage","unknown":true}}`,
+	} {
+		w := call(rejecting, "POST", "/api/v1/collections", body, nil)
+		if w.Code != 400 {
+			t.Fatalf("accepted invalid request %s: %d %s", body, w.Code, w.Body.String())
+		}
+	}
+	list := call(rejecting, "GET", "/api/v1/collections", "", nil)
+	if list.Code != 200 || list.Body.String() != "{\"collections\":[]}\n" {
+		t.Fatalf("invalid input wrote a record: %d %s", list.Code, list.Body.String())
+	}
+}
+
 func TestTrustedProxyOrigin(t *testing.T) {
 	s, e := store.New(filepath.Join(t.TempDir(), "collections.jsonl"))
 	if e != nil {
