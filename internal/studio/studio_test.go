@@ -8,7 +8,7 @@ import (
 )
 
 func TestEmbeddedStudioRoutes(t *testing.T) {
-	for _, target := range []string{"/", "/?collection=col_example", "/?avatar=av_example&shape=circle", "/app.js", "/view.mjs", "/styles.css"} {
+	for _, target := range []string{"/", "/?collection=col_example", "/?avatar=av_example&shape=circle", "/app.js", "/view.mjs", "/styles.css", "/card-grid.css", "/card-grid.mjs", "/card-physics.mjs", "/card-sound.mjs", "/vendor/matter/matter.mjs"} {
 		t.Run(target, func(t *testing.T) {
 			response := httptest.NewRecorder()
 			Handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, target, nil))
@@ -22,6 +22,22 @@ func TestEmbeddedStudioRoutes(t *testing.T) {
 				t.Fatal("deep links must open the studio document")
 			}
 		})
+	}
+}
+
+func TestStudioCardAssetsUseBrowserMIMETypes(t *testing.T) {
+	for target, expected := range map[string]string{
+		"/card-grid.css":             "text/css",
+		"/card-grid.mjs":             "text/javascript",
+		"/card-physics.mjs":          "text/javascript",
+		"/card-sound.mjs":            "text/javascript",
+		"/vendor/matter/matter.mjs": "text/javascript",
+	} {
+		response := httptest.NewRecorder()
+		Handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, target, nil))
+		if contentType := response.Header().Get("Content-Type"); !strings.HasPrefix(contentType, expected) {
+			t.Errorf("%s: content type %q, want %q", target, contentType, expected)
+		}
 	}
 }
 

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { deterministicCardAngle, reconcileKeyedChildren } from "./assets/card-grid.mjs";
+import { chooseOpenSlot, deterministicCardAngle, reconcileKeyedChildren } from "./assets/card-grid.mjs";
 
 class FakeNode {
   constructor(id) {
@@ -73,4 +73,17 @@ test("card angles are deterministic, subtle, and varied", () => {
   assert.deepEqual(ids.map(deterministicCardAngle), angles);
   assert(angles.every((angle) => Math.abs(angle) <= .08));
   assert(new Set(angles).size > 1);
+});
+
+test("new cards choose a slot clear of complete displaced card footprints", () => {
+  const slots = [
+    { x: 80, y: 110, width: 140, height: 200, angle: 0 },
+    { x: 240, y: 110, width: 140, height: 200, angle: 0 },
+    { x: 400, y: 110, width: 140, height: 200, angle: 0 },
+  ];
+  const occupied = [
+    { id: "first", x: 80, y: 110, width: 140, height: 200, angle: 0 },
+    { id: "second", x: 236, y: 116, width: 140, height: 200, angle: .08 },
+  ];
+  assert.equal(chooseOpenSlot(slots, occupied, slots[0]), slots[2]);
 });

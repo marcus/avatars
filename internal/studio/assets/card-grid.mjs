@@ -32,6 +32,26 @@ export function reconcileKeyedChildren(container, items, keyFor, create, update)
   return result;
 }
 
+function footprint(card) {
+  const cosine = Math.abs(Math.cos(card.angle || 0));
+  const sine = Math.abs(Math.sin(card.angle || 0));
+  return {
+    rx: (card.width * cosine + card.height * sine) / 2,
+    ry: (card.height * cosine + card.width * sine) / 2,
+  };
+}
+
+export function chooseOpenSlot(slots, occupied, fallback) {
+  return slots.find((candidate) => {
+    const size = footprint(candidate);
+    return occupied.every((other) => {
+      const otherSize = footprint(other);
+      return Math.abs(candidate.x - other.x) >= size.rx + otherSize.rx + 4
+        || Math.abs(candidate.y - other.y) >= size.ry + otherSize.ry + 4;
+    });
+  }) || fallback;
+}
+
 export function createCardGrid({ grid, sound = createCardSound() }) {
   const physics = createCardPhysics();
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -43,6 +63,9 @@ export function createCardGrid({ grid, sound = createCardSound() }) {
   let lastFrame = 0;
   let arranging = null;
   let resizeFrame = 0;
+  let observedWidth = 0;
+  let observedHeight = 0;
+  let suppressNextHeightArrange = false;
 
   function slot(card) {
     return {
@@ -57,16 +80,17 @@ export function createCardGrid({ grid, sound = createCardSound() }) {
   }
 
   function specs({ preserve = false } = {}) {
-    const slots = cards.map(slot);
-    const used = preserve ? [...poses.values()] : [];
+    const slots = cards.map((card) => ({ ...slot(card), width: card.offsetWidth, height: card.offsetHeight }));
+    const used = preserve ? [...poses.values()].map((pose) => {
+      const card = cards.find((item) => item.dataset.avatar === pose.id);
+      return { ...pose, width: card?.offsetWidth || 0, height: card?.offsetHeight || 0 };
+    }) : [];
     return cards.map((card, index) => {
       let resting = slots[index];
       const pose = preserve ? poses.get(card.dataset.avatar) : null;
       if (preserve && !pose) {
-        resting = slots.find((candidate) => used.every((occupied) => (
-          Math.hypot(candidate.x - occupied.x, candidate.y - occupied.y) > Math.min(card.offsetWidth, card.offsetHeight) * .55
-        ))) || resting;
-        used.push(resting);
+        resting = chooseOpenSlot(slots, used, resting);
+        used.push({ ...resting, width: card.offsetWidth, height: card.offsetHeight });
       }
       return {
         id: card.dataset.avatar,
@@ -209,9 +233,10 @@ export function createCardGrid({ grid, sound = createCardSound() }) {
     const nextCards = [...grid.querySelectorAll(":scope > [data-avatar]")];
     const nextIDs = nextCards.map((card) => card.dataset.avatar).join("\u0000");
     const oldIDs = cards.map((card) => card.dataset.avatar).join("\u0000");
+    const oldCount = cards.length;
     const changedCollection = collectionKey !== null && collectionKey !== nextCollectionKey;
     collectionKey = nextCollectionKey;
-    if (nextIDs === oldIDs && !changedCollection) return;
+    if (nextIDs === oldIDs && !changedCollection && poses.size === nextCards.length) return;
     finishDrag(true);
     stopAnimation();
     cards = nextCards;
@@ -219,7 +244,10 @@ export function createCardGrid({ grid, sound = createCardSound() }) {
       poses.clear();
       return;
     }
-    reset({ preserve: !changedCollection && Boolean(oldIDs) });
+    const preserve = !changedCollection && nextCards.length >= oldCount && Boolean(oldIDs);
+    suppressNextHeightArrange = preserve && nextCards.length !== oldCount;
+    reset({ preserve });
+    if (suppressNextHeightArrange) requestAnimationFrame(() => { suppressNextHeightArrange = false; });
   }
 
   function onPointerDown(event) {
@@ -269,6 +297,10 @@ export function createCardGrid({ grid, sound = createCardSound() }) {
 
   function onClick(event) {
     const card = event.target.closest("[data-avatar]");
+    if (card?.dataset.suppressClick === "true" && event.detail === 0) {
+      delete card.dataset.suppressClick;
+      return;
+    }
     if (card?.dataset.suppressClick === "true" && event.detail !== 0) {
       delete card.dataset.suppressClick;
       event.preventDefault();
@@ -277,6 +309,17 @@ export function createCardGrid({ grid, sound = createCardSound() }) {
   }
 
   function onResize() {
+    const width = grid.clientWidth;
+    const height = grid.clientHeight;
+    const widthChanged = width !== observedWidth;
+    const heightChanged = height !== observedHeight;
+    observedWidth = width;
+    observedHeight = height;
+    if (!widthChanged && (!heightChanged || suppressNextHeightArrange)) {
+      suppressNextHeightArrange = false;
+      return;
+    }
+    suppressNextHeightArrange = false;
     if (resizeFrame) cancelAnimationFrame(resizeFrame);
     resizeFrame = requestAnimationFrame(() => {
       resizeFrame = 0;

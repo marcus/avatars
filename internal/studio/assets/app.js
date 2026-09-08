@@ -1,4 +1,5 @@
 import { colorChoiceForRecipe, colorInputFor, colorValueForStyle, readExportView, writeExportView } from "/view.mjs";
+import { createCardGrid, reconcileKeyedChildren } from "/card-grid.mjs";
 
 const $ = (id) => document.getElementById(id);
 const state = {
@@ -9,6 +10,7 @@ const state = {
 };
 let toastTimer;
 let lastSelected = null;
+const cardGrid = createCardGrid({ grid: $("portrait-grid") });
 const date = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
 const dateTime = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
@@ -183,38 +185,54 @@ function renderLibrary() {
   $("library-count").textContent = state.collections.reduce((sum, collection) => sum + collection.avatars.length, 0);
 }
 
+function createPortraitCard(avatar) {
+  const card = element("button", "portrait-card");
+  card.type = "button";
+  card.dataset.avatar = avatar.id;
+  const mat = element("span", "portrait-mat");
+  const image = element("img", "portrait-image");
+  watchImage(image);
+  image.alt = "";
+  image.width = 192;
+  image.height = 216;
+  image.loading = "lazy";
+  image.decoding = "async";
+  image.draggable = false;
+  const mark = element("span", "selection-mark");
+  mark.append(icon("check"));
+  mat.append(image, mark);
+  const label = element("span", "portrait-label");
+  label.append(element("span"), element("span", "portrait-number"));
+  card.append(mat, label);
+  return card;
+}
+
+function updatePortraitCard(card, avatar) {
+  const number = portraitNumber(avatar);
+  const sourceName = collectionFor(avatar.collection_id)?.name || styleName(avatar.style);
+  card.setAttribute("aria-label", `Portrait ${number}, ${sourceName}`);
+  const image = card.querySelector(".portrait-image");
+  const source = imageURL(avatar);
+  if (image.src !== source) image.src = source;
+  card.querySelector(".portrait-label > span:first-child").textContent = `Portrait ${number}`;
+  card.querySelector(".portrait-number").textContent = avatar.id.slice(-5).toUpperCase();
+  let collection = card.querySelector(".portrait-source");
+  if (!state.collectionId) {
+    if (!collection) {
+      collection = element("span", "portrait-source");
+      card.append(collection);
+    }
+    collection.textContent = sourceName;
+  } else collection?.remove();
+}
+
 function renderGrid() {
   const avatars = visibleAvatars();
   const collection = collectionFor(state.collectionId);
   const signature = JSON.stringify([state.collectionId, avatars.map((avatar) => [avatar.id, collectionFor(avatar.collection_id)?.name])]);
   if (signature !== state.gridSignature) {
     const focused = document.activeElement?.dataset.avatar;
-    const fragment = document.createDocumentFragment();
-    for (const avatar of avatars) {
-      const number = portraitNumber(avatar);
-      const card = element("button", "portrait-card");
-      card.type = "button";
-      card.dataset.avatar = avatar.id;
-      card.setAttribute("aria-label", `Portrait ${number}, ${collectionFor(avatar.collection_id)?.name || styleName(avatar.style)}`);
-      const mat = element("span", "portrait-mat");
-      const image = element("img", "portrait-image");
-      watchImage(image);
-      image.src = imageURL(avatar);
-      image.alt = "";
-      image.width = 192;
-      image.height = 216;
-      image.loading = "lazy";
-      image.decoding = "async";
-      const mark = element("span", "selection-mark");
-      mark.append(icon("check"));
-      mat.append(image, mark);
-      const label = element("span", "portrait-label");
-      label.append(element("span", "", `Portrait ${number}`), element("span", "portrait-number", avatar.id.slice(-5).toUpperCase()));
-      card.append(mat, label);
-      if (!state.collectionId) card.append(element("span", "portrait-source", collectionFor(avatar.collection_id)?.name || styleName(avatar.style)));
-      fragment.append(card);
-    }
-    $("portrait-grid").replaceChildren(fragment);
+    reconcileKeyedChildren($("portrait-grid"), avatars, (avatar) => avatar.id, createPortraitCard, updatePortraitCard);
     state.gridSignature = signature;
     if (focused) [...$("portrait-grid").children].find((card) => card.dataset.avatar === focused)?.focus({ preventScroll: true });
   }
@@ -230,6 +248,8 @@ function renderGrid() {
   $("load-state").hidden = true;
   $("empty-state").hidden = avatars.length > 0 || Boolean(state.collectionId);
   $("portrait-grid").hidden = !avatars.length;
+  $("arrange-cards").disabled = !avatars.length;
+  cardGrid.sync({ nextCollectionKey: state.collectionId || "all" });
   document.title = state.selected ? `Portrait ${portraitNumber(state.selected)} · Avatars Studio` : `${collection?.name || "Avatars"} · Studio`;
 }
 
@@ -316,6 +336,7 @@ function navigate(url) {
   const target = new URL(url, location.origin);
   if (target.origin !== location.origin) return;
   const previousCollection = state.collectionId;
+  cardGrid.cancel();
   history.pushState(null, "", target.pathname + target.search);
   setLibraryOpen(false);
   $("notice").hidden = true;
@@ -557,7 +578,25 @@ $("close-inspector").addEventListener("click", () => {
 });
 $("copy-avatar").addEventListener("click", () => copyLink(routeURL(null, state.avatarId), "Portrait"));
 $("copy-collection").addEventListener("click", () => copyLink(routeURL(state.collectionId), "Collection"));
-$("thumbnail-size").addEventListener("input", (event) => { $("portrait-grid").dataset.size = event.target.value; });
+$("thumbnail-size").addEventListener("input", (event) => {
+  $("portrait-grid").dataset.size = event.target.value;
+  requestAnimationFrame(() => cardGrid.arrange({ animate: false }));
+});
+$("arrange-cards").addEventListener("click", () => {
+  void cardGrid.unlockSound();
+  cardGrid.arrange({ audible: true });
+});
+function syncCardSoundControl() {
+  const enabled = cardGrid.soundEnabled;
+  $("toggle-card-sound").setAttribute("aria-pressed", String(enabled));
+  $("toggle-card-sound").setAttribute("aria-label", enabled ? "Turn card sounds off" : "Turn card sounds on");
+  $("toggle-card-sound").querySelector("use").setAttribute("href", enabled ? "#i-sound" : "#i-sound-off");
+}
+$("toggle-card-sound").addEventListener("click", () => {
+  cardGrid.toggleSound();
+  syncCardSoundControl();
+});
+syncCardSoundControl();
 $("menu-toggle").addEventListener("click", () => setLibraryOpen(!$("library").classList.contains("open")));
 $("sidebar-scrim").addEventListener("click", () => setLibraryOpen(false));
 $("export-form").addEventListener("submit", exportAvatar);
