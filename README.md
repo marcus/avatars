@@ -23,7 +23,7 @@ make build
 ./bin/avatars serve --open
 ```
 
-The studio opens at `http://127.0.0.1:7447`. It includes a collection browser, portrait grid, and export inspector. Choose a style and batch size, then generate. Companions shows an Animal dropdown for Dogs or Cats; Pebble shows Color. Each saved portrait keeps its selected species or color. Select a portrait to adjust export dimensions, apply a circular crop, download SVG or PNG, or copy its direct link with the selected shape and dimensions.
+The studio opens at `http://127.0.0.1:7447`. It includes a collection browser, portrait grid, and export inspector. Choose a style and batch size, then generate. Companions shows an Animal dropdown for Dogs, Cats, or Mixed; Pebble shows Color. Each saved portrait keeps its selected species or color. Select a portrait to adjust export dimensions, apply a circular crop, download SVG or PNG, or copy its direct link with the selected shape and dimensions.
 
 The inspector offers Dark, Light, and Gray preview backgrounds. Copied portrait links retain the selected surround, shape, and dimensions. Background choices affect the preview only; SVG and PNG exports keep their original transparency.
 
@@ -38,7 +38,7 @@ In another terminal:
 ./bin/avatars generate --count 12 --name "First cast" --json
 ./bin/avatars generate --style picasso --count 12 --name "Picasso studies" --json
 ./bin/avatars generate --style pebble --color random --count 12 --name "Mixed pebbles" --json
-./bin/avatars generate --style companions --animal cat --count 12 --name "Curious cats" --json
+./bin/avatars generate --style companions --animal mixed --count 12 --name "Mixed companions" --json
 
 # Browse the same library shown in the studio.
 ./bin/avatars list --json
@@ -58,6 +58,8 @@ In another terminal:
 Replace `AVATAR_ID` with an ID returned by `generate` or `list`. Each saved avatar and collection has a direct studio URL. The studio refreshes when another process creates a collection.
 
 `generate` works while the service is stopped. To use a running service's library through HTTP, add `--url http://127.0.0.1:7447` or set `AVATARS_URL`. Otherwise the CLI opens the local library through the same application core used by the API.
+
+Companions defaults to Dogs. `--animal mixed` chooses a dog or cat independently for each final seed, without promising an exact balance in a batch. Saved avatars retain the concrete species. Mixed stays selected for consecutive generation and refresh; opening a mixed-species collection suggests Mixed, while selecting a portrait restores Dogs or Cats.
 
 Pebble defaults to Walnut. `--color random` picks from all 15 palette colors independently for each avatar; a fixed seed repeats its color. Saved recipes contain the chosen palette value, so later exports keep that color. In the studio, Random stays selected after generation and ordinary refresh. Opening a saved portrait selects its concrete color; opening a mixed-color collection selects Random.
 

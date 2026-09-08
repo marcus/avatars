@@ -39,11 +39,14 @@ For each new input:
 3. Resolve defaults and validate in the shared core before persistence or rendering. Reject values and inputs unsupported by the selected style. CLI and HTTP translate the same error into their normal envelopes.
 4. Save the resolved input with every avatar, so retrieval, export, restart, and copied links recreate its appearance. Do not fold an input into the seed or store it only in browser state.
 5. Expose generation through CLI and HTTP as well as the UI. Update human help, JSON discovery, integration examples, and the guide when the contract changes.
-6. Preserve records that omit new fields, and keep input-free calls compatible. Saved exports use the saved recipe; they must refuse attempts to override its appearance.
+6. Offer a mixed/random choice for selectable appearance inputs where it makes sense. Resolve it per avatar's final seed through `RecipeInputResolver`, persist concrete values, and keep explicit choices and defaults stable. State whether any balance is guaranteed; independent sampling alone does not guarantee both choices in a batch.
+7. Preserve records that omit new fields, and keep input-free calls compatible. Saved exports use the saved recipe; they must refuse attempts to override its appearance.
 
 Use a narrow typed input and a small adapter extension when required. A schema engine, plugin loader, or arbitrary options map is unnecessary for one enum. Keep the existing input-free `Generator` and `Engine.Render` usable where practical; put optional input support behind a documented seam. The core must not switch on a style ID to implement that style's rules.
 
 The current Go seam uses `Style.Inputs` for discovery, `Engine.ResolveInputs` for shared defaulting and validation, and the optional `InputGenerator.GenerateWithInputs` method for rendering. Callers with an input use `Engine.RenderWithInputs`; ordinary generators and callers continue to use `Generate` and `Engine.Render`. A seed-dependent request such as Pebble Random also implements `RecipeInputResolver`. `Engine.ResolveInputs` validates the request before batch creation, and `Engine.ResolveRecipeInputs` resolves each avatar's final seed into concrete saved inputs. Keep that resolution independent of geometry randomness so existing explicit choices retain their output. The typed inputs are currently `Inputs.Color` with `StyleInputs.Color`, and `Inputs.Animal` with `StyleInputs.Animal`. Add another typed descriptor only when a shipped style needs it.
+
+Publish the mixed request value in the descriptor's optional `mixed_value` field and include it in `values` with a readable label. The studio uses this metadata to restore a collection with varied concrete values; it must not assume the choice is named `random`. For example, Pebble color uses `random` and Companions animal uses `mixed`. A uniform collection restores its concrete value. Inputs without a mixed choice keep the first saved value. This convention applies to appearance recipes, not preview backgrounds, crops, dimensions, or other presentation controls.
 
 When adding a second input, validate every supplied field before returning. A valid color must not short-circuit rejection of an unsupported animal. Built-in input generators use `resolveStyleInputs` for direct calls as well as engine calls, so neither route silently ignores another style's fields. Keep the input-free `Generate` path on the same defaults.
 
@@ -61,7 +64,7 @@ Meaningful evidence includes:
 - Existing style fixtures and records still render unchanged.
 - PNG dimensions, transparency, and circle clipping are correct; SVG is well formed and contains no seed text or external resources.
 - The studio shows only supported controls, creates the requested result, and can reopen, export, and share it with the selected crop and dimensions.
-- A background library refresh and successful generation preserve the input draft. Opening a saved avatar restores its concrete recipe; opening a mixed collection can suggest Random when the input supports it.
+- A background library refresh and successful generation preserve the input draft. Opening a saved avatar restores its concrete recipe; opening a mixed collection suggests its descriptor's `mixed_value` when supported.
 
 Do not duplicate every assertion across all surfaces. Cover domain rules at the core and add focused adapter and real-process parity checks.
 

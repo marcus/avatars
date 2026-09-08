@@ -19,6 +19,8 @@ Describe what the user should see and the shortest generation-to-export journey.
 
 List every input, machine values, labels, defaults, discovery shape, CLI syntax, HTTP shape, and persistence behavior. Explicitly say when there are no inputs. Separate generation inputs from export controls. State compatibility requirements for omitted fields and old saved records. For studio inputs, define style switching, saved-recipe restoration, and background refresh behavior.
 
+For selectable appearance choices, offer Mixed or Random where meaningful. Specify its machine value, label, `mixed_value` metadata, per-seed resolution, concrete saved values, and any batch-balance guarantee. Explain a deliberate omission. Require consecutive generation and refresh to preserve the draft, individual avatar navigation to restore the concrete value, and mixed collection navigation to restore the mixed choice. Keep this convention separate from presentation controls.
+
 ## Scope and ownership
 
 Name the allowed implementation area, working branch, task context, review owner, and who lands, installs, and restarts the live service. Include everything the agent needs without conversation history.

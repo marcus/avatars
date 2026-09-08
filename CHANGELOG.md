@@ -4,6 +4,8 @@
 
 ### Features
 
+- Companions Mixed samples dogs and cats per avatar, preserves concrete saved species, and retains the Mixed choice for consecutive batches.
+
 - Pebble Random selects from all 15 palette colors per avatar, with deterministic seeds and concrete saved colors across the studio, CLI, and HTTP API.
 
 - Go Gorey generator with byte-for-byte TypeScript parity and extensible style and export adapters.

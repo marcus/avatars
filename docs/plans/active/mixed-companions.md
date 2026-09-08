@@ -1,6 +1,6 @@
 # Mixed dogs and cats
 
-Status: active. Task: `td-58936f` (also includes a parent-owned future-service plan).
+Status: implementation complete, ready for parent review and delivery. Task: `td-58936f` (also includes a parent-owned future-service plan).
 
 ## Assignment
 
@@ -20,4 +20,21 @@ Run `make fmt-check vet test-race build`, required Node/reference tests, changed
 
 ## Handoff
 
-Pending.
+Implementation commit: `b097019`. Mixed is available through discovery, the studio, local and remote CLI, direct generation, and HTTP. Companions resolves `mixed` through `RecipeInputResolver` using the UTF-8 final seed and an independent FNV-1a hash domain (`companions:animal:`), then saves only `dog` or `cat`. Existing artwork randomness and explicit/default recipes are unchanged. Both appearance descriptors now expose optional `mixed_value`; collection restoration reads that metadata for Companions Mixed and Pebble Random without style-specific view logic. The authoring guide and brief template carry this convention forward.
+
+Validation passed:
+
+- `make fmt-check vet test-race build`, all 30 required Node/reference tests, both changed JavaScript syntax checks, and `git diff --check`. Log: `/tmp/avatars-mixed-final-checks.log`.
+- Real CLI/HTTP processes: 48 explicit Dog/Cat SVG/PNG exports unchanged against the pre-change binary; Pebble Walnut/Sage/Random PNG unchanged; both species persisted concretely; 24 local/HTTP/saved export comparisons; direct HTTP Mixed collection creation; identical saved export after process restart; invalid inputs refused before writes and saved appearance overrides refused.
+- CUA desktop and 390-by-844 mobile proof in owned Chrome tab `727446955`: Mixed persisted after a 12-avatar batch, consecutive single-avatar generation, and refresh; mixed collection navigation restored Mixed; individual dog and cat navigation restored concrete species. A copied cat link retained Circle, 128-by-128 dimensions, and Light. Mobile controls fit without horizontal overflow. Pebble Random and Mixed generated valid concrete recipes when switching between them. Screenshots were visually inspected through CUA; the browser reported no console errors.
+- Browser-created Mixed batches contained 8 dogs/4 cats, one cat, and 1 dog/3 cats. This demonstrates independent selection rather than any promised batch balance.
+- Naturally gated scans passed for README, changelog, API guide, authoring guide, brief template, and generated instructions (scores 97–100; no hard-gate findings).
+
+Evidence: `/var/folders/9z/_hxsyhcx59d_cbrbhxfk9j000000gn/T/avatars-mixed-proof.ccr2q62b/`, including `runtime-proof.json`, `browser-proof.json`, and the isolated saved library. The owned proof service on port 65501 was stopped and its browser tab closed; the mobile viewport override was reset. Live port 7447, installed binaries, main, and Tailscale were not changed.
+
+Parent still owns independent review, landing/install/live samples, the future-service plan, and approval of shared task `td-58936f`. Keep this brief active until that delivery.
+
+## Decisions and limits
+
+- Mixed is an input policy, not saved appearance or a new artwork style. It offers either existing species per avatar, without hybrids or guaranteed batch balance.
+- `mixed_value` is optional discovery metadata. A collection without it keeps the existing first-concrete-value fallback; presentation choices remain separate.
