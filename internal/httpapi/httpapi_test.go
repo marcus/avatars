@@ -122,7 +122,7 @@ func TestTrustedProxyOrigin(t *testing.T) {
 		t.Fatal(e)
 	}
 	engine := avatar.New()
-	h := httpapi.NewWithConfig(library.New(engine, s), engine, studio.Handler(), httpapi.Config{PublicURL: "https://studio.example:7447"})
+	h := httpapi.NewWithConfig(library.New(engine, s), engine, studio.Handler(), httpapi.Config{PublicURL: "https://STUDIO.example:7447"})
 	for _, host := range []string{"127.0.0.1:7447", "studio.example:7447"} {
 		w := call(h, "POST", "/api/v1/collections", `{}`, map[string]string{"Host": host, "Origin": "https://studio.example:7447", "Sec-Fetch-Site": "same-origin"})
 		if w.Code != 201 {
@@ -139,6 +139,32 @@ func TestTrustedProxyOrigin(t *testing.T) {
 		w := call(h, "POST", "/api/v1/collections", `{}`, headers)
 		if w.Code != 403 {
 			t.Fatal(headers, w.Code, w.Body)
+		}
+	}
+}
+
+func TestPublicOriginCanonicalization(t *testing.T) {
+	for _, input := range []string{"https://Studio.Example:443", "https://studio.example/", "https://STUDIO.example"} {
+		got, err := httpapi.NormalizePublicURL(input)
+		if err != nil || got != "https://studio.example" {
+			t.Fatal(input, got, err)
+		}
+	}
+	for _, input := range []string{"http://studio.example", "https://studio.example:0", "https://studio.example:65536", "https://user@studio.example", "https://studio.example/path", "https://studio.example?x=1", "https://studio.example#x", "https://*.example"} {
+		if _, err := httpapi.NormalizePublicURL(input); err == nil {
+			t.Fatal("accepted invalid origin", input)
+		}
+	}
+	s, e := store.New(filepath.Join(t.TempDir(), "collections.jsonl"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	engine := avatar.New()
+	h := httpapi.NewWithConfig(library.New(engine, s), engine, studio.Handler(), httpapi.Config{PublicURL: "https://Studio.Example:443/"})
+	for _, host := range []string{"studio.example", "STUDIO.example:443", "127.0.0.1:7447"} {
+		w := call(h, "POST", "/api/v1/collections", `{}`, map[string]string{"Host": host, "Origin": "https://studio.example"})
+		if w.Code != 201 {
+			t.Fatal(host, w.Code, w.Body)
 		}
 	}
 }

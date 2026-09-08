@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"net/url"
 	"os"
 	"os/exec"
 	"runtime"
-	"strings"
 	"time"
 
 	"github.com/marcus/avatars/internal/discovery"
@@ -32,13 +30,11 @@ func (a *app) serve(ctx context.Context, args []string) error {
 	if f.NArg() != 0 {
 		return bad("serve takes no positional arguments")
 	}
-	*publicURL = strings.TrimRight(*publicURL, "/")
-	if *publicURL != "" {
-		u, err := url.Parse(*publicURL)
-		if err != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.Path != "" || u.RawQuery != "" || u.Fragment != "" {
-			return bad("--public-url must be an HTTPS origin without a path, such as https://host.example:7447")
-		}
+	normalized, err := httpapi.NormalizePublicURL(*publicURL)
+	if err != nil {
+		return bad("--public-url: " + err.Error())
 	}
+	*publicURL = normalized
 	host, _, e := net.SplitHostPort(*address)
 	if e != nil {
 		return bad("--listen must be a loopback host:port")

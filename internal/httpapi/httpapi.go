@@ -33,13 +33,8 @@ func New(service *library.Service, engine *avatar.Engine, studio http.Handler) h
 }
 
 func NewWithConfig(service *library.Service, engine *avatar.Engine, studio http.Handler, config Config) http.Handler {
-	publicURL, _ := url.Parse(config.PublicURL)
-	publicOrigin := ""
-	publicHost := ""
-	if publicURL != nil && publicURL.Scheme == "https" && publicURL.Host != "" && publicURL.User == nil && (publicURL.Path == "" || publicURL.Path == "/") && publicURL.RawQuery == "" && publicURL.Fragment == "" {
-		publicOrigin = "https://" + publicURL.Host
-		publicHost = publicURL.Host
-	}
+	publicOrigin, _ := NormalizePublicURL(config.PublicURL)
+
 	a := &API{service, engine}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/v1/health", func(w http.ResponseWriter, r *http.Request) {
@@ -66,19 +61,21 @@ func NewWithConfig(service *library.Service, engine *avatar.Engine, studio http.
 		w.Header().Set("Referrer-Policy", "no-referrer")
 		w.Header().Set("Content-Security-Policy", "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
 		w.Header().Set("Cache-Control", "no-store")
-		host := r.Host
+		host := strings.ToLower(r.Host)
 		if h, _, err := net.SplitHostPort(host); err == nil {
 			host = h
 		}
 		localHost := host == "localhost" || (net.ParseIP(strings.Trim(host, "[]")) != nil && net.ParseIP(strings.Trim(host, "[]")).IsLoopback())
-		if !localHost && (publicHost == "" || r.Host != publicHost) {
+		requestOrigin, _ := NormalizePublicURL("https://" + r.Host)
+		if !localHost && (publicOrigin == "" || requestOrigin != publicOrigin) {
 			JSON(w, 403, map[string]any{"error": map[string]string{"code": "invalid_request", "message": "the service accepts only loopback hosts or its configured public host"}})
 			return
 		}
 		if r.Method != "GET" && r.Method != "HEAD" {
 			origin := r.Header.Get("Origin")
 			sameOrigin := origin == "http://"+r.Host && localHost
-			trustedProxyOrigin := publicOrigin != "" && origin == publicOrigin
+			normalizedOrigin, _ := NormalizePublicURL(origin)
+			trustedProxyOrigin := publicOrigin != "" && normalizedOrigin == publicOrigin
 			if r.Header.Get("Sec-Fetch-Site") == "cross-site" || (origin != "" && !sameOrigin && !trustedProxyOrigin) {
 				JSON(w, 403, map[string]any{"error": map[string]string{"code": "invalid_request", "message": "cross-origin mutations are not allowed"}})
 				return
