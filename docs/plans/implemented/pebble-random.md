@@ -1,6 +1,6 @@
 # Random palette colors for Pebble
 
-Status: implementation, integration, and validation complete; awaiting coordinator delivery. Task: `td-2734a4`.
+Status: implemented, independently reviewed, and installed. Task: `td-2734a4`.
 
 ## Assignment
 
@@ -35,3 +35,7 @@ Browser evidence: isolated library `/tmp/avatars-pebble-random-proof/library`, l
 Final integration: main `5badeff`, including the completed Companions and tactile card grid, is merged at `ab90834`. The only card integration conflict was the import list; both Random's collection-input helper and the card controller were retained. A rebuilt isolated server was checked again: the mixed collection restored Random, refresh preserved it, desktop and mobile card layouts remained intact, and no browser console errors were recorded. The earlier Companions merge is `da4c078`; Git inferred an active-to-implemented directory rename during that merge, so the Random brief was deliberately kept active.
 
 No operational clarification was required and no known concern remains. The isolated proof server was stopped after verification. No live service, installed binary, or Tailscale route was changed. The coordinator owns landing, the live mixed-color sample collection, and final task approval.
+
+Coordinator delivery: merged and installed from main `217e47a`; private HTTPS health reports that commit. Full combined Go formatting/vet/race/build and 29 Node/reference tests passed. Independent real-process checks preserved 36 original-style exports and 30 explicit Pebble color exports, verified all palette/animal paths, and matched Random local/HTTP/saved SVG and PNG output. CI passed for the installed commit.
+
+The coordinator generated `col_43fe02f1191350a711a376227f029e92` (Colorful pebbles) through the live studio: 24 avatars, 14 concrete palette colors, Random retained through generation and refresh. Opening the first portrait restores Butter; copying/reopening its Circle/256/Light link restores the whole inspector view. Live saved exports match seeded Random rendering. The final 390-pixel mobile toolbar and tactile grid have no horizontal overflow. Independent Astra reviewer `companions_astra` reported no blocking findings.
