@@ -249,3 +249,37 @@ func TestSVGAdapterReplacesNativeDimensions(t *testing.T) {
 		t.Fatalf("got %d SVG roots", roots)
 	}
 }
+
+func TestSVGAdapterFramesSelfClosingRoot(t *testing.T) {
+	for _, source := range []string{
+		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72"/>`,
+		`<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="64" height="72" viewBox="0 0 64 72" />` + "\n<!-- trailing comment -->",
+	} {
+		for _, options := range []Options{{Width: 128}, {Width: 128, Circle: true}} {
+			artwork := Artwork{Data: []byte(source), MediaType: "image/svg+xml", Width: 64, Height: 72}
+			output, err := (SVGExporter{}).Export(context.Background(), artwork, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			decoder := xml.NewDecoder(bytes.NewReader(output))
+			var document struct {
+				XMLName xml.Name `xml:"svg"`
+			}
+			if err := decoder.Decode(&document); err != nil {
+				t.Fatalf("invalid framed SVG for %q: %v\n%s", source, err, output)
+			}
+			for {
+				token, err := decoder.Token()
+				if err == io.EOF {
+					break
+				}
+				if err != nil {
+					t.Fatal(err)
+				}
+				if _, ok := token.(xml.StartElement); ok {
+					t.Fatal("unexpected additional document root")
+				}
+			}
+		}
+	}
+}

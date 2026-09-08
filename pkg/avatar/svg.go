@@ -80,6 +80,11 @@ func (SVGExporter) Export(ctx context.Context, a Artwork, o Options) ([]byte, er
 		out.WriteString(`" `)
 	}
 	out.WriteByte('>')
+	// XML tokenization expands a self-closing root into start/end tokens,
+	// but its original byte suffix contains no closing tag to copy.
+	if bytes.HasSuffix(a.Data[:rootEnd], []byte("/>")) {
+		out.WriteString(`</svg>`)
+	}
 	out.Write(a.Data[rootEnd:])
 	out.WriteString(`</g>`)
 	if o.Circle {
