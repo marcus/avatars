@@ -12,7 +12,7 @@ import (
 func TestCompanionHTTPRecipeAndRefusals(t *testing.T) {
 	h := handler(t)
 	styles := call(h, "GET", "/api/v1/styles", "", nil)
-	for _, token := range []string{`"id":"companions"`, `"native_width":128`, `"animal":{"default":"dog"`, `"label":"Cats"`} {
+	for _, token := range []string{`"id":"companions"`, `"native_width":128`, `"default":"dog"`, `"mixed_value":"mixed"`, `"label":"Cats"`} {
 		if styles.Code != 200 || !strings.Contains(styles.Body.String(), token) {
 			t.Fatalf("missing discovery %s: %s", token, styles.Body.String())
 		}

@@ -10,11 +10,14 @@ import (
 func TestCompanionInputContract(t *testing.T) {
 	engine := New()
 	style := (Companions{}).Style()
-	if style.Inputs.Animal.Default != "dog" || len(style.Inputs.Animal.Values) != 2 || style.Inputs.Color != nil {
+	if style.Inputs.Animal.Default != "dog" || len(style.Inputs.Animal.Values) != 3 || style.Inputs.Animal.MixedValue != "mixed" || style.Inputs.Color != nil {
 		t.Fatalf("unexpected metadata: %+v", style)
 	}
 	if style.Inputs.Animal.Values[0] != (AnimalChoice{Value: "dog", Label: "Dogs"}) || style.Inputs.Animal.Values[1] != (AnimalChoice{Value: "cat", Label: "Cats"}) {
 		t.Fatal("invalid species descriptors")
+	}
+	if style.Inputs.Animal.Values[2] != (AnimalChoice{Value: "mixed", Label: "Mixed"}) {
+		t.Fatal("missing Mixed descriptor")
 	}
 	for _, requested := range []Inputs{{}, {Animal: "dog"}, {Animal: "cat"}} {
 		want := requested.Animal

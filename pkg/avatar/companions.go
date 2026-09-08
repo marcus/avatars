@@ -3,6 +3,7 @@ package avatar
 import (
 	"context"
 	"fmt"
+	"hash/fnv"
 	"strings"
 )
 
@@ -12,7 +13,7 @@ type Companions struct{}
 
 func (Companions) Style() Style {
 	return Style{ID: "companions", Name: "Companions", Description: "Playful dogs and cats in lively ink and warm color.", NativeWidth: 128, NativeHeight: 128,
-		Inputs: &StyleInputs{Animal: &AnimalInput{Default: "dog", Values: []AnimalChoice{{Value: "dog", Label: "Dogs"}, {Value: "cat", Label: "Cats"}}}},
+		Inputs: &StyleInputs{Animal: &AnimalInput{Default: "dog", MixedValue: "mixed", Values: []AnimalChoice{{Value: "dog", Label: "Dogs"}, {Value: "cat", Label: "Cats"}, {Value: "mixed", Label: "Mixed"}}}},
 	}
 }
 
@@ -24,11 +25,26 @@ func (c Companions) GenerateWithInputs(ctx context.Context, seed string, inputs 
 	if err := ctx.Err(); err != nil {
 		return Artwork{}, err
 	}
-	resolved, err := resolveStyleInputs(c.Style(), inputs)
+	resolved, err := c.ResolveRecipeInputs(seed, inputs)
 	if err != nil {
 		return Artwork{}, err
 	}
 	return generateCompanion(ctx, seed, resolved.Animal)
+}
+
+// ResolveRecipeInputs selects one species for Mixed without changing artwork
+// randomness. A saved recipe always holds dog or cat, never a batch instruction.
+func (c Companions) ResolveRecipeInputs(seed string, inputs Inputs) (Inputs, error) {
+	resolved, err := resolveStyleInputs(c.Style(), inputs)
+	if err != nil {
+		return Inputs{}, err
+	}
+	if resolved.Animal == "mixed" {
+		hash := fnv.New32a()
+		_, _ = hash.Write([]byte("companions:animal:" + seed))
+		resolved.Animal = []string{"dog", "cat"}[hash.Sum32()%2]
+	}
+	return resolved, nil
 }
 
 func generateCompanion(ctx context.Context, seed, animal string) (Artwork, error) {

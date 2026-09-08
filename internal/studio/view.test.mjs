@@ -3,11 +3,11 @@ import test from "node:test";
 import { generationInputsForCollection, generationInputsForStyle, inputChoiceForRecipe, inputFor, inputValueForStyle, readExportView, readPreviewBackground, writeExportView } from "./assets/view.mjs";
 
 const styles = [
-  { id: "companions", native_width: 128, native_height: 128, inputs: { animal: { default: "dog", values: [
-    { value: "dog", label: "Dogs" }, { value: "cat", label: "Cats" },
+  { id: "companions", native_width: 128, native_height: 128, inputs: { animal: { default: "dog", mixed_value: "mixed", values: [
+    { value: "dog", label: "Dogs" }, { value: "cat", label: "Cats" }, { value: "mixed", label: "Mixed" },
   ] } } },
   { id: "gorey", name: "Gorey" },
-  { id: "pebble", name: "Pebble", inputs: { color: { default: "walnut", values: [
+  { id: "pebble", name: "Pebble", inputs: { color: { default: "walnut", mixed_value: "random", values: [
     { value: "walnut", label: "Walnut", swatch: "#92744F" },
     { value: "sage", label: "Sage", swatch: "#A5B59A" },
     { value: "random", label: "Random" },
@@ -97,4 +97,14 @@ test("mixed collections suggest Random while saved avatars retain concrete color
   assert.deepEqual(generationInputsForStyle(styles, "pebble", { color: "random", animal: "cat" }), { color: "random" });
   assert.deepEqual(generationInputsForStyle(styles, "pebble", sage.inputs), { color: "sage" });
   assert.deepEqual(generationInputsForCollection(styles, { style: "companions", avatars: [{ inputs: { animal: "cat" } }] }), { animal: "cat" });
+});
+
+test("mixed species collections restore the metadata choice instead of assuming Random", () => {
+  const cat = { inputs: { animal: "cat" } }, dog = { inputs: { animal: "dog" } };
+  assert.deepEqual(generationInputsForCollection(styles, { style: "companions", avatars: [cat, dog] }), { animal: "mixed" });
+  assert.deepEqual(generationInputsForCollection(styles, { style: "companions", avatars: [cat, cat] }), { animal: "cat" });
+  assert.deepEqual(generationInputsForStyle(styles, "companions", { animal: "mixed", color: "random" }), { animal: "mixed" });
+  assert.deepEqual(inputChoiceForRecipe(styles, { style: "companions", inputs: dog.inputs }, "animal"), { value: "dog", label: "Dogs" });
+  const oldStyles = [{ id: "custom", inputs: { animal: { default: "dog", values: [{ value: "dog" }, { value: "cat" }] } } }];
+  assert.deepEqual(generationInputsForCollection(oldStyles, { style: "custom", avatars: [cat, dog] }), { animal: "cat" });
 });

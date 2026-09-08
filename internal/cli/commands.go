@@ -45,7 +45,7 @@ func (a *app) generate(ctx context.Context, args []string) error {
 	f.StringVar(&req.Seed, "seed", "", "seed")
 	f.StringVar(&req.Seed, "s", "", "seed")
 	f.StringVar(&color, "color", "", "style color")
-	f.StringVar(&animal, "animal", "", "companion animal: dog or cat")
+	f.StringVar(&animal, "animal", "", "companion animal: dog, cat, or mixed")
 	f.StringVar(&file, "out", "", "file")
 	f.StringVar(&file, "o", "", "file")
 	f.StringVar(&format, "format", "svg", "format")
@@ -250,7 +250,7 @@ func (a *app) image(ctx context.Context, command string, args []string) error {
 		f.StringVar(&seed, "s", "", "seed")
 		f.StringVar(&style, "style", "gorey", "style")
 		f.StringVar(&color, "color", "", "style color")
-		f.StringVar(&animal, "animal", "", "companion animal: dog or cat")
+		f.StringVar(&animal, "animal", "", "companion animal: dog, cat, or mixed")
 	}
 	if e := parse(f, args); e != nil {
 		return e

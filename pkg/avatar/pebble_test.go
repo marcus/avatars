@@ -26,7 +26,7 @@ func TestPebbleStyleInputsAndPalette(t *testing.T) {
 		t.Fatalf("Pebble discovery is incomplete: %+v", style)
 	}
 	color := style.Inputs.Color
-	if color.Default != "walnut" || len(color.Values) != 16 {
+	if color.Default != "walnut" || color.MixedValue != "random" || len(color.Values) != 16 {
 		t.Fatalf("unexpected color contract: %+v", color)
 	}
 	want := []string{

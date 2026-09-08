@@ -37,8 +37,9 @@ func (Pebble) Style() Style {
 		Name:        "Pebble",
 		Description: "Pudgy, softly irregular characters with two tiny eyes.",
 		Inputs: &StyleInputs{Color: &ColorInput{
-			Default: pebbleDefaultColor,
-			Values:  append(append([]ColorChoice(nil), pebbleColors...), ColorChoice{Value: "random", Label: "Random"}),
+			Default:    pebbleDefaultColor,
+			MixedValue: "random",
+			Values:     append(append([]ColorChoice(nil), pebbleColors...), ColorChoice{Value: "random", Label: "Random"}),
 		}},
 	}
 }

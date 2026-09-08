@@ -44,8 +44,10 @@ type StyleInputs struct {
 }
 
 type AnimalInput struct {
-	Default string         `json:"default"`
-	Values  []AnimalChoice `json:"values"`
+	// MixedValue names the request choice to suggest for a collection with varied values.
+	MixedValue string         `json:"mixed_value,omitempty"`
+	Default    string         `json:"default"`
+	Values     []AnimalChoice `json:"values"`
 }
 
 type AnimalChoice struct {
@@ -54,8 +56,9 @@ type AnimalChoice struct {
 }
 
 type ColorInput struct {
-	Default string        `json:"default"`
-	Values  []ColorChoice `json:"values"`
+	MixedValue string        `json:"mixed_value,omitempty"`
+	Default    string        `json:"default"`
+	Values     []ColorChoice `json:"values"`
 }
 
 type ColorChoice struct {
