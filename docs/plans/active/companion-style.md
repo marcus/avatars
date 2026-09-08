@@ -63,7 +63,7 @@ Run `scripts/prove-companions.sh /tmp/avatars-companions-astra-proof` to reprodu
 
 Focused checks: deterministic output, 100-seed variety per species, safe and well-formed SVG, cancellation, 24 PNG recipes per species, native size, and circle transparency. `go test -race ./pkg/avatar` and `git diff --check` passed.
 
-Input integration and parity evidence: pending.
+Input integration and parity evidence: pending. Artwork commit `3c6c3d4` is pushed to `origin/companion-style`. After that push, local `main` at `f614a30` contains neither `InputGenerator` in `pkg/avatar/engine.go` nor a completed Pebble plan under `docs/plans/implemented/`. Paused at the required dependency boundary. Resume from this brief when both signals are present; the artwork worktree is clean and no shared surface files were edited.
 
 Guidance gaps and decisions: the brief provides enough guidance for the artwork slice. Native square framing leaves ears and whiskers inside the circle without style-specific export logic. Preview uses an opt-in Go test so the temporary pre-integration animal selector does not become a public API. Seed identity is deterministic but not promised to be collision-free in a finite visual recipe space. The artwork descriptions and proof labels passed `naturally scan`.
 
