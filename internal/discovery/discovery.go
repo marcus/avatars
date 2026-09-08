@@ -13,11 +13,11 @@ type Operation struct {
 }
 
 var Operations = []Operation{
-	{"generate", "Generate and save a collection of random avatars", "generate [SEED] [--count 12] [--style gorey] [--color COLOR] [--animal dog|cat] [--name TEXT] [--seed TEXT] [--out FILE] [--format svg|png] [--size WxH] [--circle]", "POST", "/api/v1/collections"},
+	{"generate", "Generate and save a collection of random avatars", "generate [SEED] [--count 12] [--style gorey] [--color COLOR|random] [--animal dog|cat] [--name TEXT] [--seed TEXT] [--out FILE] [--format svg|png] [--size WxH] [--circle]", "POST", "/api/v1/collections"},
 	{"list", "List saved collections, newest first", "list", "GET", "/api/v1/collections"},
 	{"show", "Inspect a saved avatar or collection", "show ID", "GET", "/api/v1/collections/{id} or /api/v1/avatars/{id}"},
 	{"export", "Export a saved avatar as SVG or PNG", "export AVATAR_ID [--format svg|png] [--size 256x288] [--circle] [--out FILE|-]", "GET", "/api/v1/avatars/{id}.{format}"},
-	{"render", "Render a reproducible avatar without saving it", "render [SEED] [--seed TEXT] [--style gorey] [--color COLOR] [--animal dog|cat] [--format svg|png] [--size WxH] [--circle] [--out FILE|-]", "GET", "/api/v1/render"},
+	{"render", "Render a reproducible avatar without saving it", "render [SEED] [--seed TEXT] [--style gorey] [--color COLOR|random] [--animal dog|cat] [--format svg|png] [--size WxH] [--circle] [--out FILE|-]", "GET", "/api/v1/render"},
 	{"styles", "List installed styles and export formats", "styles", "GET", "/api/v1/styles"},
 	{"serve", "Run the HTTP API and studio on loopback", "serve [--listen 127.0.0.1:7447] [--public-url HTTPS_ORIGIN] [--open]", "", ""},
 	{"instructions", "Print operational guidance for agents", "instructions", "GET", "/api/v1/instructions"},
@@ -38,6 +38,8 @@ these defaults. With --url, the server owns the library; --data-dir is refused.
 No seed is required. Omit --seed to use fresh random seeds. For reproducibility,
 use --seed TEXT; a single avatar uses that exact seed, while batches use
 TEXT:0, TEXT:1, and so on. Pebble supports --color with a Walnut default.
+Use --color random to choose independently from all 15 palette colors for each
+avatar. A fixed seed repeats its color; saved recipes retain the concrete value.
 Companions supports --animal dog|cat, defaulting to dog. Use avatars styles
 --json for each style's accepted inputs, defaults, and native dimensions.
 Saved avatars retain these choices; export refuses appearance overrides.
@@ -46,7 +48,7 @@ List: avatars list --json
 Inspect: avatars show ID --json
 Export: avatars export AVATAR_ID --format png --size 256 --circle --out icon.png
 Companions: avatars generate --style companions --animal cat --count 12 --json
-Pebble: avatars generate --style pebble --color sage --count 12 --json
+Pebble: avatars generate --style pebble --color random --count 12 --json
 Stateless: avatars render --style pebble --color sage --seed agent-42 --format svg --out icon.svg
 SVG is the default format. --size N requests an N by N canvas; --size WxH sets
 both dimensions. Native dimensions depend on the style: Gorey portraits are

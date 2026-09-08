@@ -26,7 +26,7 @@ func TestPebbleStyleInputsAndPalette(t *testing.T) {
 		t.Fatalf("Pebble discovery is incomplete: %+v", style)
 	}
 	color := style.Inputs.Color
-	if color.Default != "walnut" || len(color.Values) != 15 {
+	if color.Default != "walnut" || len(color.Values) != 16 {
 		t.Fatalf("unexpected color contract: %+v", color)
 	}
 	want := []string{
@@ -36,11 +36,14 @@ func TestPebbleStyleInputsAndPalette(t *testing.T) {
 		"denim:Denim:#607C9B", "lavender:Lavender:#AAA0C6", "mauve:Mauve:#A47B97",
 		"rose:Rose:#D6A0A4", "coral:Coral:#D77F6D", "slate:Slate:#6C777D",
 	}
-	for i, choice := range color.Values {
+	for i, choice := range color.Values[:15] {
 		got := choice.Value + ":" + choice.Label + ":" + choice.Swatch
 		if got != want[i] {
 			t.Fatalf("palette entry %d: got %q, want %q", i, got, want[i])
 		}
+	}
+	if choice := color.Values[15]; choice.Value != "random" || choice.Label != "Random" || choice.Swatch != "" {
+		t.Fatalf("invalid Random descriptor: %+v", choice)
 	}
 	resolved, err := e.ResolveInputs("pebble", Inputs{})
 	if err != nil || resolved.Color != "walnut" {

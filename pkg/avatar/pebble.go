@@ -3,6 +3,7 @@ package avatar
 import (
 	"context"
 	"fmt"
+	"hash/fnv"
 	"strings"
 )
 
@@ -37,7 +38,7 @@ func (Pebble) Style() Style {
 		Description: "Pudgy, softly irregular characters with two tiny eyes.",
 		Inputs: &StyleInputs{Color: &ColorInput{
 			Default: pebbleDefaultColor,
-			Values:  append([]ColorChoice(nil), pebbleColors...),
+			Values:  append(append([]ColorChoice(nil), pebbleColors...), ColorChoice{Value: "random", Label: "Random"}),
 		}},
 	}
 }
@@ -50,7 +51,7 @@ func (p Pebble) GenerateWithInputs(ctx context.Context, seed string, inputs Inpu
 	if err := ctx.Err(); err != nil {
 		return Artwork{}, err
 	}
-	resolved, err := resolveStyleInputs(p.Style(), inputs)
+	resolved, err := p.ResolveRecipeInputs(seed, inputs)
 	if err != nil {
 		return Artwork{}, err
 	}
@@ -59,6 +60,20 @@ func (p Pebble) GenerateWithInputs(ctx context.Context, seed string, inputs Inpu
 		return Artwork{}, fmt.Errorf("%w: invalid color %q for style %q", ErrInvalidInputs, inputs.Color, "pebble")
 	}
 	return Artwork{Data: []byte(pebbleSVG(seed, color)), MediaType: "image/svg+xml", Width: 64, Height: 64}, nil
+}
+
+// ResolveRecipeInputs chooses a palette color without consuming geometry randomness.
+func (p Pebble) ResolveRecipeInputs(seed string, inputs Inputs) (Inputs, error) {
+	resolved, err := resolveStyleInputs(p.Style(), inputs)
+	if err != nil {
+		return Inputs{}, err
+	}
+	if resolved.Color == "random" {
+		hash := fnv.New32a()
+		_, _ = hash.Write([]byte("pebble:color:" + seed))
+		resolved.Color = pebbleColors[int(hash.Sum32()%uint32(len(pebbleColors)))].Value
+	}
+	return resolved, nil
 }
 
 func pebbleColor(value string) (ColorChoice, bool) {

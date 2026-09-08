@@ -40,6 +40,8 @@ Companions accepts `animal`, with values `dog` and `cat`. Its default is `dog`. 
 {"style":"companions","inputs":{"animal":"cat"},"count":12}
 ```
 
+Pebble also accepts `"inputs":{"color":"random"}` or stateless `color=random`. This request selects independently from all 15 palette colors using each avatar's final seed. The same seed produces the same color across direct rendering, saving, and export. Each saved avatar contains its concrete palette value, never `random`. Random has no single swatch; its discovery entry contains a value and label without `swatch`.
+
 Use `GET /api/v1/styles` or `avatars styles --json` to discover supported inputs. Companions publishes `inputs.animal` with `default`, and `values` containing `value` and `label` (Dogs or Cats). Pebble publishes `inputs.color` with the same fields plus color swatches. Styles reject nonempty inputs they do not support; Companions refuses color and Pebble refuses animal. Unknown nested fields and values are refused before persistence. Existing records without inputs remain valid.
 
 Style discovery also reports `native_width` and `native_height` for built-in styles. These describe artwork geometry, independent of export dimensions.
@@ -118,7 +120,7 @@ pets, err := engine.RenderWithInputs(ctx, "companions", "sample", "svg",
     avatar.Inputs{Animal: "cat"}, avatar.Options{})
 ```
 
-`Engine.ResolveInputs` is the shared validation boundary. It resolves the style default before a recipe is saved and rejects an input unsupported by the selected style. Saved exports pass the stored recipe to `RenderWithInputs` and expose no appearance override.
+`Engine.ResolveInputs` validates request choices and applies style defaults. `Engine.ResolveRecipeInputs(style, seed, inputs)` resolves one avatar's final appearance before saving or rendering. Styles with seed-dependent choices implement the optional `RecipeInputResolver`; Pebble uses it to turn Random into a concrete color. Other generators keep the existing defaulting and validation path. These methods reject inputs unsupported by the selected style. Saved exports pass the stored recipe to `RenderWithInputs` and expose no appearance override.
 
 The saved library lives behind `library.Store`. The JSONL adapter handles paths, locks, append ordering, and sync. The application handles creation rules and lookup. The HTTP adapter and CLI call that application; the embedded studio calls the public HTTP API.
 

@@ -43,7 +43,7 @@ For each new input:
 
 Use a narrow typed input and a small adapter extension when required. A schema engine, plugin loader, or arbitrary options map is unnecessary for one enum. Keep the existing input-free `Generator` and `Engine.Render` usable where practical; put optional input support behind a documented seam. The core must not switch on a style ID to implement that style's rules.
 
-The current Go seam uses `Style.Inputs` for discovery, `Engine.ResolveInputs` for shared defaulting and validation, and the optional `InputGenerator.GenerateWithInputs` method for rendering. Callers with an input use `Engine.RenderWithInputs`; ordinary generators and callers continue to use `Generate` and `Engine.Render`. The typed inputs are currently `Inputs.Color` with `StyleInputs.Color`, and `Inputs.Animal` with `StyleInputs.Animal`. Add another typed descriptor only when a shipped style needs it.
+The current Go seam uses `Style.Inputs` for discovery, `Engine.ResolveInputs` for shared defaulting and validation, and the optional `InputGenerator.GenerateWithInputs` method for rendering. Callers with an input use `Engine.RenderWithInputs`; ordinary generators and callers continue to use `Generate` and `Engine.Render`. A seed-dependent request such as Pebble Random also implements `RecipeInputResolver`. `Engine.ResolveInputs` validates the request before batch creation, and `Engine.ResolveRecipeInputs` resolves each avatar's final seed into concrete saved inputs. Keep that resolution independent of geometry randomness so existing explicit choices retain their output. The typed inputs are currently `Inputs.Color` with `StyleInputs.Color`, and `Inputs.Animal` with `StyleInputs.Animal`. Add another typed descriptor only when a shipped style needs it.
 
 When adding a second input, validate every supplied field before returning. A valid color must not short-circuit rejection of an unsupported animal. Built-in input generators use `resolveStyleInputs` for direct calls as well as engine calls, so neither route silently ignores another style's fields. Keep the input-free `Generate` path on the same defaults.
 
@@ -61,7 +61,7 @@ Meaningful evidence includes:
 - Existing style fixtures and records still render unchanged.
 - PNG dimensions, transparency, and circle clipping are correct; SVG is well formed and contains no seed text or external resources.
 - The studio shows only supported controls, creates the requested result, and can reopen, export, and share it with the selected crop and dimensions.
-- A background library refresh preserves a manual input choice, while opening a saved avatar or collection restores its resolved recipe.
+- A background library refresh and successful generation preserve the input draft. Opening a saved avatar restores its concrete recipe; opening a mixed collection can suggest Random when the input supports it.
 
 Do not duplicate every assertion across all surfaces. Cover domain rules at the core and add focused adapter and real-process parity checks.
 
