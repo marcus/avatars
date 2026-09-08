@@ -89,6 +89,9 @@ func (a *app) serviceCommand(ctx context.Context, args []string) error {
 		if status.LaunchMode != lifecycle.Auto {
 			return fmt.Errorf("refusing to stop %s service; use its owning foreground process or supervisor", status.LaunchMode)
 		}
+		if err := validateService(ctx, status, "", socket); err != nil {
+			return err
+		}
 		if err := shutdownService(ctx, socket, status.InstanceID); err != nil {
 			return err
 		}
