@@ -1,0 +1,758 @@
+[
+  {
+    "seed": "agent-0",
+    "sha256": "0ec3e93cdde829a01af210d3fb3c50127fd38fa8aecbc1a17b218549e54eeb83",
+    "outfit": 0,
+    "hair": 1,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-1",
+    "sha256": "f8be6b0251e1d8260aa71fcb02a11d51c944c103e1bbaa99a0c54baba7218df4",
+    "outfit": 3,
+    "hair": 4,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-2",
+    "sha256": "519df19703824f2807da122a1b1456e762c40694086ec2e2439a9b280f88b525",
+    "outfit": 0,
+    "hair": 4,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-3",
+    "sha256": "9a42930d20f8d796c166bf4aba2ea7be558bd76a05073affb702dfe282cfba32",
+    "outfit": 5,
+    "hair": 4,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-4",
+    "sha256": "2529df39cfcb0dfdfd9e11a56fc1fbf82f7f1d7e3ede7d9170a4a9d3be474a17",
+    "outfit": 0,
+    "hair": 4,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-5",
+    "sha256": "89db9fcaaba84aaf58509b818df54683ae2b88455c231d2c4965e163e3273a86",
+    "outfit": 5,
+    "hair": 0,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-6",
+    "sha256": "30c68bf11fe8249087b988d8c956ad210f2e96f75cbeb700ec025359a635aeaa",
+    "outfit": 2,
+    "hair": 2,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-7",
+    "sha256": "f358a523ed857b46c1ce10276548d604e65b9895f4ce975c87f4b59c6faa9d6d",
+    "outfit": 1,
+    "hair": 0,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-8",
+    "sha256": "53cc290ca1393e6743efa02d061496e4a67c73143eedb3b9a74326eadbf02138",
+    "outfit": 2,
+    "hair": 1,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-9",
+    "sha256": "d3d8b912d7226a07151611958f4e5bed5f08e6ff48e1ce2a958fb451c869d6f6",
+    "outfit": 1,
+    "hair": 4,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-10",
+    "sha256": "a1859c6cb728e05bc452e14a3b05ba567d87b6faa17485436425e05aba82a5b4",
+    "outfit": 1,
+    "hair": 0,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-11",
+    "sha256": "a4699ee7878962959f8b463357f65ecab18f756c7488e4fd2ea0b16b95114f22",
+    "outfit": 0,
+    "hair": 2,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-12",
+    "sha256": "fbbc8291be6cb4e38d928b526aab24d5c6a4b6a21bfbfcd2cb8a54ecf57fa67b",
+    "outfit": 3,
+    "hair": 0,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-13",
+    "sha256": "00509c27f6b61b4519fb04fac36673a2af501e4229bcaaf7d02413122181f704",
+    "outfit": 4,
+    "hair": 2,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-14",
+    "sha256": "07aaaa101f073985437f20420c40f95633c98cb6937288822087dfaf432eb018",
+    "outfit": 3,
+    "hair": 2,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-15",
+    "sha256": "99c3fe789004ab28e7b3f556e4031b26eda8105d776285bcc60ea1f7f9574087",
+    "outfit": 0,
+    "hair": 1,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-16",
+    "sha256": "ca4417c807fbe1239c29b1cdb562e909348da8523bc55ba0cafa171e3d27fd5d",
+    "outfit": 1,
+    "hair": 3,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-17",
+    "sha256": "4038fa423ee60b84c8689544dc5c589c65e8b610b677da9c3c3540c998397097",
+    "outfit": 0,
+    "hair": 4,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-18",
+    "sha256": "ce41610da9746501a4ea4424d66fe9c251e6a301a92ddc2d645498302bee7ff9",
+    "outfit": 5,
+    "hair": 1,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-19",
+    "sha256": "800f3e7a59dc3340684d24330ff5b7546aa2df59b8627a1bf8fbf20d1e1010b6",
+    "outfit": 2,
+    "hair": 3,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-20",
+    "sha256": "6bea1e0a9f7fdd1d2449abf2e1036359786eabd75537850b6503755daa060a7c",
+    "outfit": 2,
+    "hair": 1,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-21",
+    "sha256": "a37b6816e77f405ec310943d3230a74171e4206d6ccc78747a722ab9636725c9",
+    "outfit": 5,
+    "hair": 2,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-22",
+    "sha256": "017b1f451f937a79f6665a7a54d4d5bb5b00ded4cd140b00714d310c9824af61",
+    "outfit": 4,
+    "hair": 4,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-23",
+    "sha256": "32e14c89d159bf7207833c82218ed61499e3bf15481a336d9dcb795c3db75849",
+    "outfit": 1,
+    "hair": 4,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-24",
+    "sha256": "1942544a9c54fb3bc0de728bab0dab980cba4e1e9edeb8ac3d296a5ef1e9af5b",
+    "outfit": 4,
+    "hair": 1,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-25",
+    "sha256": "545c639927b835e6553c3d3ec984795a2074a37490c90b1c614e46e23fccc24d",
+    "outfit": 5,
+    "hair": 3,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-26",
+    "sha256": "a735f88fc21de3879591a9ebaccaad838e46061cc63358aaa65c334f068aa40b",
+    "outfit": 0,
+    "hair": 4,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-27",
+    "sha256": "aa7ea48828fce39928102937ffe35be1976b4dce0c3fcd0627d17b26d557945e",
+    "outfit": 3,
+    "hair": 3,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-28",
+    "sha256": "457ddd28fcf750a54412458a74222bfb0f1165dee65676dd4096cc1abe59d5a9",
+    "outfit": 2,
+    "hair": 3,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-29",
+    "sha256": "4ca964ad34dff8ce8208ee699e110da5c8b2be28980572abd31e9656ffbaf082",
+    "outfit": 5,
+    "hair": 3,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-30",
+    "sha256": "31cb3fb1083e5f71d82d6c3025fa24c9dda8cc88b0407eb456459624366f6b17",
+    "outfit": 5,
+    "hair": 3,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-31",
+    "sha256": "5307d1f67693963145e3076b4015aee2ad1997d732eb9a59544111835b890a30",
+    "outfit": 0,
+    "hair": 4,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-32",
+    "sha256": "ef1fbad0ed53122512e9d8d08452b8dbd59a7a2d4a05c88f64aa07aff80770ca",
+    "outfit": 3,
+    "hair": 2,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-33",
+    "sha256": "12b53216258f6e9c75b8685192d299a8276a7da2e9c21d301a30843950b63bcd",
+    "outfit": 4,
+    "hair": 2,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-34",
+    "sha256": "59c1c4623e603b0213e7b22172ad70ae89dd60c894598b5940be009e6dbfb7db",
+    "outfit": 3,
+    "hair": 0,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-35",
+    "sha256": "618f97af4a76c37de6b619362ce339ac4c9ba9354d1fd0cbee4f63e58a74eeba",
+    "outfit": 0,
+    "hair": 1,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-36",
+    "sha256": "7cc87cb913e5353f86ac77d5f5062585bd1d50caf160db2e53e0a8f3e42fa3b2",
+    "outfit": 1,
+    "hair": 1,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-37",
+    "sha256": "187b8ffbd93332a2457c1afcf1d27399539d89046df300e8a17ffedcdd9d3d7a",
+    "outfit": 0,
+    "hair": 3,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-38",
+    "sha256": "7d6ae829eb9f9c642246f2d80880af11ab054a1524319bf0af2cd5b94e8bd980",
+    "outfit": 5,
+    "hair": 2,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-39",
+    "sha256": "d8eac18e74d1338dc7e756e6617e16a76e73e2f46c1c5ee9a9c2b8ef40996fdd",
+    "outfit": 0,
+    "hair": 0,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-40",
+    "sha256": "838d089a43305571656a641939836d8c3b23b18cd48d212b2fe76dc24c8291ae",
+    "outfit": 4,
+    "hair": 3,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-41",
+    "sha256": "f13e5cf894475f01ddd3b63e37e40631bbb9d0ff6709d5acaef9d670e7d8c102",
+    "outfit": 1,
+    "hair": 1,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-42",
+    "sha256": "43aa3fa988f0e77bcc582e65c9dc576670c9cd9dc217930dd7a4d2c80977cd8d",
+    "outfit": 4,
+    "hair": 4,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-43",
+    "sha256": "9a9851590636d74f801b2c6a5cf70bd80eca59c42795e8d25c04a5f312932a37",
+    "outfit": 1,
+    "hair": 3,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-44",
+    "sha256": "97f344b9235a9f2dc9942e58c68dbfc52e4465e87bc7f91ad7902bc8550e6a2d",
+    "outfit": 0,
+    "hair": 1,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-45",
+    "sha256": "a4bbe55c8097196fc1c2b73eaee77a97c0e7efdec80882a2a9bebdddf404b315",
+    "outfit": 3,
+    "hair": 0,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-46",
+    "sha256": "278f8df4dd656fdfd227b9ec8affbed49cfbf1e9c82e656d6d83802f90142b77",
+    "outfit": 4,
+    "hair": 3,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-47",
+    "sha256": "6392b72e73a654d84bddd202e9b5602a8b856989a567b7c29e286ed36fd8504e",
+    "outfit": 5,
+    "hair": 0,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-48",
+    "sha256": "582848f734308d4f9ebdebeda18cca3cd1c8b5a78fd50999c94a15484645d1ca",
+    "outfit": 4,
+    "hair": 4,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-49",
+    "sha256": "a8774655d91578b6b5509995621e64375dd9b09ebdd1d8ea0680280b2ec1951a",
+    "outfit": 1,
+    "hair": 0,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-50",
+    "sha256": "4a7d629d70eb8e24219c64f81a424b11a5418b54bb59a725cd4d1b84c5c12db0",
+    "outfit": 1,
+    "hair": 2,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-51",
+    "sha256": "f8539061fb8e8634bec0100869008ab1de5137e6186492d4fc498c52359ed952",
+    "outfit": 4,
+    "hair": 1,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-52",
+    "sha256": "f2719be193b7837d050cd15f919ab6898fd92d9f3e92397c8d6d04858d1a872a",
+    "outfit": 1,
+    "hair": 2,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-53",
+    "sha256": "4719b42f94f7cef62efc7846959b3af8c5a03a80444c923e9dbd9c68d481b755",
+    "outfit": 2,
+    "hair": 2,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-54",
+    "sha256": "61f0f35428c92e97393a2fd4ca00fe5db90386e65df9a7d31716078028a22492",
+    "outfit": 5,
+    "hair": 2,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-55",
+    "sha256": "91b3bbd88773acdc81cc9247aa0a93eed3db6855303ec9d8b120a802f0bc1fe1",
+    "outfit": 2,
+    "hair": 1,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-56",
+    "sha256": "f9923a2dad7609e3e1adf3db5188965356aa3368476b70ed4354ef9773a05732",
+    "outfit": 5,
+    "hair": 4,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-57",
+    "sha256": "75a9bd3262f1aebe0555d6ecc434c770a364a49bc2dcbb864acd31e79b583874",
+    "outfit": 0,
+    "hair": 4,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-58",
+    "sha256": "7429c56d5799f2a57964ecf023e8c1cd8e877d56d2259ec604ddc12920452c1d",
+    "outfit": 5,
+    "hair": 0,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-59",
+    "sha256": "e83cb8663e49a0637841d9e2565e452c255e572570d880cd71a0eb8085ee6436",
+    "outfit": 0,
+    "hair": 2,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-60",
+    "sha256": "a2fa5db4421e83436c66680a222750811a14363f65fec00c6750ee90e306b85a",
+    "outfit": 0,
+    "hair": 0,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-61",
+    "sha256": "b5c3b61aad064de4d8b63678656e556aaef42f8efe686bdee3587cf5016f6778",
+    "outfit": 3,
+    "hair": 1,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-62",
+    "sha256": "9e3ba703d5a8c0a1579d0b289d1df89798578867182d1dcd700dfce8cd9a969d",
+    "outfit": 4,
+    "hair": 0,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-63",
+    "sha256": "c0f143970250b5d23d38da489fd90930c524bc94200f546504b3e86f6f354435",
+    "outfit": 5,
+    "hair": 0,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-64",
+    "sha256": "d01cc6ebbf4078d0b777cb729f0b337c1cb79bdfb8006eeee74eb1b5262390d2",
+    "outfit": 4,
+    "hair": 0,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-65",
+    "sha256": "e2e197632366104db8447d79ac8422fe125a6cfc72a784b86165c5b285a9eb57",
+    "outfit": 5,
+    "hair": 4,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-66",
+    "sha256": "cdf5d22aaef7d13f6e128a7ffa221224ff70ea6f83a0edba06cb6574365933ca",
+    "outfit": 2,
+    "hair": 3,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-67",
+    "sha256": "b18e904ca7a642b1340dcd3ca156e3ac93816409f5a222bd7479e3a7b1f73912",
+    "outfit": 5,
+    "hair": 4,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-68",
+    "sha256": "9d75110ff2c45786a5636add8a493c6e72ffca6bd8ca671ef0ea0ceeb0a239d1",
+    "outfit": 0,
+    "hair": 0,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-69",
+    "sha256": "7246aa0d1cf60a4906fe5237ee92982148b1e17835318b49c59353529d97375b",
+    "outfit": 1,
+    "hair": 2,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-70",
+    "sha256": "bdaf881f9b44c9bf890dd63da88094b27c4dce0b53db66d85834cd0c945ec452",
+    "outfit": 1,
+    "hair": 2,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-71",
+    "sha256": "9839b4b6440f579d6b361a7ddd69ad92154486700059a9ac465cde0a0b3b1bd6",
+    "outfit": 2,
+    "hair": 0,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-72",
+    "sha256": "812c3c5ad7899b16e1d2c95dccfeac4824a676df86bd9608dcd0a2f00b28eaf7",
+    "outfit": 5,
+    "hair": 3,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-73",
+    "sha256": "95f01cfd6f39843495e7acd50f0260d719a7628e7719faa63634d2a03e9d980e",
+    "outfit": 4,
+    "hair": 1,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-74",
+    "sha256": "7f9c0c1afe1a8510e02f81b75ae632b2667809def8130507e474e65d85b42fba",
+    "outfit": 5,
+    "hair": 1,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-75",
+    "sha256": "d808c5aa0ef20c0a56cdbb5f3b9ff841933329585fc34465cd631c949d3f25b6",
+    "outfit": 4,
+    "hair": 3,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-76",
+    "sha256": "9600c2b093eb473a8bfdd7dbe45f3428f052d8e5485457339436884042889952",
+    "outfit": 1,
+    "hair": 2,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-77",
+    "sha256": "c54c00c398c8ad09178a4ce013f4a35417cdee9e1f39bb9e97af49fe56131e59",
+    "outfit": 2,
+    "hair": 4,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-78",
+    "sha256": "3961c6e16026361bc4469111ac03c6a5913d6a419b6cfe1dabf2f3bad665932b",
+    "outfit": 1,
+    "hair": 0,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-79",
+    "sha256": "2ed2cfa88a87b0bdf873a45fe0d86b5bd930bea0785b7c2b5d21b701f62abfcf",
+    "outfit": 2,
+    "hair": 4,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-80",
+    "sha256": "374df2d02921feede98131f869d24dd2a1f5595d9bfc9e43451d74bf21d39779",
+    "outfit": 0,
+    "hair": 0,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-81",
+    "sha256": "ad961839c896dda52750ba5a0c98b98497c7a07583579f2a8f4e7fa9c8c79920",
+    "outfit": 3,
+    "hair": 1,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-82",
+    "sha256": "39daef4e60205329e8917cf5e8c35f42ac2738952e476c7a6ca0263207374d6f",
+    "outfit": 2,
+    "hair": 2,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-83",
+    "sha256": "583ae4e0e0ad29bb5a965fdf14c05c4eeec09de430b0eff54248c88e67176958",
+    "outfit": 5,
+    "hair": 1,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-84",
+    "sha256": "002c984875a5766b4447a443c742baee6e6ad7520049b84f730645f0da1cfd88",
+    "outfit": 2,
+    "hair": 1,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-85",
+    "sha256": "1101ed7856661a3625a6ad0256ca222ad3fdffc6ef079528d495108e14b8cf69",
+    "outfit": 1,
+    "hair": 4,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-86",
+    "sha256": "003b1db4ae09cdd3b47dcbd9adbdcad803b7e8cf96c25ce3391f83179b06f6bc",
+    "outfit": 4,
+    "hair": 4,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-87",
+    "sha256": "4c98e28ef0e076f343984992896a7747ad73cb7be6c6b3ed70732cbd874b24e8",
+    "outfit": 1,
+    "hair": 4,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-88",
+    "sha256": "251f729f74860919bd3bfd7c90b994eaf3f8d5988f12241f749888313d14fd53",
+    "outfit": 4,
+    "hair": 3,
+    "accessory": 5
+  },
+  {
+    "seed": "agent-89",
+    "sha256": "837d6bb5652f451a15f836549e6a545db8411029ecb9f979938df821a988a8e4",
+    "outfit": 5,
+    "hair": 1,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-90",
+    "sha256": "d0f303bf9c7f4350eca504edf556f7b91e24c24d7a009e1e248bb0bb3f710ef2",
+    "outfit": 5,
+    "hair": 3,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-91",
+    "sha256": "efc2112cee95ff55b02b1ca8078a347d1cf42a7c7bae73f16741eedb3f643e44",
+    "outfit": 2,
+    "hair": 4,
+    "accessory": 2
+  },
+  {
+    "seed": "agent-92",
+    "sha256": "9a7ad71dde0f12fdab25157c5642a0c928503c4b34396e379534121cebf284ae",
+    "outfit": 1,
+    "hair": 0,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-93",
+    "sha256": "6208db195c87ef798f6767b7379425e6c856bcb957639d981623ce0a879f77df",
+    "outfit": 4,
+    "hair": 3,
+    "accessory": 0
+  },
+  {
+    "seed": "agent-94",
+    "sha256": "09db2d06c1909c1983fe903062c2f49ef9f7017eaf10fe5797e0edb9a9662a26",
+    "outfit": 3,
+    "hair": 4,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-95",
+    "sha256": "9ec913b510f60b9396a5b2a78942b79b857bf8612bacd33ca4eba89e10c087b9",
+    "outfit": 2,
+    "hair": 1,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-96",
+    "sha256": "19d4cd90aebb453439c2ee4067e75d96d99d0f10a464c1108bdb3a1a5eac20f4",
+    "outfit": 1,
+    "hair": 3,
+    "accessory": 4
+  },
+  {
+    "seed": "agent-97",
+    "sha256": "e4b63abe36df42df2addb21c33b467d544f85b7237ee49575d69a2f3e4a93008",
+    "outfit": 2,
+    "hair": 4,
+    "accessory": 1
+  },
+  {
+    "seed": "agent-98",
+    "sha256": "4818251d83d594208cbb6d046749bf6befaab7dc075df4d436ca6d12e6b27a58",
+    "outfit": 1,
+    "hair": 4,
+    "accessory": 3
+  },
+  {
+    "seed": "agent-99",
+    "sha256": "95fc9a854597843b44751cd150892152ce8e54c38907a41d39e0d70551f8222a",
+    "outfit": 4,
+    "hair": 2,
+    "accessory": 1
+  },
+  {
+    "seed": "",
+    "sha256": "00d4fcb7fb6184426f7f653429ea64cf8a3c08a4654d6098ac9a15badd57456d",
+    "outfit": 2,
+    "hair": 4,
+    "accessory": 4
+  },
+  {
+    "seed": "marcus",
+    "sha256": "e70740a03c0deec48e8f646a3172f4348cbe5d8dd483f6b4b5abedb8b7ad7764",
+    "outfit": 3,
+    "hair": 2,
+    "accessory": 2
+  },
+  {
+    "seed": "é",
+    "sha256": "d37b1e3fac02510ab01d12253c289b4e282b9571bd36a0f4a33bd1dc36249396",
+    "outfit": 3,
+    "hair": 1,
+    "accessory": 0
+  },
+  {
+    "seed": "é",
+    "sha256": "2617ba938f90fe7040e5f499134856c1f1a4aaad103507cc92cb205d8e44a05d",
+    "outfit": 0,
+    "hair": 0,
+    "accessory": 2
+  },
+  {
+    "seed": "你好",
+    "sha256": "2e7bb88fde6eb48a310557215d56499b9577e1ba73bc2a06f955b210b619a5cd",
+    "outfit": 5,
+    "hair": 0,
+    "accessory": 2
+  },
+  {
+    "seed": "🦉🧑🏽‍🎨",
+    "sha256": "ea787163e3bc30f8e47c4388836c43d45cf475b6069083c40a631f0bb6785a51",
+    "outfit": 4,
+    "hair": 0,
+    "accessory": 5
+  },
+  {
+    "seed": "a\u0000b",
+    "sha256": "d615ca138f8b8627347fab7672b01a40445c5539de69cc2c52312c13d0b1220c",
+    "outfit": 1,
+    "hair": 4,
+    "accessory": 1
+  },
+  {
+    "seed": "<script>alert(\"x\")</script><svg onload=\"evil()\">",
+    "sha256": "e667c2284ca4b7f492300bb60d5b0a9223ec04ae5bd172e6a9d1eb99cadaf42c",
+    "outfit": 3,
+    "hair": 0,
+    "accessory": 1
+  }
+]
