@@ -1,0 +1,136 @@
+.portrait-grid {
+  --card-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Cpath fill='%23808080' filter='url(%23n)' opacity='.12' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
+  position: relative;
+  min-height: 100%;
+  padding-top: 24px;
+  box-sizing: border-box;
+  isolation: isolate;
+  overflow: clip;
+}
+
+.portrait-card {
+  --card-x: 0px;
+  --card-y: 0px;
+  --card-angle: 0rad;
+  padding: 9px 9px 8px;
+  color: #d1d3cf;
+  background-color: #222426;
+  background-image: var(--card-grain);
+  border: 1px solid #65676945;
+  border-radius: 5px;
+  box-shadow:
+    0 1px 0 #45484a,
+    0 2px 0 #383b3d,
+    0 3px 0 #2d3032,
+    0 4px 0 #1b1d1f,
+    0 6px 5px -3px #0009,
+    0 16px 23px -12px #000b;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transform: translate3d(var(--card-x), var(--card-y), 0) rotate(var(--card-angle));
+  transform-origin: center;
+}
+
+.portrait-card:hover,
+.portrait-card:focus-visible {
+  z-index: 2;
+  box-shadow:
+    0 1px 0 #45484a,
+    0 2px 0 #383b3d,
+    0 3px 0 #2d3032,
+    0 4px 0 #1b1d1f,
+    0 10px 10px -5px #0009,
+    0 22px 28px -12px #000b;
+}
+
+.portrait-card:focus-visible {
+  outline: 2px solid #d5b580;
+  outline-offset: 5px;
+}
+
+.portrait-card.is-dragging {
+  z-index: 3;
+  cursor: grabbing;
+  box-shadow:
+    0 1px 0 #45484a,
+    0 2px 0 #383b3d,
+    0 3px 0 #2d3032,
+    0 4px 0 #1b1d1f,
+    0 13px 14px -6px #000a,
+    0 26px 34px -14px #000c;
+}
+
+.portrait-card[aria-pressed="true"] {
+  border-color: #9f8b69;
+  box-shadow:
+    0 1px 0 #665b48,
+    0 2px 0 #4b453a,
+    0 3px 0 #36332e,
+    0 4px 0 #1b1d1f,
+    0 7px 6px -3px #0009,
+    0 17px 24px -12px #000b;
+}
+
+.portrait-mat,
+.portrait-card:hover .portrait-mat,
+.portrait-card[aria-pressed="true"] .portrait-mat {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+.portrait-image {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  border-radius: 1px;
+  box-shadow: 0 1px 0 #62646566, 0 2px 4px #0007;
+}
+
+.portrait-label {
+  padding: 10px 1px 0;
+}
+
+.portrait-source {
+  padding: 5px 1px 1px;
+}
+
+.view-actions .card-grid-control {
+  min-height: 30px;
+  gap: 6px;
+}
+
+.view-actions .card-grid-control .icon {
+  width: 13px;
+  height: 13px;
+}
+
+@media (max-width: 540px) {
+  .portrait-card {
+    padding: 8px 8px 7px;
+  }
+
+  .view-actions {
+    gap: 7px;
+  }
+
+  .thumbnail-control {
+    gap: 5px;
+    padding-left: 8px;
+  }
+
+  .thumbnail-control input {
+    width: 45px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portrait-card {
+    cursor: pointer;
+  }
+}
