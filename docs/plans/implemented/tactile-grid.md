@@ -1,6 +1,6 @@
 # Tactile avatar preview cards
 
-Status: implemented and independently reviewed; awaiting coordinator landing. Task: `td-988156`.
+Status: implemented, independently reviewed, and installed. Task: `td-988156`.
 
 ## Assignment and ownership
 
@@ -107,3 +107,5 @@ remain outside this worktree assignment.
   footprint-clear slot for each new card.
 - 2026-09-07: Interrupt an active Arrange tween at its displayed pose before a
   pointer grab so the drag cannot be cleared by the tween's completion.
+
+Live delivery: merged to main and installed at `5badeff`. The coordinator inspected the private HTTPS studio with the Good dogs collection: card material, angles, controls, and artwork render correctly. Independent real browser proof also covered drag collisions without selection, ordinary click and Enter selection, unchanged refresh, new CLI arrivals, Arrange, persisted mute, 390-pixel layout and scrolling, and reduced-motion behavior. There were no browser console warnings or errors. The canceled grid portrait-mode switch was not added.
