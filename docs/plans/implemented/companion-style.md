@@ -1,6 +1,6 @@
 # Companions: dogs and cats by a fresh Astra agent
 
-Status: implementation and browser proof complete; ready for coordinator review and live delivery. Task: `td-98d7df`.
+Status: implemented, independently reviewed, and installed. Task: `td-98d7df`.
 
 ## Assignment and ownership
 
