@@ -1,6 +1,6 @@
 # Mixed dogs and cats
 
-Status: implementation complete, ready for parent review and delivery. Task: `td-58936f` (also includes a parent-owned future-service plan).
+Status: implemented, independently reviewed, and live. Task: `td-58936f` also covers the proposed [requested-styles service plan](../active/requested-styles-service.md).
 
 ## Assignment
 
@@ -32,7 +32,11 @@ Validation passed:
 
 Evidence: `/var/folders/9z/_hxsyhcx59d_cbrbhxfk9j000000gn/T/avatars-mixed-proof.ccr2q62b/`, including `runtime-proof.json`, `browser-proof.json`, and the isolated saved library. The owned proof service on port 65501 was stopped and its browser tab closed; the mobile viewport override was reset. Live port 7447, installed binaries, main, and Tailscale were not changed.
 
-Parent still owns independent review, landing/install/live samples, the future-service plan, and approval of shared task `td-58936f`. Keep this brief active until that delivery.
+Parent reviewed the scoped implementation and independently compared eight explicit Dog/Cat SVG/PNG exports against the installed pre-change binary; all matched byte-for-byte. Branch `mixed-companions` was fast-forwarded into main at `3765981`, installed with `make install-local`, and the owned Avatar Studio process was relaunched. The default tmux server and other Tailscale routes were preserved.
+
+Live HTTPS health reports `3765981`. A [Cats and dogs collection](https://aerie.tail53fd54.ts.net:7447/?collection=col_94dfe46694b561b60c67882b74476073) contains 24 avatars, with 12 concrete cats and 12 concrete dogs in this sample. Parent CUA proof in tab `727446957` confirmed Mixed collection restoration, the visible mixed grid, concrete Cats inspector metadata, and a copied Tailscale portrait link retaining Circle, 256-by-256 dimensions, and Light. No browser warnings or errors were reported. Evidence: `/tmp/avatars-mixed-parent.Ju0MGW/`.
+
+The future-service plan remains proposed. Astra independently reviewed it using `TD_CONTEXT_ID=avatars-requested-styles-review`, session `ses_6208d0`, and reported no remaining concerns after runtime containment, immutable activation consistency, and phase-specific prerequisites were clarified. It includes the subsequently requested Comms on-demand startup pattern; that lifecycle and comms-web integration are not implemented in this delivery.
 
 ## Decisions and limits
 
