@@ -297,6 +297,10 @@ async function resolveRoute({ scroll = false, restoreView = true } = {}) {
     showNotice(explainError(error));
   }
   if (sequence !== state.routeRequest) return;
+  if (restoreView) {
+    const style = state.selected?.style || collectionFor(state.collectionId)?.style;
+    if (state.styles.some((item) => item.id === style)) $("style").value = style;
+  }
   render();
   if (scroll && state.avatarId) [...$("portrait-grid").children].find((card) => card.dataset.avatar === state.avatarId)?.scrollIntoView({ block: "nearest" });
 }
