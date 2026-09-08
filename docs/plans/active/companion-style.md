@@ -1,6 +1,6 @@
 # Companions: dogs and cats by a fresh Astra agent
 
-Status: ready for artwork implementation. Task: `td-98d7df`.
+Status: artwork implemented and visually checked; input integration waits for the Pebble foundation. Task: `td-98d7df`.
 
 ## Assignment and ownership
 
@@ -57,10 +57,14 @@ Make routine choices independently and document guidance gaps you encounter. If 
 
 ## Handoff
 
-Artwork and visual evidence: pending.
+Artwork and visual evidence: implemented in `pkg/avatar/companions.go`, with native 128 × 128 SVG. Six dog ear/head recipes and three cat cheek silhouettes use eight warm coat palettes, five marking recipes, relaxed/curious/happy/winking expressions, gaze, and head tilt. Default input-free `Companions.Generate` draws a dog; registration and typed animal inputs belong to the integration slice.
+
+Run `scripts/prove-companions.sh /tmp/avatars-companions-astra-proof` to reproduce the artwork evidence. Visually inspected `dog-portrait-sheet.png`, `dog-circle-sheet.png`, `cat-portrait-sheet.png`, `cat-circle-sheet.png`, `dog-sizes.png`, and `cat-sizes.png` from the actual Go PNG exporter. Each contact sheet contains the same 24 labeled seeds (`companion-00` through `companion-23`); size sheets show seeds 00, 07, and 16 at actual 32/64/256 px in both shapes. HTML also loads the actual SVG exporter output. The species, expression, and silhouette remain legible at 32 px. Ear tips, whiskers, eyes, and muzzles retain clear circle margins. Quiet paper flecks and broad color areas avoid small-size clutter. The proof generator and shell entry point are committed; generated images stay in `/tmp`.
+
+Focused checks: deterministic output, 100-seed variety per species, safe and well-formed SVG, cancellation, 24 PNG recipes per species, native size, and circle transparency. `go test -race ./pkg/avatar` and `git diff --check` passed.
 
 Input integration and parity evidence: pending.
 
-Guidance gaps and decisions: pending.
+Guidance gaps and decisions: the brief provides enough guidance for the artwork slice. Native square framing leaves ears and whiskers inside the circle without style-specific export logic. Preview uses an opt-in Go test so the temporary pre-integration animal selector does not become a public API. Seed identity is deterministic but not promised to be collision-free in a finite visual recipe space. The artwork descriptions and proof labels passed `naturally scan`.
 
 Independent review and live delivery: pending.
