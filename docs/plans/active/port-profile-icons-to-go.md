@@ -1,54 +1,47 @@
-# Port Profile Icon Generator to Go
+# Avatar generator and studio
 
-**Status:** active  
-**Goal:** Extract and port the pen-and-ink portrait/avatar generator from `comms-web` to Go with multi-format export (SVG, PNG, etc.) and standalone distribution.
+Status: active. Tracking: `td-7c3910`.
 
-## Context
+## Outcome
 
-The profile icon generator in `comms-web` (`src/lib/agent-portrait.ts`) creates deterministic, static pen-and-ink portraits from an arbitrary seed or agent identity. To enable wider use across CLIs, services, and native apps, we are creating a dedicated Go project (`avatars`).
+Generate an avatar or a batch from the CLI or studio, see the same saved collection in the studio, link directly to an avatar or collection, and export SVG or PNG. The initial Gorey style reproduces `port/agent-portrait.ts`. Generation is random by default; a seed remains available to programs for reproducibility. The studio has no prompt or appearance controls.
 
-## Core Requirements
+## Architecture and decisions
 
-1. **Go Core Engine (`pkg/avatar` or `internal/avatar`)**:
-   - Deterministic 32-bit FNV-1a hash and 32-bit xorshift PRNG matching the reference implementation.
-   - Exact recreation of the pen-and-ink aesthetic: paper palettes, ink tones, cloth textures, engraved backdrop hatching, 6 wardrobe styles, facial geometry, accessories, and hair styles.
-   - Zero input string leakage into generated markup (pure numeric geometry).
-   - Direct SVG generation matching the reference structure and viewBox (`0 0 64 72`).
+- `pkg/avatar`: public, deterministic generator library with separate generator and export adapters. Gorey emits SVG; SVG and pure Go PNG exporters consume an artwork value. Additional style providers and output codecs can register without changing callers.
+- `internal/library`: shared creation, validation, saved collection queries, and export behavior. Every batch is a durable collection with stable avatar IDs and links.
+- `internal/store`: inspectable JSONL behind a narrow repository interface. Cross-process file locking coordinates direct CLI calls and the HTTP service; each batch is one append and sync. No database server or model runtime.
+- `internal/httpapi`: versioned loopback HTTP interface over the same library. The studio uses these public endpoints exclusively.
+- `internal/studio`: embedded HTML, CSS, and JavaScript. The Go binary serves the entire app without a frontend build or network dependencies.
+- `internal/cli`: human and JSON output, command help, agent instructions, and machine-readable capabilities. Local calls use the library; `--url` selects HTTP access to a running service.
+- The first service runs explicitly with `avatars serve --open`. Bind to loopback by default, refuse non-loopback exposure, and protect browser mutations against cross-origin requests. Automatic daemon lifecycle, accounts, public hosting, AI providers, prompt steering, and new styles are outside this slice.
+- Saved records retain style and seed; the initial procedural style is a stable rendering contract. A future nondeterministic provider must persist its generated artwork through a storage extension before shipping.
 
-2. **Multi-Format Export**:
-   - **SVG**: Native vector output.
-   - **PNG**: Rasterized export with configurable resolution (e.g., 64x72, 128x144, 256x288, 512x576) and optional circular masking.
-   - Clean seam/adapter design so additional raster or vector formats can be plugged in without refactoring the generation core.
+## Capability parity
 
-3. **CLI (`cmd/avatars`)**:
-   - `avatars generate <seed> [flags]`
-   - Flags:
-     - `-s, --seed`: identity seed string (or positional argument)
-     - `-f, --format`: output format (`svg`, `png`; default `svg`)
-     - `--size`: dimensions or scale factor
-     - `-o, --out`: output destination file (defaults to stdout or `<seed>.<format>`)
-     - `-c, --circle`: render with circular crop/mask
-   - `avatars --version`, `avatars --help`
+| Capability | Studio | CLI | HTTP |
+| --- | --- | --- | --- |
+| Discover styles and formats | Style selector | `styles`, `capabilities` | `GET /api/v1/styles` |
+| Generate and save batch | Generate | `generate` | `POST /api/v1/collections` |
+| Browse collections | Sidebar and grid | `list`, `show` | `GET /api/v1/collections[/{id}]` |
+| Inspect an avatar | Inspector | `show` | `GET /api/v1/avatars/{id}` |
+| Export SVG/PNG | Download | `export` | `GET /api/v1/avatars/{id}.{format}` |
+| Reproducible stateless render | No steering UI by design | `render --seed` | `GET /api/v1/render` |
+| Open exact selection | Deep links | Returned URLs | `/?avatar=ID`, `/?collection=ID` |
 
-4. **Testing Parity**:
-   - Unit tests covering determinism (same seed produces identical output).
-   - Entropy check (100 distinct seeds produce 100 distinct outputs).
-   - Injection safety test (seeds with `<script>`, `<image>`, etc. never bleed into SVG markup).
-   - Visual parity verification against reference SVG outputs.
+## Work and acceptance
 
-5. **Release & Packaging**:
-   - Local dev install and worktree switching via `make install-local` and `make install-worktree`.
-   - Homebrew tap formula distribution (`marcus/tap/avatars`).
-   - Cross-platform release binaries for Darwin and Linux (amd64/arm64) via GoReleaser and GitHub Actions.
+- [x] Inspect reference generator, scaffold, local runtime, and Comms conventions.
+- [x] Create isolated `avatar-studio` worktree and agree parallel file ownership.
+- [ ] Port generator and check TypeScript fixture parity including Unicode, entropy, and injection safety.
+- [ ] Implement SVG and PNG exports with dimensions and optional circular crop.
+- [ ] Implement shared collection library and JSONL persistence with restart and concurrency proof.
+- [ ] Implement CLI, HTTP, structured discovery, and consistent error mapping.
+- [ ] Build compact studio with grid, collection navigation, inspector, generation, downloads, and deep links.
+- [ ] Run focused tests, race suite, vet, formatting, build, and actual CLI/API/browser journeys.
+- [ ] Independently review meaningful changes and repair findings.
+- [ ] Update usage docs, run external prose through `naturally`, land on main, push private backup, install, and leave studio running.
 
-## Steps
+## Current handoff
 
-- [x] Create repository structure, git initialization, and private GitHub repo push.
-- [x] Set up Go build, test, lint, and worktree tooling matching `~/code/tasks`.
-- [x] Copy reference files (`agent-portrait.ts`, `agent-portrait.test.ts`, `AgentPortrait.svelte`) into `port/`.
-- [x] Author `AGENTS.md` extracting SDLC guidelines from `agentic-sdlc-project-standards.md`.
-- [ ] Implement core Go generator package.
-- [ ] Implement SVG rendering engine and verify against reference tests.
-- [ ] Implement PNG export rasterization.
-- [ ] Wire up CLI commands and flags.
-- [ ] End-to-end integration and smoke testing.
+Generator agent owns `pkg/avatar`, fixtures, and Go dependencies. Library agent owns `internal/library` and `internal/store`. Studio agent owns `internal/studio`. Primary agent owns integration, CLI, HTTP, discovery, docs, and operational proof. Shared worktree: `/Users/marcus/code/avatars-avatar-studio`. Each contributor commits only owned files. No release tag or change to repository visibility is part of this work.
