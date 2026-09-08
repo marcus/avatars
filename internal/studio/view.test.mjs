@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { generationInputsForStyle, inputChoiceForRecipe, inputFor, inputValueForStyle, readExportView, readPreviewBackground, writeExportView } from "./assets/view.mjs";
+import { generationInputsForCollection, generationInputsForStyle, inputChoiceForRecipe, inputFor, inputValueForStyle, readExportView, readPreviewBackground, writeExportView } from "./assets/view.mjs";
 
 const styles = [
   { id: "companions", native_width: 128, native_height: 128, inputs: { animal: { default: "dog", values: [
@@ -10,6 +10,7 @@ const styles = [
   { id: "pebble", name: "Pebble", inputs: { color: { default: "walnut", values: [
     { value: "walnut", label: "Walnut", swatch: "#92744F" },
     { value: "sage", label: "Sage", swatch: "#A5B59A" },
+    { value: "random", label: "Random" },
   ] } } },
 ];
 
@@ -85,4 +86,15 @@ test("preview background links accept named surrounds and default safely", () =>
   for (const query of ["", "background=red", "background=LIGHT"]) {
     assert.equal(readPreviewBackground(new URLSearchParams(query)), "dark");
   }
+});
+
+test("mixed collections suggest Random while saved avatars retain concrete color", () => {
+  const walnut = { style: "pebble", inputs: { color: "walnut" } };
+  const sage = { style: "pebble", inputs: { color: "sage" } };
+  assert.deepEqual(generationInputsForCollection(styles, { style: "pebble", avatars: [walnut, sage] }), { color: "random" });
+  assert.deepEqual(generationInputsForCollection(styles, { style: "pebble", avatars: [sage, sage] }), { color: "sage" });
+  assert.deepEqual(generationInputsForCollection(styles, { style: "pebble", avatars: [{ style: "pebble" }] }), { color: "walnut" });
+  assert.deepEqual(generationInputsForStyle(styles, "pebble", { color: "random", animal: "cat" }), { color: "random" });
+  assert.deepEqual(generationInputsForStyle(styles, "pebble", sage.inputs), { color: "sage" });
+  assert.deepEqual(generationInputsForCollection(styles, { style: "companions", avatars: [{ inputs: { animal: "cat" } }] }), { animal: "cat" });
 });

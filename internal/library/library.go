@@ -140,9 +140,13 @@ func (s *Service) Create(ctx context.Context, request CreateRequest) (Collection
 		} else if request.Count > 1 {
 			seed = fmt.Sprintf("%s:%d", seed, i)
 		}
+		recipeInputs, err := s.engine.ResolveRecipeInputs(request.Style, seed, resolvedInputs)
+		if err != nil {
+			return Collection{}, invalid(err.Error())
+		}
 		collection.Avatars = append(collection.Avatars, Avatar{
 			ID: id, CollectionID: collection.ID, Style: request.Style, Seed: seed,
-			Inputs:    generationInputs(resolvedInputs),
+			Inputs:    generationInputs(recipeInputs),
 			CreatedAt: now, URL: "/?avatar=" + id,
 			SVGURL: "/api/v1/avatars/" + id + ".svg", PNGURL: "/api/v1/avatars/" + id + ".png",
 		})

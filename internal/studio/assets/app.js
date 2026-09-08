@@ -1,4 +1,4 @@
-import { generationInputsForStyle, inputChoiceForRecipe, inputFor, nativeRatio, readExportView, readPreviewBackground, writeExportView } from "/view.mjs";
+import { generationInputsForCollection, generationInputsForStyle, inputChoiceForRecipe, inputFor, nativeRatio, readExportView, readPreviewBackground, writeExportView } from "/view.mjs";
 
 const $ = (id) => document.getElementById(id);
 const state = {
@@ -271,7 +271,7 @@ function render() {
   renderInspector();
 }
 
-async function resolveRoute({ scroll = false, restoreView = true } = {}) {
+async function resolveRoute({ scroll = false, restoreView = true, restoreInputs = restoreView } = {}) {
   const sequence = ++state.routeRequest;
   const params = new URLSearchParams(location.search);
   state.collectionId = params.get("collection");
@@ -298,11 +298,15 @@ async function resolveRoute({ scroll = false, restoreView = true } = {}) {
     showNotice(explainError(error));
   }
   if (sequence !== state.routeRequest) return;
-  if (restoreView) {
+  if (restoreInputs) {
     const style = state.selected?.style || collectionFor(state.collectionId)?.style;
     if (state.styles.some((item) => item.id === style)) $("style").value = style;
-    const recipe = state.selected || collectionFor(state.collectionId)?.avatars[0];
-    renderGenerationInputs(recipe ? generationInputsForStyle(state.styles, style, recipe.inputs) : undefined);
+    const preferred = state.selected
+      ? generationInputsForStyle(state.styles, style, state.selected.inputs)
+      : generationInputsForCollection(state.styles, collectionFor(state.collectionId));
+    renderGenerationInputs(preferred);
+  }
+  if (restoreView) {
     if (state.avatarId) {
       const view = readExportView(params, state.styles.find((item) => item.id === state.selected?.style));
       $("export-form").elements.shape.value = view.shape;
@@ -315,14 +319,14 @@ async function resolveRoute({ scroll = false, restoreView = true } = {}) {
   if (scroll && state.avatarId) [...$("portrait-grid").children].find((card) => card.dataset.avatar === state.avatarId)?.scrollIntoView({ block: "nearest" });
 }
 
-function navigate(url) {
+function navigate(url, options = {}) {
   const target = new URL(url, location.origin);
   if (target.origin !== location.origin) return;
   const previousCollection = state.collectionId;
   history.pushState(null, "", target.pathname + target.search);
   setLibraryOpen(false);
   $("notice").hidden = true;
-  void resolveRoute();
+  void resolveRoute(options);
   if (previousCollection !== new URLSearchParams(target.search).get("collection")) $("canvas-scroll").scrollTop = 0;
 }
 
@@ -363,7 +367,8 @@ function renderGenerationInputs(preferred = {}) {
 function updateColorSwatch() {
   const input = inputFor(state.styles, $("style").value, "color");
   const choice = input?.values.find((item) => item.value === $("color").value);
-  if (choice) $("color-swatch").style.setProperty("--swatch", choice.swatch);
+  $("color-swatch").hidden = !choice?.swatch;
+  if (choice?.swatch) $("color-swatch").style.setProperty("--swatch", choice.swatch);
   else $("color-swatch").style.removeProperty("--swatch");
 }
 
@@ -437,7 +442,7 @@ async function generate(event) {
     state.loaded = true;
     connection(true);
     $("collection-name").value = "";
-    navigate(routeURL(collection.id));
+    navigate(routeURL(collection.id), { restoreInputs: false });
     toast(`${collection.avatars.length} ${collection.avatars.length === 1 ? "portrait" : "portraits"} created`);
   } catch (error) {
     showNotice(explainError(error));

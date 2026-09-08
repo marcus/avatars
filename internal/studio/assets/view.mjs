@@ -60,3 +60,15 @@ export function readPreviewBackground(params) {
   const value = params.get("background");
   return ["dark", "light", "gray"].includes(value) ? value : "dark";
 }
+
+// A mixed saved collection suggests Random when that input supports it; a
+// uniform collection restores its concrete value, including older defaults.
+export function generationInputsForCollection(styles, collection) {
+  if (!collection) return {};
+  const inputs = generationInputsForStyle(styles, collection.style, collection.avatars?.[0]?.inputs);
+  for (const name of Object.keys(inputs)) {
+    const values = new Set((collection.avatars || []).map((avatar) => inputValueForStyle(styles, collection.style, name, avatar.inputs?.[name])));
+    if (values.size > 1) inputs[name] = inputValueForStyle(styles, collection.style, name, "random");
+  }
+  return inputs;
+}

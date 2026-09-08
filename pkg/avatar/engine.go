@@ -61,7 +61,7 @@ type ColorInput struct {
 type ColorChoice struct {
 	Value    string `json:"value"`
 	Label    string `json:"label"`
-	Swatch   string `json:"swatch"`
+	Swatch   string `json:"swatch,omitempty"`
 	EyeColor string `json:"-"`
 }
 
@@ -76,6 +76,12 @@ type Generator interface {
 type InputGenerator interface {
 	Generator
 	GenerateWithInputs(context.Context, string, Inputs) (Artwork, error)
+}
+
+// RecipeInputResolver optionally turns seed-dependent requests into concrete
+// saved appearance inputs. Implementations must be deterministic and concurrent-safe.
+type RecipeInputResolver interface {
+	ResolveRecipeInputs(seed string, inputs Inputs) (Inputs, error)
 }
 
 // Exporter implementations must support concurrent calls and reject unsupported
@@ -243,6 +249,24 @@ func (e *Engine) ResolveInputs(style string, inputs Inputs) (Inputs, error) {
 	return resolveStyleInputs(g.Style(), inputs)
 }
 
+// ResolveRecipeInputs resolves appearance for one avatar's final seed. Unlike
+// ResolveInputs, it replaces request choices such as Random with concrete values.
+func (e *Engine) ResolveRecipeInputs(style, seed string, inputs Inputs) (Inputs, error) {
+	if style == "" {
+		style = "gorey"
+	}
+	e.mu.RLock()
+	g, ok := e.generators[style]
+	e.mu.RUnlock()
+	if !ok {
+		return Inputs{}, fmt.Errorf("%w: %q", ErrUnknownStyle, style)
+	}
+	if resolver, ok := g.(RecipeInputResolver); ok {
+		return resolver.ResolveRecipeInputs(seed, inputs)
+	}
+	return resolveStyleInputs(g.Style(), inputs)
+}
+
 // resolveStyleInputs also serves direct generator calls, keeping defaults and
 // unsupported-input refusal the same with or without an Engine.
 func resolveStyleInputs(style Style, inputs Inputs) (Inputs, error) {
@@ -316,7 +340,7 @@ func (e *Engine) RenderWithInputs(ctx context.Context, style, seed, format strin
 	if !xok {
 		return nil, fmt.Errorf("%w: %q", ErrUnknownFormat, format)
 	}
-	resolved, err := e.ResolveInputs(style, inputs)
+	resolved, err := e.ResolveRecipeInputs(style, seed, inputs)
 	if err != nil {
 		return nil, err
 	}
