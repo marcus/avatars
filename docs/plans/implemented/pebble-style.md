@@ -1,6 +1,6 @@
 # Pebble: a fresh-agent style authoring trial
 
-Status: Sol implementation complete; awaiting coordinator review. Task: `td-bb42fd`.
+Status: implemented and independently reviewed; live on the private studio. Task: `td-bb42fd`.
 
 ## Assignment and ownership
 
@@ -87,4 +87,4 @@ Visual proof is at `/tmp/avatars-pebble-proof.woh8vU/index.html`, with derived i
 
 Guidance gaps and decisions made without extra instructions: no product clarification was needed. The task was already `in_progress` under the coordinator's td session, so the independent `avatars-pebble-sol` context could not start it; that context was still used successfully for implementation logs. Eye colors are stored beside body fills in the shared core palette but omitted from public discovery because callers need only the selectable value, label, and swatch. An empty color value resolves like omission; any nonempty unknown value is rejected.
 
-Independent review and live delivery: pending with the coordinating agent, as assigned. This implementation did not merge, install, change Tailscale, or touch the live studio on port 7447.
+Independent review and live delivery: the coordinator reviewed the code, contact sheets, and real browser journeys. Independent CLI/HTTP checks covered all 15 palettes in SVG and PNG, persistence, invalid requests before writes, defaults, and 36 unchanged exports from the original styles. Desktop and 390-pixel browser checks passed for generation, saved-color restoration, manual choices surviving refresh, and circle/dimension links. The implementation was merged to main and installed at commit `63ccbbe`; the private Tailscale studio serves the color metadata and a generated Walnut collection. The initial Sol-only documentation trial is complete without extra product guidance. The user subsequently requested more personality; that separate Astra refinement is tracked in `pebble-uplift.md` and may revise this pre-release artwork while retaining its input contract.
