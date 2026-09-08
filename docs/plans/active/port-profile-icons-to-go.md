@@ -4,7 +4,7 @@ Status: active. Tracking: `td-7c3910`.
 
 ## Outcome
 
-Generate an avatar or a batch from the CLI or studio, see the same saved collection in the studio, link directly to an avatar or collection, and export SVG or PNG. The initial Gorey style reproduces `port/agent-portrait.ts`. Generation is random by default; a seed remains available to programs for reproducibility. The studio has no prompt or appearance controls.
+Generate an avatar or a batch from the CLI or studio, see the same saved collection in the studio, link directly to an avatar or collection, and export SVG or PNG. The original Gorey style reproduces `port/agent-portrait.ts`. Gorey Expanded adds more varied people in the same engraved language. Picasso adds recognizable portraits with restrained cubist planes. Generation is random by default; a seed remains available to programs for reproducibility. The studio has no prompt or appearance controls.
 
 ## Architecture and decisions
 
@@ -14,7 +14,7 @@ Generate an avatar or a batch from the CLI or studio, see the same saved collect
 - `internal/httpapi`: versioned loopback HTTP interface over the same library. The studio uses these public endpoints exclusively.
 - `internal/studio`: embedded HTML, CSS, and JavaScript. The Go binary serves the entire app without a frontend build or network dependencies.
 - `internal/cli`: human and JSON output, command help, agent instructions, and machine-readable capabilities. Local calls use the library; `--url` selects HTTP access to a running service.
-- The first service runs explicitly with `avatars serve --open`. Bind to loopback by default, refuse non-loopback exposure, and protect browser mutations against cross-origin requests. Automatic daemon lifecycle, accounts, public hosting, AI providers, prompt steering, and new styles are outside this slice.
+- The first service runs explicitly with `avatars serve --open`. Bind to loopback by default, refuse non-loopback exposure, and protect browser mutations against cross-origin requests. Tailscale Serve supplies private HTTPS through an explicitly configured `--public-url`; user-facing links use that verified origin. Automatic daemon lifecycle, accounts, public hosting, AI providers, and prompt steering are outside this slice.
 - Saved records retain style and seed; the initial procedural style is a stable rendering contract. A future nondeterministic provider must persist its generated artwork through a storage extension before shipping.
 
 ## Capability parity
@@ -33,15 +33,21 @@ Generate an avatar or a batch from the CLI or studio, see the same saved collect
 
 - [x] Inspect reference generator, scaffold, local runtime, and Comms conventions.
 - [x] Create isolated `avatar-studio` worktree and agree parallel file ownership.
-- [ ] Port generator and check TypeScript fixture parity including Unicode, entropy, and injection safety.
-- [ ] Implement SVG and PNG exports with dimensions and optional circular crop.
-- [ ] Implement shared collection library and JSONL persistence with restart and concurrency proof.
-- [ ] Implement CLI, HTTP, structured discovery, and consistent error mapping.
-- [ ] Build compact studio with grid, collection navigation, inspector, generation, downloads, and deep links.
-- [ ] Run focused tests, race suite, vet, formatting, build, and actual CLI/API/browser journeys.
-- [ ] Independently review meaningful changes and repair findings.
+- [x] Port generator and check TypeScript fixture parity including Unicode, entropy, and injection safety.
+- [x] Implement SVG and PNG exports with dimensions and optional circular crop.
+- [x] Implement shared collection library and JSONL persistence with restart and concurrency proof.
+- [x] Implement CLI, HTTP, structured discovery, and consistent error mapping.
+- [x] Build compact studio with grid, collection navigation, inspector, generation, downloads, and deep links.
+- [x] Run focused tests, race suite, vet, formatting, build, and actual CLI/API/browser journeys.
+- [x] Independently review meaningful changes and repair findings.
 - [ ] Update usage docs, run external prose through `naturally`, land on main, push private backup, install, and leave studio running.
+
+- [ ] Add Gorey Expanded and Picasso adapters, visually inspect collections, and verify all surfaces.
+- [ ] Preserve portrait/circle mode and dimensions in copied portrait URLs.
+- [ ] Add Tailscale link guidance to AGENTS.md, configure private HTTPS, and verify the remote journey.
 
 ## Current handoff
 
-Generator agent owns `pkg/avatar`, fixtures, and Go dependencies. Library agent owns `internal/library` and `internal/store`. Studio agent owns `internal/studio`. Primary agent owns integration, CLI, HTTP, discovery, docs, and operational proof. Shared worktree: `/Users/marcus/code/avatars-avatar-studio`. Each contributor commits only owned files. No release tag or change to repository visibility is part of this work.
+The initial implementation is merged into local main and installed, with the studio running in Sidecar shell `sidecar-sh-avatars-2`. It has passed independent reviews, the Go race/vet/format/build suite, TypeScript fixtures, desktop/mobile browser workflows, downloads, and connection recovery. Four CGO-free target builds succeeded. The repository remains private; no release tag is part of this work.
+
+User review expanded the scope: add Gorey variety, a recognizable Picasso style, shape-preserving portrait links, and Tailscale handoff URLs. Generator agent owns the new Gorey adapter; library agent owns the Picasso adapter; studio agent owns URL state. Primary owns proxy configuration, registration, docs, installation, and final proof. Continue in `/Users/marcus/code/avatars-avatar-studio`, committing only owned files.

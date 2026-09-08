@@ -280,7 +280,7 @@ func parse(f *flag.FlagSet, args []string) error {
 
 func takesValue(name string) bool {
 	switch name {
-	case "--seed", "-s", "--name", "--count", "--style", "--out", "-o", "--format", "-f", "--size", "--listen":
+	case "--seed", "-s", "--name", "--count", "--style", "--out", "-o", "--format", "-f", "--size", "--listen", "--public-url":
 		return true
 	}
 	return false

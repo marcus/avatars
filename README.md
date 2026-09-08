@@ -105,7 +105,15 @@ Saved collections live in `$XDG_DATA_HOME/avatars/collections.jsonl`, or `~/.loc
 
 The JSONL file stores one collection per line, including stable IDs, style, and seeds. File locking coordinates CLI and HTTP writes. Back it up or inspect it with ordinary file tools; stop writers before editing or replacing it. An incomplete or corrupt record is reported with its location and is preserved for repair.
 
-The service accepts loopback connections. Direct links work on the machine running the studio. Remote hosting, accounts, AI providers, and appearance steering are outside this first version.
+The service listens on loopback. To reach it from other devices on your tailnet, use Tailscale Serve and configure its HTTPS origin:
+
+```sh
+avatars serve --public-url https://YOUR_HOST.YOUR_TAILNET.ts.net:7447
+# In another terminal, add this route without changing existing Tailscale services:
+tailscale serve --bg --https=7447 http://127.0.0.1:7447
+```
+
+Use the Tailscale URL in the browser and with CLI `--url` when sharing links. `AVATARS_PUBLIC_URL` can supply the serve flag's default. The proxy host and browser origin are accepted only when configured explicitly. Accounts, public hosting, AI providers, and appearance steering are outside this version.
 
 ## Development
 

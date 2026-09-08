@@ -24,7 +24,22 @@ type API struct {
 	engine  *avatar.Engine
 }
 
+// Config declares the external origin of a trusted proxy such as Tailscale Serve.
+// The listener remains loopback-only; forwarded headers never grant access.
+type Config struct{ PublicURL string }
+
 func New(service *library.Service, engine *avatar.Engine, studio http.Handler) http.Handler {
+	return NewWithConfig(service, engine, studio, Config{})
+}
+
+func NewWithConfig(service *library.Service, engine *avatar.Engine, studio http.Handler, config Config) http.Handler {
+	publicURL, _ := url.Parse(config.PublicURL)
+	publicOrigin := ""
+	publicHost := ""
+	if publicURL != nil && publicURL.Scheme == "https" && publicURL.Host != "" && publicURL.User == nil && (publicURL.Path == "" || publicURL.Path == "/") && publicURL.RawQuery == "" && publicURL.Fragment == "" {
+		publicOrigin = "https://" + publicURL.Host
+		publicHost = publicURL.Host
+	}
 	a := &API{service, engine}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/v1/health", func(w http.ResponseWriter, r *http.Request) {
@@ -55,14 +70,16 @@ func New(service *library.Service, engine *avatar.Engine, studio http.Handler) h
 		if h, _, err := net.SplitHostPort(host); err == nil {
 			host = h
 		}
-		if host != "localhost" && (net.ParseIP(strings.Trim(host, "[]")) == nil || !net.ParseIP(strings.Trim(host, "[]")).IsLoopback()) {
-			JSON(w, 403, map[string]any{"error": map[string]string{"code": "invalid_request", "message": "the service accepts only loopback hosts"}})
+		localHost := host == "localhost" || (net.ParseIP(strings.Trim(host, "[]")) != nil && net.ParseIP(strings.Trim(host, "[]")).IsLoopback())
+		if !localHost && (publicHost == "" || r.Host != publicHost) {
+			JSON(w, 403, map[string]any{"error": map[string]string{"code": "invalid_request", "message": "the service accepts only loopback hosts or its configured public host"}})
 			return
 		}
 		if r.Method != "GET" && r.Method != "HEAD" {
 			origin := r.Header.Get("Origin")
-			u, err := url.Parse(origin)
-			if r.Header.Get("Sec-Fetch-Site") == "cross-site" || (origin != "" && (err != nil || u.Scheme != "http" || u.Host != r.Host)) {
+			sameOrigin := origin == "http://"+r.Host && localHost
+			trustedProxyOrigin := publicOrigin != "" && origin == publicOrigin
+			if r.Header.Get("Sec-Fetch-Site") == "cross-site" || (origin != "" && !sameOrigin && !trustedProxyOrigin) {
 				JSON(w, 403, map[string]any{"error": map[string]string{"code": "invalid_request", "message": "cross-origin mutations are not allowed"}})
 				return
 			}

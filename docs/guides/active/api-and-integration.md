@@ -1,6 +1,6 @@
 # API and integration
 
-Run `avatars serve` to serve the studio and API at `http://127.0.0.1:7447`. Use `--listen 127.0.0.1:PORT` to select another port. The service accepts loopback hosts and rejects browser requests that mutate another origin's library.
+Run `avatars serve` to serve the studio and API at `http://127.0.0.1:7447`. Use `--listen 127.0.0.1:PORT` to select another port. The service accepts loopback hosts and rejects browser requests that mutate another origin's library. Behind Tailscale Serve, set `--public-url https://HOST:PORT` or `AVATARS_PUBLIC_URL` to accept that exact HTTPS host and origin. The listener remains on loopback, and forwarded headers do not grant trust.
 
 ## Capabilities
 
@@ -54,7 +54,7 @@ The response shape is:
 }
 ```
 
-API URLs are relative to the service origin. CLI JSON expands them into absolute URLs. An avatar link selects that avatar in the inspector; a collection link opens its grid.
+API URLs are relative to the service origin. CLI JSON expands them into absolute URLs. An avatar link selects that avatar in the inspector; a collection link opens its grid. Copied portrait links include `shape=portrait|circle` and export `width`/`height`, restoring that view when opened. A link without these options uses the portrait default.
 
 ## Export images
 

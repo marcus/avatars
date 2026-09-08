@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
+	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/marcus/avatars/internal/discovery"
@@ -22,11 +25,19 @@ func (a *app) serve(ctx context.Context, args []string) error {
 	f := a.flags("serve")
 	address := f.String("listen", discovery.DefaultAddress, "listen address")
 	open := f.Bool("open", false, "open studio")
+	publicURL := f.String("public-url", os.Getenv("AVATARS_PUBLIC_URL"), "trusted HTTPS proxy origin")
 	if e := parse(f, args); e != nil {
 		return e
 	}
 	if f.NArg() != 0 {
 		return bad("serve takes no positional arguments")
+	}
+	*publicURL = strings.TrimRight(*publicURL, "/")
+	if *publicURL != "" {
+		u, err := url.Parse(*publicURL)
+		if err != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.Path != "" || u.RawQuery != "" || u.Fragment != "" {
+			return bad("--public-url must be an HTTPS origin without a path, such as https://host.example:7447")
+		}
 	}
 	host, _, e := net.SplitHostPort(*address)
 	if e != nil {
@@ -47,8 +58,11 @@ func (a *app) serve(ctx context.Context, args []string) error {
 	if e != nil {
 		return e
 	}
-	server := &http.Server{Handler: httpapi.New(a.service, a.engine, studio.Handler()), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
+	server := &http.Server{Handler: httpapi.NewWithConfig(a.service, a.engine, studio.Handler(), httpapi.Config{PublicURL: *publicURL}), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
 	studioURL := "http://" + listener.Addr().String()
+	if *publicURL != "" {
+		studioURL = *publicURL
+	}
 	if a.json {
 		e = a.emit(map[string]string{"url": studioURL, "data_dir": a.dataDir, "status": "listening"})
 	} else {

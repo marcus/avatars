@@ -122,4 +122,5 @@ When communicating decisions and choices to Marcus:
 - **Lead with user & product impact**: Explain how the change affects the experience or capabilities.
 - **Frame technical choices as trade-offs**: State the real trade across maintainability, performance, flexibility, security, and operability.
 - **Jargon last**: Do not lead with internal function names, file paths, or pattern labels.
+- **Links for Marcus**: Send studio, avatar, and collection links using the machine's verified Tailscale HTTPS address. Marcus is usually on another machine, so localhost links are not a useful handoff. Use `avatars --url https://HOST:PORT` for shareable CLI output. Inspect the current Tailscale Serve configuration before configuring a route; preserve other services and never enable public Funnel exposure by implication.
 - **External prose**: Any user-facing copy or documentation meant for people other than Marcus must be passed through the `naturally` CLI.

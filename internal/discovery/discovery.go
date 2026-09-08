@@ -19,7 +19,7 @@ var Operations = []Operation{
 	{"export", "Export a saved avatar as SVG or PNG", "export AVATAR_ID [--format svg|png] [--size 256x288] [--circle] [--out FILE|-]", "GET", "/api/v1/avatars/{id}.{format}"},
 	{"render", "Render a reproducible avatar without saving it", "render [SEED] [--seed TEXT] [--style gorey] [--format svg|png] [--size WxH] [--circle] [--out FILE|-]", "GET", "/api/v1/render"},
 	{"styles", "List installed styles and export formats", "styles", "GET", "/api/v1/styles"},
-	{"serve", "Run the HTTP API and studio on loopback", "serve [--listen 127.0.0.1:7447] [--open]", "", ""},
+	{"serve", "Run the HTTP API and studio on loopback", "serve [--listen 127.0.0.1:7447] [--public-url HTTPS_ORIGIN] [--open]", "", ""},
 	{"instructions", "Print operational guidance for agents", "instructions", "GET", "/api/v1/instructions"},
 	{"capabilities", "Print machine-readable command and API discovery", "capabilities", "GET", "/api/v1/capabilities"},
 	{"version", "Print build information", "version", "GET", "/api/v1/health"},
@@ -62,7 +62,10 @@ CLI exit codes: 0 success, 1 operation failure, 2 invalid invocation.
 
 Use avatars help COMMAND for syntax and avatars capabilities for JSON discovery.
 The service runs in the foreground until interrupted; it does not manage tmux
-or start a daemon. URLs are local to the machine running the service.
+or start a daemon. For access from your other devices, place Tailscale Serve
+in front of the loopback listener and start serve with --public-url HTTPS_ORIGIN
+(or AVATARS_PUBLIC_URL). This permits that exact proxy host and browser origin.
+Use --url HTTPS_ORIGIN for CLI calls that return shareable links.
 `
 
 func Capabilities() any {

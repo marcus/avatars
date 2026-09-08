@@ -115,3 +115,30 @@ func TestRejectInvalidAndCrossOrigin(t *testing.T) {
 		t.Fatal(res.StatusCode, string(b))
 	}
 }
+
+func TestTrustedProxyOrigin(t *testing.T) {
+	s, e := store.New(filepath.Join(t.TempDir(), "collections.jsonl"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	engine := avatar.New()
+	h := httpapi.NewWithConfig(library.New(engine, s), engine, studio.Handler(), httpapi.Config{PublicURL: "https://studio.example:7447"})
+	for _, host := range []string{"127.0.0.1:7447", "studio.example:7447"} {
+		w := call(h, "POST", "/api/v1/collections", `{}`, map[string]string{"Host": host, "Origin": "https://studio.example:7447", "Sec-Fetch-Site": "same-origin"})
+		if w.Code != 201 {
+			t.Fatal(host, w.Code, w.Body)
+		}
+	}
+	for _, headers := range []map[string]string{
+		{"Host": "evil.example:7447"},
+		{"Host": "studio.example:7447", "Origin": "http://studio.example:7447"},
+		{"Host": "studio.example:7447", "Origin": "https://evil.example:7447"},
+		{"Host": "studio.example:7447", "Origin": "https://studio.example:7447", "Sec-Fetch-Site": "cross-site"},
+		{"Host": "127.0.0.1:7447", "Origin": "https://evil.example", "X-Forwarded-Host": "evil.example", "X-Forwarded-Proto": "https"},
+	} {
+		w := call(h, "POST", "/api/v1/collections", `{}`, headers)
+		if w.Code != 403 {
+			t.Fatal(headers, w.Code, w.Body)
+		}
+	}
+}
