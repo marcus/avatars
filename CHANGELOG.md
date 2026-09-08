@@ -13,3 +13,6 @@
 - Gorey Expanded adds a wider cast of engraved characters; Picasso adds restrained cubist portraits through the same generator interface.
 - Portrait links preserve export shape and dimensions, and the service supports an explicit Tailscale HTTPS proxy origin.
 - Pebble adds softly irregular two-eye characters with 15 stable colors across the Go library, CLI, HTTP API, saved recipes, and studio.
+
+- Companions adds playful dog and cat portraits with saved Animal choices across Go, CLI, HTTP, and the studio.
+- Style discovery reports native dimensions so square portraits open with square export defaults.

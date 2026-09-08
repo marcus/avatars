@@ -2,7 +2,7 @@
 
 A local avatar generator with a CLI, HTTP API, and creative studio. Generate a collection, pick a portrait, and export it as SVG or PNG. Avatars created by agents appear in the same library as those created in the studio.
 
-Four styles are available:
+Five styles are available:
 
 | Style | Character |
 | --- | --- |
@@ -10,6 +10,7 @@ Four styles are available:
 | **Gorey Expanded** (`gorey-expanded`) | A wider cast with more face shapes, ages, hairstyles, clothes, and accessories. |
 | **Picasso** (`picasso`) | Recognizable faces drawn with bold contours, muted color, and restrained cubist planes. |
 | **Pebble** (`pebble`) | Pudgy, softly irregular characters with two tiny eyes and 15 selectable colors. |
+| **Companions** (`companions`) | Playful dogs and cats with expressive ears, warm coats, and lively ink contours. |
 
 Generation is random by default. Programs can provide a seed to reproduce a portrait exactly. Each style uses the same SVG/PNG exporters and library workflow.
 
@@ -22,7 +23,7 @@ make build
 ./bin/avatars serve --open
 ```
 
-The studio opens at `http://127.0.0.1:7447`. It includes a collection browser, portrait grid, and export inspector. Choose a style and batch size, then generate. Select a portrait to adjust export dimensions, apply a circular crop, download SVG or PNG, or copy its direct link with the selected shape and dimensions.
+The studio opens at `http://127.0.0.1:7447`. It includes a collection browser, portrait grid, and export inspector. Choose a style and batch size, then generate. Companions shows an Animal dropdown for Dogs or Cats; Pebble shows Color. Each saved portrait keeps its selected species or color. Select a portrait to adjust export dimensions, apply a circular crop, download SVG or PNG, or copy its direct link with the selected shape and dimensions.
 
 The inspector offers Dark, Light, and Gray preview backgrounds. Copied portrait links retain the selected surround, shape, and dimensions. Background choices affect the preview only; SVG and PNG exports keep their original transparency.
 
@@ -37,6 +38,7 @@ In another terminal:
 ./bin/avatars generate --count 12 --name "First cast" --json
 ./bin/avatars generate --style picasso --count 12 --name "Picasso studies" --json
 ./bin/avatars generate --style pebble --color sage --count 12 --name "Sage pebbles" --json
+./bin/avatars generate --style companions --animal cat --count 12 --name "Curious cats" --json
 
 # Browse the same library shown in the studio.
 ./bin/avatars list --json
@@ -50,13 +52,14 @@ In another terminal:
 
 # Produce a reproducible image without saving a collection.
 ./bin/avatars render --seed agent-42 --format svg --out agent.svg
+./bin/avatars render --style companions --animal dog --seed sample --format png --out dog.png
 ```
 
 Replace `AVATAR_ID` with an ID returned by `generate` or `list`. Each saved avatar and collection has a direct studio URL. The studio refreshes when another process creates a collection.
 
 `generate` works while the service is stopped. To use a running service's library through HTTP, add `--url http://127.0.0.1:7447` or set `AVATARS_URL`. Otherwise the CLI opens the local library through the same application core used by the API.
 
-SVG is the default export format. `--size 256` requests a square canvas; `--size 256x288` sets both dimensions. Gorey and Picasso portraits use a 64 × 72 native canvas, while Pebble uses 64 × 64. Rectangular exports preserve the artwork's aspect ratio, with transparent margins when needed. Circular exports crop the center and leave transparent corners. Each dimension supports 1–2048 pixels.
+SVG is the default export format. `--size 256` requests a square canvas; `--size 256x288` sets both dimensions. Gorey and Picasso portraits use a 64 × 72 native canvas; Pebble uses 64 × 64, and Companions uses 128 × 128. Style discovery reports these as `native_width` and `native_height`. Rectangular exports preserve the artwork's aspect ratio, with transparent margins when needed. Circular exports crop the center and leave transparent corners. Each dimension supports 1–2048 pixels.
 
 `render` and `export` write image bytes to stdout when `--out` is omitted. With `--json`, they return base64 data and its media type instead. `--out FILE` creates a new file and refuses to overwrite an existing one.
 
@@ -128,7 +131,7 @@ avatars serve --public-url https://YOUR_HOST.YOUR_TAILNET.ts.net:7447
 tailscale serve --bg --https=7447 http://127.0.0.1:7447
 ```
 
-Use the Tailscale URL in the browser and with CLI `--url` when sharing links. `AVATARS_PUBLIC_URL` can supply the serve flag's default. The proxy host and browser origin are accepted only when configured explicitly. Pebble color is the first style-owned appearance input. Accounts, public hosting, and AI providers are outside this version.
+Use the Tailscale URL in the browser and with CLI `--url` when sharing links. `AVATARS_PUBLIC_URL` can supply the serve flag's default. The proxy host and browser origin are accepted only when configured explicitly. Pebble color and companion animal choices are saved appearance inputs. Omitting them resolves to Walnut or Dogs. Other styles refuse unsupported nonempty inputs, and saved exports refuse appearance overrides. Accounts, public hosting, and AI providers are outside this version.
 
 ## Development
 
