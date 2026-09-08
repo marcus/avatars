@@ -1,6 +1,6 @@
 # Tactile avatar preview cards
 
-Status: ready for Sol implementation. Task: `td-988156`.
+Status: implemented and independently reviewed; awaiting coordinator landing. Task: `td-988156`.
 
 ## Assignment and ownership
 
@@ -54,10 +54,56 @@ This is presentation behavior; dragging and sound preferences do not change avat
 
 ## Handoff
 
-Source adaptation and decisions: pending.
+Source adaptation and decisions: OpenTangle commit
+`78b0a86862770b695183f589f32b85d10b93cff9` supplied the small headless Matter
+adapter, fixed stepping and throw constants, shared procedural paper voice, and
+card material reference. Marcus Pictures commit `7a5142d` supplied the
+shared-voice timing and stale-replay checks. The studio uses local Matter.js
+0.20.0 with its MIT license. `internal/studio/CARD_SYSTEM.md` records the full
+provenance. Direct DOM transforms were chosen over Three.js because the preview
+is an existing scrolling grid. Physics and sound remain presentation-only state.
 
-Implementation and browser evidence: pending.
+Implementation and browser evidence: the preview now renders keyed, matte cards
+with deterministic angles, layered cut edges, grain, focus and selected states,
+bounded drag, damped throws and collisions, an Arrange action, and a persisted
+sound toggle. The merged controller retains the Pebble Color control, Companions
+Animal control, inspector preview backgrounds, native framing, share links, and
+SVG/PNG export paths. Browser proof used an isolated data directory on
+`127.0.0.1:17447`. Desktop proof covered initial layout, collision drag without
+selection, click and Enter selection, inspector share/export actions, collection
+navigation, and Arrange. A 24-card collection scrolled in its preview panel. At
+390 pixels and thumbnail size 3, the single-column cards, rotated top corners,
+and focused outline stayed inside the preview; tap selection opened the mobile
+inspector. Sound mute survived reload. Reduced motion prevented drag/inertia and
+kept selection usable.
 
-Validation and outstanding concerns: pending.
+Validation and outstanding concerns: an unchanged manual refresh preserved the
+displaced pose exactly. A new Companions avatar created through the CLI appeared
+on the next background refresh without a visible jump or overlap. The controller
+captures the new content height during keyed sync so the matching
+`ResizeObserver` notification cannot redeal existing cards; an actual viewport
+resize still arranges them. New slots compare complete rotated footprints.
+Focused tests also cover boundary containment, fixed stepping, collision wake,
+settling without an idle frame loop, resize cancellation, shared sound timing,
+mute persistence, hidden-page silence, missing browser APIs, and stale sound
+replay. `make fmt-check vet test-race build`, 25 studio JavaScript tests, three
+TypeScript reference tests, JavaScript syntax checks, and `git diff --check`
+pass. No open implementation concern remains. The plan did not specify browser
+observer delivery ordering; dimension capture makes that timing explicit.
 
-Independent review and live delivery: pending.
+Independent review and live delivery: `/root/pebble_astra` completed a read-only
+review with no outstanding findings after controlled-frame reproductions of
+Arrange interruption and height-observer preservation. The coordinator also
+passed the merged build in an independent browser run, including four CLI
+arrivals preserving 24 displaced cards within 0.84 pixels and a clean browser
+console. Coordinator landing, local installation, and the Tailscale handoff
+remain outside this worktree assignment.
+
+## Decision log
+
+- 2026-09-07: Keep the studio's responsive thumbnail grid instead of switching
+  the whole preview to portrait mode.
+- 2026-09-07: Preserve visual card centers during keyed arrivals and reserve a
+  footprint-clear slot for each new card.
+- 2026-09-07: Interrupt an active Arrange tween at its displayed pose before a
+  pointer grab so the drag cannot be cleared by the tween's completion.
