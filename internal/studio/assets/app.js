@@ -1,3 +1,5 @@
+import { readExportView, writeExportView } from "/view.mjs";
+
 const $ = (id) => document.getElementById(id);
 const state = {
   collections: [], styles: [], formats: [], collectionId: null, avatarId: null,
@@ -68,9 +70,12 @@ function connection(connected) {
 }
 
 function routeURL(collectionId = null, avatarId = null) {
-  const params = new URLSearchParams();
+  let params = new URLSearchParams();
   if (collectionId) params.set("collection", collectionId);
-  if (avatarId) params.set("avatar", avatarId);
+  if (avatarId) {
+    params.set("avatar", avatarId);
+    params = writeExportView(params, readExportControls() || readExportView(new URLSearchParams(location.search)));
+  }
   return params.size ? `/?${params}` : "/";
 }
 
@@ -242,14 +247,14 @@ function renderInspector() {
   $("portrait-style").textContent = styleName(avatar.style);
   $("portrait-date").textContent = formatDate(avatar.created_at, true);
   $("portrait-date").title = new Date(avatar.created_at).toLocaleString();
-  $("preview-caption").textContent = `${styleName(avatar.style).toUpperCase()} / ${avatar.style === "gorey" ? "PEN & INK" : "PORTRAIT"}`;
+  $("preview-caption").textContent = `${styleName(avatar.style).toUpperCase()} / ${["gorey", "gorey-expanded"].includes(avatar.style) ? "PEN & INK" : "PORTRAIT"}`;
   $("preview").alt = `${styleName(avatar.style)} portrait ${portraitNumber(avatar)}`;
   if (lastSelected !== avatar.id) {
     $("export-error").hidden = true;
-    updatePreview();
     lastSelected = avatar.id;
     inspector.scrollTop = 0;
   }
+  updatePreview();
   for (const button of $("export-form").querySelectorAll("button[name=format]")) button.disabled = !state.formats.includes(button.value);
 }
 
@@ -259,11 +264,17 @@ function render() {
   renderInspector();
 }
 
-async function resolveRoute({ scroll = false } = {}) {
+async function resolveRoute({ scroll = false, restoreView = true } = {}) {
   const sequence = ++state.routeRequest;
   const params = new URLSearchParams(location.search);
   state.collectionId = params.get("collection");
   state.avatarId = params.get("avatar");
+  if (restoreView && state.avatarId) {
+    const view = readExportView(params);
+    $("export-form").elements.shape.value = view.shape;
+    $("export-width").value = view.width;
+    $("export-height").value = view.height;
+  }
   state.selected = null;
   try {
     if (state.collectionId && !collectionFor(state.collectionId)) {
@@ -346,7 +357,7 @@ async function refresh({ loud = false, initial = false } = {}) {
     state.loaded = true;
     connection(true);
     if ($("notice").dataset.source === "connection") $("notice").hidden = true;
-    await resolveRoute({ scroll: initial });
+    await resolveRoute({ scroll: initial, restoreView: initial });
     retryFailedImages(loud);
     if (!initial && next > previous) toast(`${next - previous} new ${next - previous === 1 ? "portrait" : "portraits"} in your library`);
     else if (loud) toast("Library is up to date");
@@ -406,14 +417,29 @@ function circleSelected() {
   return $("export-form").elements.shape.value === "circle";
 }
 
-function updatePreview() {
-  if (!state.selected) return;
+function readExportControls() {
   const width = Number($("export-width").value);
   const height = Number($("export-height").value);
-  if (![width, height].every((value) => Number.isInteger(value) && value >= 1 && value <= 2048)) return;
-  const circle = circleSelected();
+  if (![width, height].every((value) => Number.isInteger(value) && value >= 1 && value <= 2048)) return null;
+  return { shape: circleSelected() ? "circle" : "portrait", width, height };
+}
+
+function syncExportURL() {
+  const view = readExportControls();
+  if (!state.avatarId || !view) return;
+  const url = new URL(location.href);
+  url.search = writeExportView(url.searchParams, view).toString();
+  history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+}
+
+function updatePreview() {
+  const view = readExportControls();
+  if (!state.selected || !view) return;
+  const { width, height } = view;
+  const circle = view.shape === "circle";
   $("preview-stage").classList.toggle("circle", circle);
-  $("preview").src = imageURL(state.selected, "svg", { width, height, circle });
+  const source = imageURL(state.selected, "svg", { width, height, circle });
+  if ($("preview").src !== source) $("preview").src = source;
   $("export-note").textContent = circle ? "A circular portrait with a transparent surround." : "Vector detail at any size.";
 }
 
@@ -494,6 +520,7 @@ $("export-form").addEventListener("change", (event) => {
     const width = Number($("export-width").value);
     if (width >= 1 && width <= 2048) $("export-height").value = Math.min(2048, circleSelected() ? width : Math.round(width * 9 / 8));
   }
+  syncExportURL();
   updatePreview();
 });
 $("preview").addEventListener("error", () => {

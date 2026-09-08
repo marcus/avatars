@@ -8,7 +8,7 @@ import (
 )
 
 func TestEmbeddedStudioRoutes(t *testing.T) {
-	for _, target := range []string{"/", "/?collection=col_example", "/?avatar=av_example", "/app.js", "/styles.css"} {
+	for _, target := range []string{"/", "/?collection=col_example", "/?avatar=av_example&shape=circle", "/app.js", "/view.mjs", "/styles.css"} {
 		t.Run(target, func(t *testing.T) {
 			response := httptest.NewRecorder()
 			Handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, target, nil))

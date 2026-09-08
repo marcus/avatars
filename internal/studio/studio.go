@@ -24,7 +24,7 @@ func Handler() http.Handler {
 			return
 		}
 		switch r.URL.Path {
-		case "/", "/app.js", "/styles.css":
+		case "/", "/app.js", "/view.mjs", "/styles.css":
 			w.Header().Set("Cache-Control", "no-cache")
 			w.Header().Set("X-Content-Type-Options", "nosniff")
 			w.Header().Set("Referrer-Policy", "same-origin")
