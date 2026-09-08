@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#202122">
+  <title>Avatars Studio</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7V5h7l2 2h9v13H3Z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 5v6h-6M4 19v-6h6M5 8a8 8 0 0 1 13-3l2 3M4 16l2 3a8 8 0 0 0 13-3"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-5 7-2 2a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 0 2-2a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0" transform="translate(1 -1)"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-portrait" viewBox="0 0 24 24"><rect x="3" y="2" width="18" height="20" rx="2"/><circle cx="12" cy="9" r="3"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  </svg>
+
+  <header class="app-header">
+    <button class="icon-button menu-toggle" id="menu-toggle" aria-label="Show library" aria-controls="library" aria-expanded="false"><svg class="icon"><use href="#i-menu"/></svg></button>
+    <a class="brand" href="/" data-nav><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>avatars</span><span class="brand-divider">/</span><span class="brand-studio">STUDIO</span></a>
+    <span class="workspace-status" id="connection-status"><span class="status-dot"></span><span>Local workspace</span></span>
+  </header>
+
+  <div class="workspace">
+    <aside class="library" id="library" aria-label="Library">
+      <div class="sidebar-heading">LIBRARY</div>
+      <a class="library-all nav-item active" href="/" data-nav><svg class="icon"><use href="#i-grid"/></svg><span>All portraits</span><span class="count" id="library-count">0</span></a>
+      <div class="sidebar-heading collection-heading"><span>COLLECTIONS</span><button class="icon-button subtle" id="refresh" aria-label="Refresh collections" title="Refresh collections"><svg class="icon"><use href="#i-refresh"/></svg></button></div>
+      <nav id="collections" class="collection-list" aria-label="Collections"><p class="sidebar-empty">Your collections will appear here.</p></nav>
+      <div class="library-footer"><span class="style-swatch" aria-hidden="true"></span><div><strong>Made of character.</strong><span>A portrait for every possibility.</span></div></div>
+    </aside>
+    <button class="sidebar-scrim" id="sidebar-scrim" aria-label="Close library" hidden></button>
+
+    <main class="main-panel" id="main-content">
+      <form id="generate-form" class="generation-toolbar">
+        <label class="field style-field"><span>STYLE</span><select id="style" name="style" aria-label="Avatar style" disabled><option>Loading styles…</option></select></label>
+        <label class="field count-field"><span>PORTRAITS</span><select id="count" name="count"><option value="1">1</option><option value="4">4</option><option value="12" selected>12</option><option value="24">24</option></select></label>
+        <label class="field name-field"><span>COLLECTION NAME <span class="optional">OPTIONAL</span></span><input id="collection-name" name="name" aria-label="Collection name (optional)" maxlength="120" placeholder="Untitled collection" autocomplete="off"></label>
+        <button type="submit" id="generate" class="button primary" disabled><svg class="icon"><use href="#i-plus"/></svg><span>Generate</span></button>
+      </form>
+
+      <div class="notice" id="notice" role="alert" hidden><span id="notice-text"></span><button class="icon-button" id="dismiss-notice" aria-label="Dismiss message"><svg class="icon"><use href="#i-close"/></svg></button></div>
+
+      <div class="collection-toolbar">
+        <div class="collection-title"><div class="eyebrow" id="view-eyebrow">YOUR WORKSPACE</div><h1 id="view-title">All portraits</h1><p id="view-description">Loading your library…</p></div>
+        <div class="view-actions"><button class="button quiet" id="copy-collection" aria-label="Copy collection link" hidden><svg class="icon"><use href="#i-link"/></svg><span>Copy link</span></button><label class="thumbnail-control" title="Thumbnail size"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg><span class="sr-only">Thumbnail size</span><input type="range" id="thumbnail-size" min="1" max="3" step="1" value="2" aria-label="Thumbnail size"></label></div>
+      </div>
+
+      <div class="canvas-scroll" id="canvas-scroll">
+        <div class="portrait-grid" id="portrait-grid" aria-label="Portraits" aria-busy="true"></div>
+        <section class="empty-state" id="empty-state" hidden>
+          <div class="empty-art" aria-hidden="true"><span class="empty-frame rear"></span><span class="empty-frame front"><svg><use href="#i-portrait"/></svg></span><span class="empty-spark">+</span></div>
+          <span class="eyebrow">A CAST OF CHARACTERS</span><h2>Your next character starts here.</h2><p>Choose a style and generate a collection.<br>Every portrait has a character of its own.</p><button class="button primary" id="empty-generate"><svg class="icon"><use href="#i-plus"/></svg>Generate your first collection</button><span class="empty-note">Created here or by an agent. Collected in one place.</span>
+        </section>
+        <section class="load-state" id="load-state"><span class="spinner" aria-hidden="true"></span><p>Opening your studio…</p></section>
+      </div>
+      <footer class="canvas-footer"><span id="footer-count">0 portraits</span><span id="footer-hint">Select a portrait to inspect and export</span><span class="footer-format">SVG + PNG</span></footer>
+    </main>
+
+    <aside class="inspector" id="inspector" aria-label="Portrait inspector">
+      <div class="inspector-heading"><span>INSPECTOR</span><button class="icon-button subtle" id="close-inspector" aria-label="Close portrait" hidden><svg class="icon"><use href="#i-close"/></svg></button></div>
+      <div class="inspector-empty" id="inspector-empty"><svg class="icon"><use href="#i-portrait"/></svg><h2>A closer look.</h2><p>Select a portrait to see its details<br>and make it yours.</p><div class="inspector-empty-rule"></div><span>SCALABLE SVG</span><span>READY-TO-USE PNG</span></div>
+      <div id="inspector-content" class="inspector-content" hidden>
+        <div class="preview-stage" id="preview-stage"><img id="preview" alt="Selected portrait" width="224" height="252"><span class="preview-caption" id="preview-caption">GOREY / PEN & INK</span></div>
+        <div class="inspector-info"><div class="portrait-heading"><h2 id="portrait-title">Portrait</h2><button class="icon-button" id="copy-avatar" aria-label="Copy portrait link" title="Copy portrait link"><svg class="icon"><use href="#i-link"/></svg></button></div><dl class="metadata"><div><dt>Collection</dt><dd><a id="portrait-collection" href="/" data-nav></a></dd></div><div><dt>Style</dt><dd id="portrait-style"></dd></div><div><dt>Created</dt><dd id="portrait-date"></dd></div></dl></div>
+        <form id="export-form" class="export-panel"><h3>EXPORT</h3><fieldset class="shape-picker"><legend>Shape</legend><label><input type="radio" name="shape" value="portrait" checked><span><span class="shape-symbol portrait-symbol"></span>Portrait</span></label><label><input type="radio" name="shape" value="circle"><span><span class="shape-symbol circle-symbol"></span>Circle</span></label></fieldset><div class="dimension-label"><span>Dimensions</span><span>PX</span></div><div class="dimensions"><label><span class="sr-only">Export width</span><span class="dimension-prefix">W</span><input id="export-width" type="number" inputmode="numeric" min="1" max="2048" step="1" value="256" required></label><span class="dimension-cross">×</span><label><span class="sr-only">Export height</span><span class="dimension-prefix">H</span><input id="export-height" type="number" inputmode="numeric" min="1" max="2048" step="1" value="288" required></label></div><p class="export-note" id="export-note">Vector detail at any size.</p><div class="export-buttons"><button class="button export-button" type="submit" value="svg" name="format"><svg class="icon"><use href="#i-download"/></svg>SVG</button><button class="button export-button" type="submit" value="png" name="format"><svg class="icon"><use href="#i-download"/></svg>PNG</button></div><p class="export-error" id="export-error" role="alert" hidden></p></form>
+      </div>
+    </aside>
+  </div>
+  <div class="toast" id="toast" role="status" hidden><svg class="icon"><use href="#i-check"/></svg><span id="toast-text"></span></div>
+  <noscript><div class="no-script">Enable JavaScript to use Avatars Studio. The CLI and HTTP API are also available.</div></noscript>
+</body>
+</html>
