@@ -7,6 +7,7 @@
   <title>Avatars Studio</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/card-grid.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
@@ -22,6 +23,9 @@
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-arrange" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10H4zm12-1a5 5 0 0 1 0 6m2-9a9 9 0 0 1 0 12"/></symbol>
+    <symbol id="i-sound-off" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10H4zm12-1a5 5 0 0 1 .7 5.1M3 3l18 18"/></symbol>
   </svg>
 
   <header class="app-header">
@@ -54,7 +58,7 @@
 
       <div class="collection-toolbar">
         <div class="collection-title"><div class="eyebrow" id="view-eyebrow">YOUR WORKSPACE</div><h1 id="view-title">All portraits</h1><p id="view-description">Loading your library…</p></div>
-        <div class="view-actions"><button class="button quiet" id="copy-collection" aria-label="Copy collection link" hidden><svg class="icon"><use href="#i-link"/></svg><span>Copy link</span></button><label class="thumbnail-control" title="Thumbnail size"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg><span class="sr-only">Thumbnail size</span><input type="range" id="thumbnail-size" min="1" max="3" step="1" value="2" aria-label="Thumbnail size"></label></div>
+        <div class="view-actions"><button class="button quiet" id="copy-collection" aria-label="Copy collection link" hidden><svg class="icon"><use href="#i-link"/></svg><span>Copy link</span></button><button class="button quiet card-grid-control" id="arrange-cards" type="button" aria-label="Arrange portrait cards"><svg class="icon"><use href="#i-arrange"/></svg><span>Arrange</span></button><button class="button quiet card-grid-control" id="toggle-card-sound" type="button" aria-label="Turn card sounds off" aria-pressed="true"><svg class="icon"><use href="#i-sound"/></svg><span>Sound</span></button><label class="thumbnail-control" title="Thumbnail size"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg><span class="sr-only">Thumbnail size</span><input type="range" id="thumbnail-size" min="1" max="3" step="1" value="2" aria-label="Thumbnail size"></label></div>
       </div>
 
       <div class="canvas-scroll" id="canvas-scroll">
