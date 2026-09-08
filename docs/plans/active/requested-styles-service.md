@@ -1,6 +1,6 @@
 # Requested styles and avatar delivery
 
-Status: Part 1 is in implementation under `td-e3efc3`, with Avatars lifecycle in `td-5ed8eb` and comms-web integration in `td-3543ba`. Later phases remain proposed. This is the controlling plan for the service capability; original planning is tracked with `td-58936f`.
+Status: Part 1 is implemented, independently reviewed, and installed locally under `td-e3efc3`, with Avatars lifecycle in `td-5ed8eb` and comms-web integration in `td-3543ba`. Later phases remain proposed. This is the controlling plan for the service capability; original planning is tracked with `td-58936f`.
 
 ## Outcome
 
@@ -10,19 +10,27 @@ Start with an on-demand local service, then one local agent worker. Keep the exi
 
 ## On-demand service and the first consuming app
 
-Part 1 delivers local service startup on demand, with comms-web as the first consumer. This is a moderate Avatars lifecycle feature plus a small consumer integration; it does not require the agent worker or Google authentication.
+Part 1 is delivered. `avatars service ensure|status|stop --json` manages an on-demand local service without requiring the agent worker or authentication phases. The process and locking patterns are adapted from Comms with source attribution. Offline `avatars render` remains available.
 
-Comms already implements this pattern in `internal/cli/lifecycle.go`, `lifecycle_lock_unix.go`, `process_unix.go`, and `internal/service/lifecycle.go` under `/Users/marcus/code/comms`. The installed v1.3.0 service reports launch mode `auto`. Reuse its process, lock, readiness, and lifecycle test patterns with source attribution. Adapt the application-specific handshake and storage assumptions: Avatars uses JSONL and supports useful process-local rendering, so it need not inherit Comms' SQLite owner model or turn every CLI command into an HTTP call.
+`ensure` returns a compatible service or takes an endpoint-specific lifecycle lock, rechecks ownership and library identity, starts one detached child, and checks HTTP plus the private control socket. Its result includes `endpoint`, `pid`, `instance_id`, `launch_mode`, `version`, `commit`, `data_dir`, `lifecycle_socket`, and `log_path`. `status` never starts a service. `stop` requires the matching auto-started instance and refuses foreign, foreground, or supervised ownership. Shutdown is available only through a mode-0600 Unix socket, not the HTTP API.
 
-Use `avatars service ensure --json` as the noninteractive entrypoint: return a compatible live service's endpoint, or acquire a per-instance lifecycle lock, recheck, start one detached child, and wait for a real readiness handshake. Add inspect-only status, explicit stop, a startup timeout, actionable log paths, and an auto-start opt-out. Keep lifecycle control on a restricted local transport, such as a mode-0600 Unix socket, with optional loopback HTTP for the studio and existing clients. Never expose shutdown through Tailscale or the future public API. Do not replace foreground or supervisor-owned processes; recognize port conflicts and incompatible services. Automatic upgrade handoff can follow the startup proof.
+Configure the loopback address with `--listen` or `AVATARS_LISTEN`, the trusted studio proxy with `--public-url` or `AVATARS_PUBLIC_URL`, and the startup deadline with `--timeout`. `--no-auto-start` or `AVATARS_AUTO_START=0` disables startup. The existing `--data-dir` / `AVATARS_DATA_DIR` selects the library; lifecycle paths are partitioned by endpoint under the runtime/cache directory. Automatic upgrade handoff remains deferred.
 
-In `/Users/marcus/code/comms-web`, add an Avatars server adapter and same-origin image route. On an uncached image request it ensures the local service is ready, then calls the existing render API with the agent ID as seed and the effective style recipe. Gorey is the initial default. Retain the existing TypeScript generator as the bounded failure fallback for clients without Avatars installed; future style selection uses Avatars only. The browser loads this route using an image element, preserving the current small circular portraits and larger inspector crop. The comms-web server owns startup; a browser on Marcus's laptop must not be pointed at its own localhost. A stopped HTTP server cannot start itself merely because an image URL was requested.
+Comms-web calls `avatars service ensure --json` on the server and renders through the Avatars HTTP API. The browser uses same-origin `/api/avatars/image`; it never targets the laptop's localhost. `AVATARS_BIN` selects the executable. An explicit `AVATARS_ENDPOINT` uses that service without spawning locally. The adapter coalesces startup and identical renders, caches up to 256 images by full recipe and generator version/commit, refreshes service metadata after 30 seconds, and uses bounded timeouts with a two-second failure cooldown. The original TypeScript portrait generator remains the fallback for an unavailable installation; Avatars is the only selectable provider.
 
-Coalesce cold-start requests and cache image bytes by the full render recipe and generator build/version. Use a bounded failure fallback so missing Avatars does not block the inbox. Configure the local executable and endpoint server-side; remote endpoints never authorize spawning a process on the caller's machine. Keep existing offline `avatars render` behavior. Reuse the current loopback/Tailscale studio route when deliberately migrating its owned foreground process; never alter other services' routes.
+The header offers a compact default picker; the reader portrait opens the scoped picker. Both flyouts escape pane clipping and show every style and its advertised appearance inputs, including random Pebble colors and mixed Companions animals. Choices save immediately and invalidate portraits in the current view. The UI has no collection concepts.
 
-Comms-web exposes compact avatar controls with a detail flyout. Discover every supported style and its finite appearance inputs from the Avatars HTTP catalog; expose no collection concepts. Persist one shared default and explicit agent/session recipe overrides through a narrow local store and HTTP API. Resolve session override, then agent override, then default. Session keys include agent identity and the actual session reference; historical messages use their recorded author context. Changing the default updates all inheriting avatars immediately, while clearing an override restores inheritance. The same mutation API is available to headless callers.
+Comms-web owns an append-only JSONL preference store at `~/.local/state/comms-web/avatar-preferences.jsonl`, configurable through `COMMS_WEB_AVATAR_PREFERENCES`. Its shared resolution order is session override, agent override, shared default, then Gorey. `GET/PUT/DELETE /api/avatars` exposes the same choices to headless callers. Session keys include agent identity and the recorded session reference; historical messages never borrow a newer session. The session control appears only when Comms supplies a `session_ref`. The current live messages have no such references, so session precedence was proved through the API and focused tests. Clearing an override restores inheritance; changing the default leaves explicit overrides intact.
 
-Prove simultaneous first image requests start one service, a second request reuses it, denied access and startup failures are clear, status does not start it, unrelated/foreground services are untouched, and comms-web viewed remotely shows the same seeded portraits. Implement the Avatars lifecycle first; switch comms-web in a separately verified change after its current unrelated edits are reconciled.
+### Part 1 verification and local installation
+
+- Avatars implementation was independently reviewed at `a3568d7` and landed/installed from `4963e32`. `make fmt-check vet test test-race build` passed, with focused CLI/lifecycle race and vet checks after the final ownership patch. Linux and macOS CI passed for the landed implementation.
+- Twelve concurrent real CLI callers returned one PID and instance; the socket was mode 0600. Status/opt-out, render, reuse, and successful stop followed by stopped status were verified on isolated port 17447.
+- Comms-web is on `main` at `b41bc7a`. All 16 Node tests pass, `pnpm check` reports no errors or warnings, and the production build succeeds. The final flyout adjustment received independent review and browser verification.
+- Twenty image requests through an isolated comms-web server used the installed on-demand service without fallback. The missing-install proof returned the legacy SVG in 10 ms, then 1 ms during the failure cooldown. The server image matched the direct Avatars SVG bytes.
+- API proof covered session/agent/default precedence, same session reference on different agents, historical-session isolation, default changes preserving overrides, and clearing overrides. Browser proof covered live default and agent changes, six style previews, circular crops, and unclipped global/profile flyouts. The production default was restored to Gorey after verification.
+- The verified tailnet URLs remain [Avatars Studio](https://aerie.tail53fd54.ts.net:7447) and [Comms Web](https://aerie.tail53fd54.ts.net:9111). The old studio foreground process was explicitly migrated to the managed service. Comms-web's existing launchd service carries `AVATARS_PUBLIC_URL` so future cold starts preserve the studio proxy. Other Tailscale routes were not changed. Both deployed services survived the user-reported tmux crash.
+- Machine-local rollback and proof artifacts are under `~/.local/state/avatars/rollbacks/20260907-220801-part1/`: prior binary path, launcher, production build archive, original untracked comms-web file, and JSON proof results. The pre-existing comms-web state-module refactor was preserved byte-for-byte.
 
 ## Decisions and proposals
 
@@ -64,7 +72,7 @@ Persist submission before dispatch. Use one active attempt per request, attempt 
 
 ## Saving and loading styles
 
-Today, `pkg/avatar/engine.go` registers five compiled generators, inputs are typed `Color` and `Animal` fields, and saved recipes do not pin an implementation version. These are the seams to extend, not capabilities already present.
+Today, `pkg/avatar/engine.go` registers six compiled generators, inputs are typed `Color` and `Animal` fields, and saved recipes do not pin an implementation version. These are the seams to extend, not capabilities already present.
 
 A bundle contains a manifest (ID, immutable version, SDK/protocol version, native dimensions, input descriptors and digests), source, a build artifact for the worker platform, fixtures, preview images, check results, and reference provenance. Store requests and accepted bundles under the application data directory through `RequestStore`, `StyleCatalog`, and artifact-store interfaces. Agents can write their attempt directory; only the service can promote a candidate into the catalog.
 
@@ -104,7 +112,7 @@ Use one asset-store interface for immutable generated exports, initially local f
 
 ## Work sequence and evidence
 
-1. **On-demand local service:** adapt Comms' lifecycle, prove cold-start contention and safe ownership, then switch comms-web's portrait component through a server-side Avatars adapter. Preserve seeded appearance, framing and remote-browser access.
+1. **On-demand local service — complete:** local lifecycle and comms-web HTTP integration are installed and verified; see Part 1 evidence above.
 2. **Bundle proof:** package one existing style, load it through the proposed adapter, add a version, and prove existing saved SVG/PNG output remains stable. Confirm catalog reload and unsupported-bundle errors before teaching agents the format.
 3. **Local request steel thread:** owner authentication, durable request/attempt core, one acpx worker, CLI/API/studio progress, preview review, and explicit activation. Prove a fresh style can be created from the committed guide and activated without editing or rebuilding the app. Exercise cancellation, denied permissions, failed checks, and restart recovery.
 4. **Invited access:** confirm the Google project, implement OIDC and scoped script credentials, invitations and owner review. Prove authorization parity and worker containment before letting invited prompts dispatch.
@@ -114,4 +122,6 @@ Before agent-request implementation, resolve the owner bootstrap choice (local s
 
 ## Handoff
 
-Part 1 implementation is split between Sol agents in isolated Avatars and comms-web worktrees. The integration owner handles independent review, broad checks, local installation, existing-process migration, and browser proof through the verified Tailscale routes. Preserve comms-web's pre-existing local commit and untracked state-module refactor. Do not begin bundle, worker, authentication, or hosted-delivery phases as part of this change. Update this section with verified contracts and evidence before handoff.
+Part 1 is complete under `td-e3efc3`, `td-5ed8eb`, and `td-3543ba`. Both repositories are landed on `main`; Avatars is installed locally and comms-web is served by its existing launchd service. Ten pre-existing clean merged worktrees were removed using pinned Sidecar deletion plans. Temporary proof services are stopped and implementation worktrees are cleaned up after landing.
+
+Continue with Part 2, the bundle proof, only when requested. Bundle loading, agent workers, authentication, invited access, and hosted delivery remain proposed. Keep this plan active while those later phases remain outstanding.
