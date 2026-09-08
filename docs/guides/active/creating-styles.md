@@ -43,6 +43,8 @@ For each new input:
 
 Use a narrow typed input and a small adapter extension when required. A schema engine, plugin loader, or arbitrary options map is unnecessary for one enum. Keep the existing input-free `Generator` and `Engine.Render` usable where practical; put optional input support behind a documented seam. The core must not switch on a style ID to implement that style's rules.
 
+The current Go seam uses `Style.Inputs` for discovery, `Engine.ResolveInputs` for shared defaulting and validation, and the optional `InputGenerator.GenerateWithInputs` method for rendering. Callers with an input use `Engine.RenderWithInputs`; ordinary generators and callers continue to use `Generate` and `Engine.Render`. Add another typed descriptor only when a shipped style needs it.
+
 ## Build and prove one journey
 
 First connect one seed and one input value through native artwork, rendering, saving, and re-export. Then connect CLI, HTTP, and the studio. Expand the visual palette after that path works.
@@ -55,6 +57,7 @@ Meaningful evidence includes:
 - Existing style fixtures and records still render unchanged.
 - PNG dimensions, transparency, and circle clipping are correct; SVG is well formed and contains no seed text or external resources.
 - The studio shows only supported controls, creates the requested result, and can reopen, export, and share it with the selected crop and dimensions.
+- A background library refresh preserves a manual input choice, while opening a saved avatar or collection restores its resolved recipe.
 
 Do not duplicate every assertion across all surfaces. Cover domain rules at the core and add focused adapter and real-process parity checks.
 

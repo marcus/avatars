@@ -1,10 +1,11 @@
-import { readExportView, writeExportView } from "/view.mjs";
+import { colorChoiceForRecipe, colorInputFor, colorValueForStyle, readExportView, writeExportView } from "/view.mjs";
 
 const $ = (id) => document.getElementById(id);
 const state = {
   collections: [], styles: [], formats: [], collectionId: null, avatarId: null,
   selected: null, loaded: false, generating: false, refreshing: false,
   librarySignature: "", gridSignature: "", request: 0, routeRequest: 0,
+  colorByStyle: {},
 };
 let toastTimer;
 let lastSelected = null;
@@ -245,6 +246,9 @@ function renderInspector() {
   $("portrait-collection").textContent = collection?.name || "View collection";
   $("portrait-collection").href = routeURL(avatar.collection_id);
   $("portrait-style").textContent = styleName(avatar.style);
+  const savedColor = colorChoiceForRecipe(state.styles, avatar);
+  $("portrait-color-row").hidden = !savedColor;
+  $("portrait-color").textContent = savedColor?.label || "";
   $("portrait-date").textContent = formatDate(avatar.created_at, true);
   $("portrait-date").title = new Date(avatar.created_at).toLocaleString();
   $("preview-caption").textContent = `${styleName(avatar.style).toUpperCase()} / ${["gorey", "gorey-expanded"].includes(avatar.style) ? "PEN & INK" : "PORTRAIT"}`;
@@ -300,6 +304,9 @@ async function resolveRoute({ scroll = false, restoreView = true } = {}) {
   if (restoreView) {
     const style = state.selected?.style || collectionFor(state.collectionId)?.style;
     if (state.styles.some((item) => item.id === style)) $("style").value = style;
+    const recipe = state.selected || collectionFor(state.collectionId)?.avatars[0];
+    const recipeColor = recipe ? colorValueForStyle(state.styles, style, recipe.inputs?.color) : undefined;
+    renderColorInput(recipeColor);
   }
   render();
   if (scroll && state.avatarId) [...$("portrait-grid").children].find((card) => card.dataset.avatar === state.avatarId)?.scrollIntoView({ block: "nearest" });
@@ -326,7 +333,35 @@ function renderStyles() {
   }));
   if (state.styles.some((style) => style.id === previous)) $("style").value = previous;
   $("style").disabled = !state.styles.length;
+  renderColorInput();
   setGenerating(state.generating);
+}
+
+function renderColorInput(preferred) {
+  const styleId = $("style").value;
+  const input = colorInputFor(state.styles, styleId);
+  const field = $("color-field");
+  field.hidden = !input;
+  if (!input) {
+    $("color").replaceChildren();
+    $("color-swatch").style.removeProperty("--swatch");
+    return;
+  }
+  $("color").replaceChildren(...input.values.map((choice) => {
+    const option = element("option", "", choice.label);
+    option.value = choice.value;
+    return option;
+  }));
+  const selected = colorValueForStyle(state.styles, styleId, preferred || state.colorByStyle[styleId]);
+  $("color").value = selected;
+  state.colorByStyle[styleId] = selected;
+  updateColorSwatch();
+}
+
+function updateColorSwatch() {
+  const input = colorInputFor(state.styles, $("style").value);
+  const choice = input?.values.find((item) => item.value === $("color").value);
+  if (choice) $("color-swatch").style.setProperty("--swatch", choice.swatch);
 }
 
 function setGenerating(generating) {
@@ -387,6 +422,8 @@ async function generate(event) {
   $("notice").hidden = true;
   ++state.request; // An earlier library read must not replace this new collection.
   const body = { style: $("style").value, count: Number($("count").value) };
+  const color = colorValueForStyle(state.styles, body.style, $("color").value);
+  if (color) body.inputs = { color };
   const name = $("collection-name").value.trim();
   if (name) body.name = name;
   try {
@@ -505,6 +542,11 @@ $("portrait-grid").addEventListener("keydown", (event) => {
   cards[Math.min(cards.length - 1, Math.max(0, next))]?.focus();
 });
 $("generate-form").addEventListener("submit", generate);
+$("style").addEventListener("change", () => renderColorInput());
+$("color").addEventListener("change", () => {
+  state.colorByStyle[$("style").value] = $("color").value;
+  updateColorSwatch();
+});
 $("empty-generate").addEventListener("click", generate);
 $("refresh").addEventListener("click", () => refresh({ loud: true }));
 $("dismiss-notice").addEventListener("click", () => { $("notice").hidden = true; });

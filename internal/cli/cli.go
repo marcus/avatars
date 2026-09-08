@@ -209,7 +209,7 @@ func (a *app) help(name string) error {
 	return nil
 }
 func (a *app) commonHelp() {
-	fmt.Fprint(a.out, "Global flags: --json, --data-dir PATH, --url URL, -h/--help\nDefaults: SVG; native 64x72; random saved generation; style gorey.\n--size N is square; --size WxH sets both dimensions (1..2048).\n--out FILE creates a new file; --out - writes image bytes to stdout.\n")
+	fmt.Fprint(a.out, "Global flags: --json, --data-dir PATH, --url URL, -h/--help\nDefaults: SVG; native size varies by style; random saved generation; style gorey.\n--size N is square; --size WxH sets both dimensions (1..2048).\n--out FILE creates a new file; --out - writes image bytes to stdout.\n")
 }
 func (a *app) emit(v any) error {
 	e := json.NewEncoder(a.out)
@@ -280,7 +280,7 @@ func parse(f *flag.FlagSet, args []string) error {
 
 func takesValue(name string) bool {
 	switch name {
-	case "--seed", "-s", "--name", "--count", "--style", "--out", "-o", "--format", "-f", "--size", "--listen", "--public-url":
+	case "--seed", "-s", "--name", "--count", "--style", "--color", "--out", "-o", "--format", "-f", "--size", "--listen", "--public-url":
 		return true
 	}
 	return false

@@ -1,6 +1,6 @@
 # Pebble: a fresh-agent style authoring trial
 
-Status: ready for Sol implementation. Task: `td-bb42fd`.
+Status: implemented and independently reviewed; live on the private studio. Task: `td-bb42fd`.
 
 ## Assignment and ownership
 
@@ -79,10 +79,12 @@ Independent review checks this acceptance contract; live sample collections foll
 
 ## Handoff
 
-Implementation: pending.
+Implementation: complete on branch `pebble-style`. Pebble now renders original deterministic 64 × 64 SVG geometry with one softly irregular body, exactly two eyes, and all 15 specified colors. A typed core input descriptor and optional input-aware generator seam provide discovery, defaulting, validation, rendering, saved recipes, CLI/HTTP access, and input-free Go compatibility. The studio shows the API-provided Color control only for Pebble, sends resolved recipes, restores saved colors, preserves manual choices across refresh and style switching, and displays saved color in the inspector. README, changelog, agent discovery, API documentation, this authoring guide, and the brief template are updated. `scripts/pebble-contact-sheet.sh` reproduces the visual proof.
 
-Evidence: pending.
+Evidence: focused and full automated checks pass. The final required commands were `make fmt-check vet test-race build`, `node --test internal/studio/*.test.mjs port/agent-portrait.test.ts`, and `git diff --check`. Gated `naturally scan` runs passed for every changed human-facing Markdown file. Local and HTTP render commands produced identical fixed-seed Sage SVG and PNG files; SHA-256 was `2a6e9ebf4e98dcfbdf7404a840e6d6c8adef4ad46d914ad4a52dfffce4f311ff` for SVG and `cd29ca7a44e31b73937d38bb5b595a472067d58f9f9793124dfaca280281be99` for PNG.
 
-Guidance gaps and decisions made without extra instructions: pending.
+Visual proof is at `/tmp/avatars-pebble-proof.woh8vU/index.html`, with derived inspection sheets at `palette-sheet.png` and `variety-sheet.png`. It contains all 15 colors for `palette-proof`, 12 Walnut seeds, 16/24/32/64/256 pixel exports, and a 256-pixel circle export. Inspection found good light/dark eye contrast, distinct eyes through 24 pixels and still readable at 16 pixels, comfortable canvas and circle margins, and quiet silhouette/gaze variation without extra features. Real browser proof used an isolated library at `/tmp/avatars-pebble-studio.oLYHD1` and a free loopback port. It covered default Walnut discovery, manual Sage preservation after refresh and style switching, Coral restoration from a saved collection and avatar, studio generation, inspector metadata, SVG/PNG downloads, direct-link circle and dimension restoration, and desktop plus 390-pixel layouts. The first narrow screenshot exposed a clipped Generate button; the responsive grid was corrected and visually rechecked at 390 pixels.
 
-Independent review and live delivery: pending.
+Guidance gaps and decisions made without extra instructions: no product clarification was needed. The task was already `in_progress` under the coordinator's td session, so the independent `avatars-pebble-sol` context could not start it; that context was still used successfully for implementation logs. Eye colors are stored beside body fills in the shared core palette but omitted from public discovery because callers need only the selectable value, label, and swatch. An empty color value resolves like omission; any nonempty unknown value is rejected.
+
+Independent review and live delivery: the coordinator reviewed the code, contact sheets, and real browser journeys. Independent CLI/HTTP checks covered all 15 palettes in SVG and PNG, persistence, invalid requests before writes, defaults, and 36 unchanged exports from the original styles. Desktop and 390-pixel browser checks passed for generation, saved-color restoration, manual choices surviving refresh, and circle/dimension links. The implementation was merged to main and installed at commit `63ccbbe`; the private Tailscale studio serves the color metadata and a generated Walnut collection. The initial Sol-only documentation trial is complete without extra product guidance. The user subsequently requested more personality; that separate Astra refinement is tracked in `pebble-uplift.md` and may revise this pre-release artwork while retaining its input contract.

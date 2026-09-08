@@ -1,6 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readExportView, writeExportView } from "./assets/view.mjs";
+import { colorChoiceForRecipe, colorInputFor, colorValueForStyle, readExportView, writeExportView } from "./assets/view.mjs";
+
+const styles = [
+  { id: "gorey", name: "Gorey" },
+  { id: "pebble", name: "Pebble", inputs: { color: { default: "walnut", values: [
+    { value: "walnut", label: "Walnut", swatch: "#92744F" },
+    { value: "sage", label: "Sage", swatch: "#A5B59A" },
+  ] } } },
+];
 
 test("links without a shape and invalid shapes open a portrait", () => {
   for (const query of ["", "shape=square", "shape=CIRCLE"]) {
@@ -31,4 +39,18 @@ test("copied views round-trip both shapes and preserve collection context", () =
     assert.deepEqual(readExportView(share), view);
   }
   assert.equal(original.has("shape"), false, "serializing a view does not mutate its source parameters");
+});
+
+test("style color metadata resolves defaults without leaking into other styles", () => {
+  assert.equal(colorInputFor(styles, "gorey"), null);
+  assert.equal(colorValueForStyle(styles, "gorey", "sage"), null);
+  assert.equal(colorValueForStyle(styles, "pebble", ""), "walnut");
+  assert.equal(colorValueForStyle(styles, "pebble", "sage"), "sage");
+  assert.equal(colorValueForStyle(styles, "pebble", "missing"), "walnut");
+});
+
+test("saved colors restore a readable inspector choice, including old default recipes", () => {
+  assert.deepEqual(colorChoiceForRecipe(styles, { style: "pebble", inputs: { color: "sage" } }), { value: "sage", label: "Sage", swatch: "#A5B59A" });
+  assert.deepEqual(colorChoiceForRecipe(styles, { style: "pebble" }), { value: "walnut", label: "Walnut", swatch: "#92744F" });
+  assert.equal(colorChoiceForRecipe(styles, { style: "gorey", inputs: { color: "sage" } }), null);
 });
