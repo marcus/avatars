@@ -36,3 +36,9 @@ export function colorChoiceForRecipe(styles, avatar) {
   const value = colorValueForStyle(styles, avatar.style, avatar.inputs?.color);
   return input.values.find((choice) => choice.value === value) || null;
 }
+
+// Preview surrounds are presentation state, never renderer inputs.
+export function readPreviewBackground(params) {
+  const value = params.get("background");
+  return ["dark", "light", "gray"].includes(value) ? value : "dark";
+}

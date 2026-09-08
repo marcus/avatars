@@ -147,3 +147,5 @@ make use-homebrew        # return to an installed released formula
 Release and Homebrew packaging are prepared in `scripts/` and `packaging/`; this development version has no published release. Reference TypeScript and Svelte code lives in [port/](port/README.md).
 
 MIT License. See [LICENSE](LICENSE).
+
+The inspector offers Dark, Light, and Gray preview backgrounds. Copied portrait links retain the selected surround, shape, and dimensions. Background choices affect the preview only; SVG and PNG exports keep their original transparency.

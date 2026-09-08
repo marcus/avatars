@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { colorChoiceForRecipe, colorInputFor, colorValueForStyle, readExportView, writeExportView } from "./assets/view.mjs";
+import { colorChoiceForRecipe, colorInputFor, colorValueForStyle, readExportView, readPreviewBackground, writeExportView } from "./assets/view.mjs";
 
 const styles = [
   { id: "gorey", name: "Gorey" },
@@ -53,4 +53,15 @@ test("saved colors restore a readable inspector choice, including old default re
   assert.deepEqual(colorChoiceForRecipe(styles, { style: "pebble", inputs: { color: "sage" } }), { value: "sage", label: "Sage", swatch: "#A5B59A" });
   assert.deepEqual(colorChoiceForRecipe(styles, { style: "pebble" }), { value: "walnut", label: "Walnut", swatch: "#92744F" });
   assert.equal(colorChoiceForRecipe(styles, { style: "gorey", inputs: { color: "sage" } }), null);
+});
+
+test("preview background links accept named surrounds and default safely", () => {
+  for (const background of ["dark", "light", "gray"]) {
+    const params = writeExportView(new URLSearchParams({ background }), { shape: "circle", width: 512, height: 512 });
+    assert.equal(readPreviewBackground(params), background);
+    assert.deepEqual(readExportView(params), { shape: "circle", width: 512, height: 512 });
+  }
+  for (const query of ["", "background=red", "background=LIGHT"]) {
+    assert.equal(readPreviewBackground(new URLSearchParams(query)), "dark");
+  }
 });
