@@ -13,6 +13,7 @@ import (
 
 	"github.com/marcus/avatars/internal/discovery"
 	"github.com/marcus/avatars/internal/httpapi"
+	"github.com/marcus/avatars/internal/lifecycle"
 	"github.com/marcus/avatars/internal/studio"
 )
 
@@ -24,6 +25,8 @@ func (a *app) serve(ctx context.Context, args []string) error {
 	address := f.String("listen", discovery.DefaultAddress, "listen address")
 	open := f.Bool("open", false, "open studio")
 	publicURL := f.String("public-url", os.Getenv("AVATARS_PUBLIC_URL"), "trusted HTTPS proxy origin")
+	launchMode := f.String("launch-mode", string(lifecycle.Foreground), "service owner: foreground, auto, or supervised")
+	lifecycleSocket := f.String("lifecycle-socket", "", "restricted local lifecycle socket")
 	if e := parse(f, args); e != nil {
 		return e
 	}
@@ -35,6 +38,13 @@ func (a *app) serve(ctx context.Context, args []string) error {
 		return bad("--public-url: " + err.Error())
 	}
 	*publicURL = normalized
+	mode := lifecycle.LaunchMode(*launchMode)
+	if mode != lifecycle.Auto && mode != lifecycle.Foreground && mode != lifecycle.Supervised {
+		return bad("--launch-mode must be foreground, auto, or supervised")
+	}
+	if mode == lifecycle.Auto && *lifecycleSocket == "" {
+		return bad("--lifecycle-socket is required for auto launch mode")
+	}
 	host, _, e := net.SplitHostPort(*address)
 	if e != nil {
 		return bad("--listen must be a loopback host:port")
@@ -54,7 +64,16 @@ func (a *app) serve(ctx context.Context, args []string) error {
 	if e != nil {
 		return e
 	}
-	server := &http.Server{Handler: httpapi.NewWithConfig(a.service, a.engine, studio.Handler(), httpapi.Config{PublicURL: *publicURL}), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
+	status := lifecycle.NewStatus(mode, "http://"+listener.Addr().String(), a.dataDir)
+	var controller *lifecycle.Controller
+	if *lifecycleSocket != "" {
+		controller = lifecycle.NewController(status)
+		if err := controller.Start(ctx, *lifecycleSocket); err != nil {
+			_ = listener.Close()
+			return fmt.Errorf("start lifecycle control: %w", err)
+		}
+	}
+	server := &http.Server{Handler: httpapi.NewWithConfig(a.service, a.engine, studio.Handler(), httpapi.Config{PublicURL: *publicURL, Status: &status}), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
 	studioURL := "http://" + listener.Addr().String()
 	if *publicURL != "" {
 		studioURL = *publicURL
@@ -74,6 +93,17 @@ func (a *app) serve(ctx context.Context, args []string) error {
 		}
 	}
 	done := make(chan struct{})
+	if controller != nil {
+		go func() {
+			select {
+			case <-controller.Done():
+				stop, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				defer cancel()
+				_ = server.Shutdown(stop)
+			case <-done:
+			}
+		}()
+	}
 	go func() {
 		select {
 		case <-ctx.Done():

@@ -16,6 +16,7 @@ import (
 	"github.com/marcus/avatars/internal/buildinfo"
 	"github.com/marcus/avatars/internal/discovery"
 	"github.com/marcus/avatars/internal/library"
+	"github.com/marcus/avatars/internal/lifecycle"
 	"github.com/marcus/avatars/pkg/avatar"
 )
 
@@ -26,7 +27,10 @@ type API struct {
 
 // Config declares the external origin of a trusted proxy such as Tailscale Serve.
 // The listener remains loopback-only; forwarded headers never grant access.
-type Config struct{ PublicURL string }
+type Config struct {
+	PublicURL string
+	Status    *lifecycle.Status
+}
 
 func New(service *library.Service, engine *avatar.Engine, studio http.Handler) http.Handler {
 	return NewWithConfig(service, engine, studio, Config{})
@@ -38,7 +42,11 @@ func NewWithConfig(service *library.Service, engine *avatar.Engine, studio http.
 	a := &API{service, engine}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/v1/health", func(w http.ResponseWriter, r *http.Request) {
-		JSON(w, 200, map[string]string{"service": "avatars", "api_version": "v1", "version": buildinfo.Version, "commit": buildinfo.Commit})
+		if config.Status != nil {
+			JSON(w, 200, config.Status)
+			return
+		}
+		JSON(w, 200, lifecycle.Status{Service: "avatars", APIVersion: "v1", Version: buildinfo.Version, Commit: buildinfo.Commit})
 	})
 	mux.HandleFunc("GET /api/v1/styles", func(w http.ResponseWriter, r *http.Request) {
 		JSON(w, 200, map[string]any{"styles": engine.Styles(), "formats": engine.Formats()})

@@ -184,6 +184,8 @@ func (a *app) run(ctx context.Context, args []string) error {
 		return a.show(ctx, tail[0])
 	case "serve":
 		return a.serve(ctx, tail)
+	case "service":
+		return a.serviceCommand(ctx, tail)
 	default:
 		return bad("unknown command " + strconv.Quote(command) + "; run avatars help")
 	}
