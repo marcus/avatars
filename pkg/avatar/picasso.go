@@ -11,7 +11,7 @@ import (
 type Picasso struct{}
 
 func (Picasso) Style() Style {
-	return Style{ID: "picasso", Name: "Picasso", Description: "Expressive portraits in bold ink, muted color, and asymmetric planes."}
+	return Style{NativeWidth: 64, NativeHeight: 72, ID: "picasso", Name: "Picasso", Description: "Expressive portraits in bold ink, muted color, and asymmetric planes."}
 }
 
 func (Picasso) Generate(ctx context.Context, seed string) (Artwork, error) {

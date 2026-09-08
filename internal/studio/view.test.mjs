@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { colorChoiceForRecipe, colorInputFor, colorValueForStyle, readExportView, writeExportView } from "./assets/view.mjs";
+import { generationInputsForStyle, inputChoiceForRecipe, inputFor, inputValueForStyle, readExportView, writeExportView } from "./assets/view.mjs";
 
 const styles = [
+  { id: "companions", native_width: 128, native_height: 128, inputs: { animal: { default: "dog", values: [
+    { value: "dog", label: "Dogs" }, { value: "cat", label: "Cats" },
+  ] } } },
   { id: "gorey", name: "Gorey" },
   { id: "pebble", name: "Pebble", inputs: { color: { default: "walnut", values: [
     { value: "walnut", label: "Walnut", swatch: "#92744F" },
@@ -42,15 +45,33 @@ test("copied views round-trip both shapes and preserve collection context", () =
 });
 
 test("style color metadata resolves defaults without leaking into other styles", () => {
-  assert.equal(colorInputFor(styles, "gorey"), null);
-  assert.equal(colorValueForStyle(styles, "gorey", "sage"), null);
-  assert.equal(colorValueForStyle(styles, "pebble", ""), "walnut");
-  assert.equal(colorValueForStyle(styles, "pebble", "sage"), "sage");
-  assert.equal(colorValueForStyle(styles, "pebble", "missing"), "walnut");
+  assert.equal(inputFor(styles, "gorey", "color"), null);
+  assert.equal(inputValueForStyle(styles, "gorey", "color", "sage"), null);
+  assert.equal(inputValueForStyle(styles, "pebble", "color", ""), "walnut");
+  assert.equal(inputValueForStyle(styles, "pebble", "color", "sage"), "sage");
+  assert.equal(inputValueForStyle(styles, "pebble", "color", "missing"), "walnut");
 });
 
 test("saved colors restore a readable inspector choice, including old default recipes", () => {
-  assert.deepEqual(colorChoiceForRecipe(styles, { style: "pebble", inputs: { color: "sage" } }), { value: "sage", label: "Sage", swatch: "#A5B59A" });
-  assert.deepEqual(colorChoiceForRecipe(styles, { style: "pebble" }), { value: "walnut", label: "Walnut", swatch: "#92744F" });
-  assert.equal(colorChoiceForRecipe(styles, { style: "gorey", inputs: { color: "sage" } }), null);
+  assert.deepEqual(inputChoiceForRecipe(styles, { style: "pebble", inputs: { color: "sage" } }, "color"), { value: "sage", label: "Sage", swatch: "#A5B59A" });
+  assert.deepEqual(inputChoiceForRecipe(styles, { style: "pebble" }, "color"), { value: "walnut", label: "Walnut", swatch: "#92744F" });
+  assert.equal(inputChoiceForRecipe(styles, { style: "gorey", inputs: { color: "sage" } }, "color"), null);
+});
+
+test("animal choices restore saved recipes and exclude unsupported stale inputs", () => {
+  assert.equal(inputFor(styles, "pebble", "animal"), null);
+  assert.deepEqual(inputChoiceForRecipe(styles, { style: "companions", inputs: { animal: "cat" } }, "animal"), { value: "cat", label: "Cats" });
+  assert.deepEqual(inputChoiceForRecipe(styles, { style: "companions" }, "animal"), { value: "dog", label: "Dogs" });
+  const stale = { color: "sage", animal: "cat" };
+  assert.deepEqual(generationInputsForStyle(styles, "companions", stale), { animal: "cat" });
+  assert.deepEqual(generationInputsForStyle(styles, "pebble", stale), { color: "sage" });
+  assert.deepEqual(generationInputsForStyle(styles, "gorey", stale), {});
+  assert.deepEqual(generationInputsForStyle(styles, "companions", { animal: "missing" }), { animal: "dog" });
+});
+
+test("native size drives default framing while copied dimensions take precedence", () => {
+  const style = styles[0];
+  assert.deepEqual(readExportView(new URLSearchParams(), style), { shape: "portrait", width: 256, height: 256 });
+  assert.deepEqual(readExportView(new URLSearchParams("width=512"), style), { shape: "portrait", width: 512, height: 512 });
+  assert.deepEqual(readExportView(new URLSearchParams("width=512&height=288"), style), { shape: "portrait", width: 512, height: 288 });
 });

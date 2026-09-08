@@ -37,7 +37,7 @@ func (a *app) styles(ctx context.Context) error {
 func (a *app) generate(ctx context.Context, args []string) error {
 	f := a.flags("generate")
 	req := library.CreateRequest{Style: "gorey", Count: 1}
-	var file, format, size, color string
+	var file, format, size, color, animal string
 	var circle bool
 	f.StringVar(&req.Style, "style", "gorey", "style")
 	f.IntVar(&req.Count, "count", 1, "batch size")
@@ -45,6 +45,7 @@ func (a *app) generate(ctx context.Context, args []string) error {
 	f.StringVar(&req.Seed, "seed", "", "seed")
 	f.StringVar(&req.Seed, "s", "", "seed")
 	f.StringVar(&color, "color", "", "style color")
+	f.StringVar(&animal, "animal", "", "companion animal: dog or cat")
 	f.StringVar(&file, "out", "", "file")
 	f.StringVar(&file, "o", "", "file")
 	f.StringVar(&format, "format", "svg", "format")
@@ -80,8 +81,8 @@ func (a *app) generate(ctx context.Context, args []string) error {
 	if file != "" && req.Count != 1 {
 		return bad("generate --out requires --count 1")
 	}
-	if color != "" {
-		req.Inputs = &avatar.Inputs{Color: color}
+	if color != "" || animal != "" {
+		req.Inputs = &avatar.Inputs{Color: color, Animal: animal}
 	}
 	if file == "-" && a.json {
 		return bad("generate --out - cannot be combined with --json")
@@ -235,7 +236,7 @@ func (a *app) renderSaved(ctx context.Context, id, format string, o avatar.Optio
 }
 func (a *app) image(ctx context.Context, command string, args []string) error {
 	f := a.flags(command)
-	var seed, style, format, size, file, color string
+	var seed, style, format, size, file, color, animal string
 	var circle bool
 	f.StringVar(&format, "format", "svg", "format")
 	f.StringVar(&format, "f", "svg", "format")
@@ -249,6 +250,7 @@ func (a *app) image(ctx context.Context, command string, args []string) error {
 		f.StringVar(&seed, "s", "", "seed")
 		f.StringVar(&style, "style", "gorey", "style")
 		f.StringVar(&color, "color", "", "style color")
+		f.StringVar(&animal, "animal", "", "companion animal: dog or cat")
 	}
 	if e := parse(f, args); e != nil {
 		return e
@@ -297,9 +299,12 @@ func (a *app) image(ctx context.Context, command string, args []string) error {
 			if color != "" {
 				q.Set("color", color)
 			}
+			if animal != "" {
+				q.Set("animal", animal)
+			}
 			b, e = a.request(ctx, "GET", "/api/v1/render?"+q.Encode(), nil, nil)
 		} else {
-			b, e = a.engine.RenderWithInputs(ctx, style, seed, format, avatar.Inputs{Color: color}, o)
+			b, e = a.engine.RenderWithInputs(ctx, style, seed, format, avatar.Inputs{Color: color, Animal: animal}, o)
 			if e != nil {
 				e = bad(e.Error())
 			}

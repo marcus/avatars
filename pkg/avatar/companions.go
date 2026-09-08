@@ -11,11 +11,24 @@ import (
 type Companions struct{}
 
 func (Companions) Style() Style {
-	return Style{ID: "companions", Name: "Companions", Description: "Playful dogs and cats in lively ink and warm color."}
+	return Style{ID: "companions", Name: "Companions", Description: "Playful dogs and cats in lively ink and warm color.", NativeWidth: 128, NativeHeight: 128,
+		Inputs: &StyleInputs{Animal: &AnimalInput{Default: "dog", Values: []AnimalChoice{{Value: "dog", Label: "Dogs"}, {Value: "cat", Label: "Cats"}}}},
+	}
 }
 
-func (Companions) Generate(ctx context.Context, seed string) (Artwork, error) {
-	return generateCompanion(ctx, seed, "dog")
+func (c Companions) Generate(ctx context.Context, seed string) (Artwork, error) {
+	return c.GenerateWithInputs(ctx, seed, Inputs{})
+}
+
+func (c Companions) GenerateWithInputs(ctx context.Context, seed string, inputs Inputs) (Artwork, error) {
+	if err := ctx.Err(); err != nil {
+		return Artwork{}, err
+	}
+	resolved, err := resolveStyleInputs(c.Style(), inputs)
+	if err != nil {
+		return Artwork{}, err
+	}
+	return generateCompanion(ctx, seed, resolved.Animal)
 }
 
 func generateCompanion(ctx context.Context, seed, animal string) (Artwork, error) {

@@ -32,6 +32,7 @@ type Pebble struct{}
 func (Pebble) Style() Style {
 	return Style{
 		ID:          "pebble",
+		NativeWidth: 64, NativeHeight: 64,
 		Name:        "Pebble",
 		Description: "Pudgy, softly irregular characters with two tiny eyes.",
 		Inputs: &StyleInputs{Color: &ColorInput{
@@ -45,11 +46,15 @@ func (p Pebble) Generate(ctx context.Context, seed string) (Artwork, error) {
 	return p.GenerateWithInputs(ctx, seed, Inputs{Color: pebbleDefaultColor})
 }
 
-func (Pebble) GenerateWithInputs(ctx context.Context, seed string, inputs Inputs) (Artwork, error) {
+func (p Pebble) GenerateWithInputs(ctx context.Context, seed string, inputs Inputs) (Artwork, error) {
 	if err := ctx.Err(); err != nil {
 		return Artwork{}, err
 	}
-	color, ok := pebbleColor(inputs.Color)
+	resolved, err := resolveStyleInputs(p.Style(), inputs)
+	if err != nil {
+		return Artwork{}, err
+	}
+	color, ok := pebbleColor(resolved.Color)
 	if !ok {
 		return Artwork{}, fmt.Errorf("%w: invalid color %q for style %q", ErrInvalidInputs, inputs.Color, "pebble")
 	}

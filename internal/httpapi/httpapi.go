@@ -164,7 +164,7 @@ func (a *API) create(w http.ResponseWriter, r *http.Request) {
 func Options(q url.Values) (avatar.Options, error) {
 	var o avatar.Options
 	for key := range q {
-		if key != "width" && key != "height" && key != "circle" && key != "seed" && key != "style" && key != "format" && key != "color" {
+		if key != "width" && key != "height" && key != "circle" && key != "seed" && key != "style" && key != "format" && key != "color" && key != "animal" {
 			return o, invalid("unknown query parameter: " + key)
 		}
 		if len(q[key]) != 1 {
@@ -246,7 +246,7 @@ func (a *API) render(w http.ResponseWriter, r *http.Request) {
 	if format == "" {
 		format = "svg"
 	}
-	b, err := a.engine.RenderWithInputs(r.Context(), style, q.Get("seed"), format, avatar.Inputs{Color: q.Get("color")}, o)
+	b, err := a.engine.RenderWithInputs(r.Context(), style, q.Get("seed"), format, avatar.Inputs{Color: q.Get("color"), Animal: q.Get("animal")}, o)
 	if err != nil {
 		WriteError(w, invalid(err.Error()))
 		return

@@ -136,6 +136,9 @@ func TestInvalidRequestsNeverSave(t *testing.T) {
 		{"invalid name", library.CreateRequest{Name: "\xff"}},
 		{"long seed", library.CreateRequest{Seed: strings.Repeat("s", 4097)}},
 		{"invalid seed", library.CreateRequest{Seed: "\xff"}},
+		{"invalid companion animal", library.CreateRequest{Style: "companions", Inputs: &avatar.Inputs{Animal: "fox"}}},
+		{"color unsupported by companions", library.CreateRequest{Style: "companions", Inputs: &avatar.Inputs{Animal: "cat", Color: "sage"}}},
+		{"animal unsupported by pebble", library.CreateRequest{Style: "pebble", Inputs: &avatar.Inputs{Animal: "cat"}}},
 		{"invalid Pebble color", library.CreateRequest{Style: "pebble", Inputs: &avatar.Inputs{Color: "missing"}}},
 		{"color unsupported by style", library.CreateRequest{Style: "gorey", Inputs: &avatar.Inputs{Color: "sage"}}},
 	} {
