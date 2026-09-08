@@ -168,3 +168,15 @@ func TestPublicOriginCanonicalization(t *testing.T) {
 		}
 	}
 }
+
+func TestPublicIPOrigins(t *testing.T) {
+	got, err := httpapi.NormalizePublicURL("https://[0:0:0:0:0:0:0:1]:443/")
+	if err != nil || got != "https://[::1]" {
+		t.Fatal(got, err)
+	}
+	for _, raw := range []string{"https://127.1", "https://2130706433", "https://127.000.000.001"} {
+		if _, err := httpapi.NormalizePublicURL(raw); err == nil {
+			t.Fatal("accepted ambiguous numeric host", raw)
+		}
+	}
+}

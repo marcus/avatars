@@ -19,7 +19,19 @@ func NormalizePublicURL(raw string) (string, error) {
 		return "", fmt.Errorf("public URL must be an HTTPS origin without a path, such as https://host.example:7447")
 	}
 	host := strings.ToLower(u.Hostname())
-	if net.ParseIP(host) == nil {
+	if ip := net.ParseIP(host); ip != nil {
+		host = ip.String()
+	} else {
+		numeric := true
+		for _, c := range host {
+			if c != '.' && (c < '0' || c > '9') {
+				numeric = false
+				break
+			}
+		}
+		if numeric {
+			return "", fmt.Errorf("public URL requires a canonical IP address")
+		}
 		for _, c := range host {
 			if !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '-' || c == '.') {
 				return "", fmt.Errorf("public URL requires an ASCII DNS hostname or IP address")
