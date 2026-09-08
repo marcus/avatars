@@ -81,6 +81,8 @@ http://127.0.0.1:7447/api/v1/render?seed=agent-42&format=png&width=256&height=25
 
 See the [API and integration guide](docs/guides/active/api-and-integration.md) for endpoints, response shapes, storage, and extension seams.
 
+To add a style, start with [Creating an avatar style](docs/guides/active/creating-styles.md) and the [style brief template](docs/guides/active/style-brief-template.md). The guide covers artwork, inputs, saved recipes, surface integration, and visual review.
+
 ## Use the Go library
 
 ```go

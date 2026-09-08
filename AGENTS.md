@@ -95,6 +95,7 @@ Homebrew binary links in `/opt/homebrew/bin` (or `brew --prefix/bin`) are safely
 
 ## 5. Architecture & Code Structure
 
+- **Creating styles**: Start with [Creating an avatar style](docs/guides/active/creating-styles.md) and commit a brief using [the style brief template](docs/guides/active/style-brief-template.md). Include reference art, supported inputs, persistence and surface contracts, and visual acceptance evidence so another agent can work from the repository alone.
 - **Core generator (`pkg/avatar` or `internal/avatar`)**:
   - Deterministic pen-and-ink vector portrait generation.
   - Zero input string leakage into markup (pure numeric geometry derived via 32-bit FNV-1a hash and xorshift PRNG).
