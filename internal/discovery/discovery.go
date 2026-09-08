@@ -20,6 +20,7 @@ var Operations = []Operation{
 	{"render", "Render a reproducible avatar without saving it", "render [SEED] [--seed TEXT] [--style gorey] [--color COLOR|random] [--animal dog|cat|mixed] [--format svg|png] [--size WxH] [--circle] [--out FILE|-]", "GET", "/api/v1/render"},
 	{"styles", "List installed styles and export formats", "styles", "GET", "/api/v1/styles"},
 	{"serve", "Run the HTTP API and studio on loopback", "serve [--listen 127.0.0.1:7447] [--public-url HTTPS_ORIGIN] [--open]", "", ""},
+	{"service", "Ensure, inspect, or stop the on-demand local service", "service ensure|status|stop [--listen 127.0.0.1:7447] [--public-url HTTPS_ORIGIN] [--timeout 5s] [--no-auto-start]", "", ""},
 	{"instructions", "Print operational guidance for agents", "instructions", "GET", "/api/v1/instructions"},
 	{"capabilities", "Print machine-readable command and API discovery", "capabilities", "GET", "/api/v1/capabilities"},
 	{"version", "Print build information", "version", "GET", "/api/v1/health"},
