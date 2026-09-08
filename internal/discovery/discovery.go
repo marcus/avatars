@@ -74,11 +74,17 @@ Unknown fields, duplicate scalar query values, and invalid inputs are refused. E
 CLI exit codes: 0 success, 1 operation failure, 2 invalid invocation.
 
 Use avatars help COMMAND for syntax and avatars capabilities for JSON discovery.
-The service runs in the foreground until interrupted; it does not manage tmux
-or start a daemon. For access from your other devices, place Tailscale Serve
-in front of the loopback listener and start serve with --public-url HTTPS_ORIGIN
-(or AVATARS_PUBLIC_URL). This permits that exact proxy host and browser origin.
-Use --url HTTPS_ORIGIN for CLI calls that return shareable links.
+Local integrations can run avatars service ensure --json to reuse or start one
+detached service, then use the returned endpoint. Service status never starts a
+process. Service stop shuts down only an auto-started instance through its
+restricted local lifecycle socket. Set AVATARS_AUTO_START=0 or pass
+--no-auto-start to require an already-running service. AVATARS_LISTEN selects a
+loopback address; --listen overrides it. Startup failures name the service log.
+
+For access from your other devices, place Tailscale Serve in front of the
+loopback listener and set AVATARS_PUBLIC_URL or pass --public-url when ensuring
+or serving. This permits that exact proxy host and browser origin. Use --url
+HTTPS_ORIGIN for CLI calls that return shareable links.
 `
 
 func Capabilities() any {
