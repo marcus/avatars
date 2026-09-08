@@ -37,9 +37,15 @@ func New(path string) (*Store, error) {
 		return nil, fmt.Errorf("create library directory: %w", err)
 	}
 	s := &Store{path: abs}
-	f, err := s.open(context.Background(), syscall.LOCK_EX)
+	// Initialization does not read or write collection data and must not wait
+	// for another process's lock. Actual operations acquire a cancellable lock.
+	f, err := os.OpenFile(abs, os.O_CREATE|os.O_RDWR, 0600)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("open library: %w", err)
+	}
+	if err := f.Chmod(0600); err != nil {
+		f.Close()
+		return nil, fmt.Errorf("set library permissions: %w", err)
 	}
 	return s, f.Close()
 }

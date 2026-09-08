@@ -124,7 +124,7 @@ func TestDuplicateIDsDoNotCorruptLog(t *testing.T) {
 	}
 }
 
-func TestLockWaitHonorsCancellation(t *testing.T) {
+func TestInitializationDoesNotBlockAndLockWaitHonorsCancellation(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "library.jsonl")
 	s, err := store.New(path)
 	if err != nil {
@@ -137,6 +137,24 @@ func TestLockWaitHonorsCancellation(t *testing.T) {
 	defer f.Close()
 	if err := syscall.Flock(int(f.Fd()), syscall.LOCK_EX); err != nil {
 		t.Fatal(err)
+	}
+	type initialization struct {
+		store *store.Store
+		err   error
+	}
+	initialized := make(chan initialization, 1)
+	go func() {
+		reopened, err := store.New(path)
+		initialized <- initialization{reopened, err}
+	}()
+	select {
+	case result := <-initialized:
+		if result.err != nil {
+			t.Fatal(result.err)
+		}
+		s = result.store
+	case <-time.After(time.Second):
+		t.Fatal("initialization waited for the data lock without a cancellable context")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 40*time.Millisecond)
 	defer cancel()
