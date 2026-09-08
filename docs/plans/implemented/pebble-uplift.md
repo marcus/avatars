@@ -1,6 +1,6 @@
 # Give Pebble more personality
 
-Status: Astra implementation complete; awaiting coordinator review. Task: `td-c3c8ed`.
+Status: implemented, independently reviewed, and installed. Task: `td-c3c8ed`.
 
 ## Assignment
 
@@ -45,4 +45,6 @@ Style-authoring lesson: define a few whole-face expression recipes before adding
 
 No assignment clarification was needed. The independent td context could not start the coordinator-owned task because it was already in progress; progress and handoff use `TD_CONTEXT_ID=avatars-pebble-uplift-astra` as assigned.
 
-Independent review and live delivery: pending with the coordinator. This implementation does not merge, install, change Tailscale, or touch the live studio on port 7447. The coordinator owns final live collection creation and task approval.
+Independent review and live delivery: the coordinator inspected the renderer, focused checks, before/after comparison, and small-size cast with no blocking findings. Full merged checks passed. The refined renderer and inspector backgrounds are installed from main `0dae3ed`. The private HTTPS studio restores a selected Walnut portrait with Circle and Light controls; live saved SVG/PNG exports match the installed renderer exactly. Sample collection: `col_878b35cc9076e578da63d17979e476fb`.
+
+Inspector delivery: Dark, Light, and Gray surrounds change only the image preview. Copied portrait links retain the background with crop and dimensions. Root browser proof covered all backgrounds, unchanged image request on background-only changes, copy/reopen restoration, and the 390-pixel inspector. A separate Astra read-only review of the five implementation/test files reported no findings. The canceled whole-grid portrait-mode idea was not implemented.
