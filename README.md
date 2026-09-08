@@ -2,7 +2,7 @@
 
 A local avatar generator with a CLI, HTTP API, and creative studio. Generate a collection, pick a portrait, and export it as SVG or PNG. Avatars created by agents appear in the same library as those created in the studio.
 
-Five styles are available:
+Six styles are available:
 
 | Style | Character |
 | --- | --- |
@@ -11,6 +11,7 @@ Five styles are available:
 | **Picasso** (`picasso`) | Recognizable faces drawn with bold contours, muted color, and restrained cubist planes. |
 | **Pebble** (`pebble`) | Pudgy, softly irregular characters with two tiny eyes and 15 palette colors and a Random choice. |
 | **Companions** (`companions`) | Playful dogs and cats with expressive ears, warm coats, and lively ink contours. |
+| **Field Birds** (`field-birds`) | Invented bird species with field-guide proportions, layered feathers, and quiet natural color. |
 
 Generation is random by default. Programs can provide a seed to reproduce a portrait exactly. Each style uses the same SVG/PNG exporters and library workflow.
 
@@ -28,6 +29,18 @@ The studio opens at `http://127.0.0.1:7447`. It includes a collection browser, p
 The inspector offers Dark, Light, and Gray preview backgrounds. Copied portrait links retain the selected surround, shape, and dimensions. Background choices affect the preview only; SVG and PNG exports keep their original transparency.
 
 The service runs in the foreground until you press Ctrl-C. It serves both the API and the embedded studio. No Node.js runtime or frontend build is needed.
+
+### Field Birds
+
+Create a collection of fictional bird species:
+
+```sh
+avatars generate --style field-birds --seed field-notes --count 48 --name "Birds of Elsewhere" --json
+avatars render --style field-birds --seed field-notes:20 --format png --size 320 --out bird.png
+```
+
+Each seed selects a complete bird: one of eight body types and twelve plumage palettes, with variation in bills, crests, face markings, breast patterns, and wing bars. Field Birds has no color or animal controls. The same recipe reproduces through the CLI, HTTP API, studio, and saved exports. Its 160 × 160 canvas also supports square and circular icons. The `field-notes` collection above covers every body type and palette; other batches sample independently.
+
 
 ## Generate from the CLI
 
@@ -63,7 +76,7 @@ Companions defaults to Dogs. `--animal mixed` chooses a dog or cat independently
 
 Pebble defaults to Walnut. `--color random` picks from all 15 palette colors independently for each avatar; a fixed seed repeats its color. Saved recipes contain the chosen palette value, so later exports keep that color. In the studio, Random stays selected after generation and ordinary refresh. Opening a saved portrait selects its concrete color; opening a mixed-color collection selects Random.
 
-SVG is the default export format. `--size 256` requests a square canvas; `--size 256x288` sets both dimensions. Gorey and Picasso portraits use a 64 × 72 native canvas; Pebble uses 64 × 64, and Companions uses 128 × 128. Style discovery reports these as `native_width` and `native_height`. Rectangular exports preserve the artwork's aspect ratio, with transparent margins when needed. Circular exports crop the center and leave transparent corners. Each dimension supports 1–2048 pixels.
+SVG is the default export format. `--size 256` requests a square canvas; `--size 256x288` sets both dimensions. Gorey and Picasso portraits use a 64 × 72 native canvas; Pebble uses 64 × 64, Companions uses 128 × 128, and Field Birds uses 160 × 160. Style discovery reports these as `native_width` and `native_height`. Rectangular exports preserve the artwork's aspect ratio, with transparent margins when needed. Circular exports crop the center and leave transparent corners. Each dimension supports 1–2048 pixels.
 
 `render` and `export` write image bytes to stdout when `--out` is omitted. With `--json`, they return base64 data and its media type instead. `--out FILE` creates a new file and refuses to overwrite an existing one.
 

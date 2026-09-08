@@ -28,6 +28,8 @@ Send `Content-Type: application/json` and an object:
 
 All fields are optional. Defaults are style `gorey`, count 1, and a name derived from the style. Count must be 1–100. A name supports up to 120 Unicode characters. The optional `seed` supports up to 4096 UTF-8 bytes. Omit it or leave it empty to generate random seeds. Unknown fields are refused.
 
+Field Birds accepts no appearance inputs. The seed selects its fictional species, plumage, and markings. For a varied collection, use `{"style":"field-birds","seed":"field-notes","count":48}`. This fixed batch covers all eight body types and twelve palettes. Other seeds sample independently. Export and persistence use the standard recipe contract.
+
 Pebble accepts one style-owned input. The default is Walnut, and saved recipes always contain the resolved value:
 
 ```json
@@ -81,7 +83,7 @@ API URLs are relative to the service origin. CLI JSON expands them into absolute
 
 ## Export images
 
-Saved image routes accept `width`, `height`, and `circle`. Omitted dimensions preserve the artwork's native ratio, which is 64 × 72 for Gorey, Gorey Expanded, and Picasso, 64 × 64 for Pebble, and 128 × 128 for Companions. If only one dimension is provided, the other is derived from the native ratio. A circular export defaults to the larger native dimension, and one supplied dimension sets both sides. With both dimensions supplied, the circle is inscribed in the requested canvas. Each dimension must be 1–2048.
+Saved image routes accept `width`, `height`, and `circle`. Omitted dimensions preserve the artwork's native ratio, which is 64 × 72 for Gorey, Gorey Expanded, and Picasso, 64 × 64 for Pebble, 128 × 128 for Companions, and 160 × 160 for Field Birds. If only one dimension is provided, the other is derived from the native ratio. A circular export defaults to the larger native dimension, and one supplied dimension sets both sides. With both dimensions supplied, the circle is inscribed in the requested canvas. Each dimension must be 1–2048.
 
 ```text
 /api/v1/avatars/av_ID.png?width=256&height=256&circle=true

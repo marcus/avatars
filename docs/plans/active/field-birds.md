@@ -1,6 +1,6 @@
 # Field Birds style brief
 
-Status: implementing. Task: td-08c5c2.
+Status: reviewed; ready to land and install. Task: td-08c5c2.
 
 ## Outcome
 
@@ -26,3 +26,12 @@ Worktree `/Users/marcus/code/avatars-field-birds`, branch `feat/field-birds`. Ro
 ## Acceptance and handoff
 
 Follow `docs/guides/active/creating-styles.md`. Commit this brief before implementation. Add focused determinism, cancellation, SVG safety, variation, PNG/circle, and CLI/HTTP save/reopen parity checks. Produce repeatable contact sheets and check desktop/mobile studio behavior. Run `make fmt-check vet test-race build`, Node studio/reference tests, and `git diff --check`. Record proof paths, commands, review, and the delivered collection here before moving this brief to implemented.
+
+### Completed evidence
+
+- Added the registered Field Birds generator, original SVG reference, reusable proof command, and discovery/integration documentation. No UI or persistence changes were needed.
+- `make fmt-check vet test-race build` passes. Node studio/reference suite: 30 tests pass. `git diff --check` passes. CLI/HTTP SVG and PNG agree before and after store reopening. Unsupported appearance input is rejected without writing a collection.
+- `scripts/prove-field-birds.sh /tmp/avatars-field-birds-proof` produces 48 labeled specimens plus 32/64/160/320 px square/circle examples. Fixed collection covers all eight families and twelve palettes. Inspected actual PNG contact sheet and enlarged details, corrected stray tail/crown strokes, and replaced a soft cheek spot with feathered markings. The visual result is a vector field-guide interpretation; it does not reproduce watercolor paper granulation.
+- Isolated studio at port 17447 with library `/tmp/avatars-bird-studio.HsjC43`: generated 12 birds through the UI, selected a saved bird, changed circle/160 px exports, copied and reopened its link, and completed a PNG export. Inspected desktop cards and 390 × 844 mobile cards/inspector. Field Birds selected and irrelevant controls hidden throughout.
+- Independent review: `review_field_birds`, `TD_CONTEXT_ID=field-birds-independent-review`, session `ses_22e826`. Focused tests and 48-bird / 32 / 64 / 320 px visual review passed. Fixed formatted-JSON test assertion and README style count/section placement. No outstanding renderer, safety, or parity findings. Reviewer evidence: `/tmp/avatars-birds-review`.
+- Root still owns landing, installing, replacing the live Avatars process, verifying the existing HTTPS endpoint, and creating the user collection.

@@ -43,17 +43,19 @@ avatar. A fixed seed repeats its color; saved recipes retain the concrete value.
 Companions supports --animal dog|cat|mixed, defaulting to dog. Mixed selects
 one species per final seed and saves dog or cat; it does not promise batch balance. Use avatars styles
 --json for each style's accepted inputs, defaults, and native dimensions.
+Field Birds invents bird species from the seed alone and accepts no appearance inputs.
 Saved avatars retain these choices; export refuses appearance overrides.
 
 List: avatars list --json
 Inspect: avatars show ID --json
 Export: avatars export AVATAR_ID --format png --size 256 --circle --out icon.png
 Companions: avatars generate --style companions --animal cat --count 12 --json
+Field Birds: avatars generate --style field-birds --seed field-notes --count 48 --json
 Pebble: avatars generate --style pebble --color random --count 12 --json
 Stateless: avatars render --style pebble --color sage --seed agent-42 --format svg --out icon.svg
 SVG is the default format. --size N requests an N by N canvas; --size WxH sets
 both dimensions. Native dimensions depend on the style: Gorey portraits are
-64 by 72, Pebble is 64 by 64, and Companions is 128 by 128. A circle crops the center and
+64 by 72, Pebble is 64 by 64, Companions is 128 by 128, and Field Birds is 160 by 160. A circle crops the center and
 leaves transparent corners. Each dimension must be 1..2048. Output files are
 created exclusively: an existing file is never overwritten. Without --out,
 render and export write image bytes to stdout. With --json they instead return

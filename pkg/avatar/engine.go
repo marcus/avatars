@@ -160,6 +160,7 @@ func New() *Engine {
 	_ = e.RegisterGenerator(Picasso{})
 	_ = e.RegisterGenerator(Pebble{})
 	_ = e.RegisterGenerator(Companions{})
+	_ = e.RegisterGenerator(FieldBirds{})
 	_ = e.RegisterExporter(SVGExporter{})
 	_ = e.RegisterExporter(PNGExporter{})
 	return e
