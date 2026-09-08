@@ -67,4 +67,4 @@ Input integration and parity evidence: pending. Artwork commit `3c6c3d4` is push
 
 Guidance gaps and decisions: the brief provides enough guidance for the artwork slice. Native square framing leaves ears and whiskers inside the circle without style-specific export logic. Preview uses an opt-in Go test so the temporary pre-integration animal selector does not become a public API. Seed identity is deterministic but not promised to be collision-free in a finite visual recipe space. The artwork descriptions and proof labels passed `naturally scan`.
 
-Independent review and live delivery: pending.
+Independent artwork review: the coordinating agent inspected the actual 24-dog and 24-cat portrait sheets, the cat circle sheet, and the dog size sheet on September 7, 2026. Species, silhouette variety, expressions, and small-size readability meet the brief; circle margins preserve defining features. Read the generator and focused tests with no blocking artwork finding. Input integration, browser review, and live delivery remain pending.
