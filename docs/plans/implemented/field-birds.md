@@ -1,6 +1,6 @@
 # Field Birds style brief
 
-Status: reviewed; ready to land and install. Task: td-08c5c2.
+Status: implemented and delivered. Task: td-08c5c2.
 
 ## Outcome
 
@@ -34,4 +34,6 @@ Follow `docs/guides/active/creating-styles.md`. Commit this brief before impleme
 - `scripts/prove-field-birds.sh /tmp/avatars-field-birds-proof` produces 48 labeled specimens plus 32/64/160/320 px square/circle examples. Fixed collection covers all eight families and twelve palettes. Inspected actual PNG contact sheet and enlarged details, corrected stray tail/crown strokes, and replaced a soft cheek spot with feathered markings. The visual result is a vector field-guide interpretation; it does not reproduce watercolor paper granulation.
 - Isolated studio at port 17447 with library `/tmp/avatars-bird-studio.HsjC43`: generated 12 birds through the UI, selected a saved bird, changed circle/160 px exports, copied and reopened its link, and completed a PNG export. Inspected desktop cards and 390 × 844 mobile cards/inspector. Field Birds selected and irrelevant controls hidden throughout.
 - Independent review: `review_field_birds`, `TD_CONTEXT_ID=field-birds-independent-review`, session `ses_22e826`. Focused tests and 48-bird / 32 / 64 / 320 px visual review passed. Fixed formatted-JSON test assertion and README style count/section placement. No outstanding renderer, safety, or parity findings. Reviewer evidence: `/tmp/avatars-birds-review`.
-- Root still owns landing, installing, replacing the live Avatars process, verifying the existing HTTPS endpoint, and creating the user collection.
+- Landed implementation `2d6592a` on main and installed through `make install-local`. The live service reports that commit. Replaced only the Avatars process; existing Tailscale routes were preserved. Verified all ten prior collections remain.
+- Delivered [Birds of Elsewhere](https://aerie.tail53fd54.ts.net:7447/?collection=col_79264b370b74872181600da807807844), 48 birds from `field-notes`. Verified the actual browser displays all 48 cards and live saved SVG/PNG circle exports match the installed CLI. Local operational evidence, previous binary path, process ID, and logs are in `/tmp/avatars-field-birds-proof`.
+- All requested work is complete. No remaining review findings.
