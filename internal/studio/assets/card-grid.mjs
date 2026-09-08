@@ -65,7 +65,6 @@ export function createCardGrid({ grid, sound = createCardSound() }) {
   let resizeFrame = 0;
   let observedWidth = 0;
   let observedHeight = 0;
-  let suppressNextHeightArrange = false;
 
   function slot(card) {
     return {
@@ -245,14 +244,17 @@ export function createCardGrid({ grid, sound = createCardSound() }) {
       return;
     }
     const preserve = !changedCollection && nextCards.length >= oldCount && Boolean(oldIDs);
-    suppressNextHeightArrange = preserve && nextCards.length !== oldCount;
     reset({ preserve });
-    if (suppressNextHeightArrange) requestAnimationFrame(() => { suppressNextHeightArrange = false; });
+    if (preserve && nextCards.length !== oldCount) observedHeight = grid.clientHeight;
   }
 
   function onPointerDown(event) {
     const card = event.target.closest("[data-avatar]");
     if (!card || card.parentElement !== grid || event.button !== 0 || !event.isPrimary || drag || reducedMotion.matches) return;
+    if (arranging) {
+      stopAnimation();
+      reset({ preserve: true });
+    }
     void sound.unlock();
     delete card.dataset.suppressClick;
     const origin = point(event);
@@ -315,11 +317,7 @@ export function createCardGrid({ grid, sound = createCardSound() }) {
     const heightChanged = height !== observedHeight;
     observedWidth = width;
     observedHeight = height;
-    if (!widthChanged && (!heightChanged || suppressNextHeightArrange)) {
-      suppressNextHeightArrange = false;
-      return;
-    }
-    suppressNextHeightArrange = false;
+    if (!widthChanged && !heightChanged) return;
     if (resizeFrame) cancelAnimationFrame(resizeFrame);
     resizeFrame = requestAnimationFrame(() => {
       resizeFrame = 0;
