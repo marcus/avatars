@@ -130,3 +130,17 @@ func TestLiteralHelpSeeds(t *testing.T) {
 		}
 	}
 }
+
+func TestFailedExportReportsSavedCollection(t *testing.T) {
+	cleanEnv(t)
+	dir := t.TempDir()
+	file := filepath.Join(dir, "missing", "avatar.png")
+	code, _, err := invoke(t, "generate", "--data-dir", dir, "--out", file, "--json")
+	if code != 1 || !strings.Contains(err, "was saved; export failed") {
+		t.Fatal(code, err)
+	}
+	code, out, err := invoke(t, "list", "--data-dir", dir, "--json")
+	if code != 0 || !strings.Contains(out, "col_") {
+		t.Fatal(code, out, err)
+	}
+}

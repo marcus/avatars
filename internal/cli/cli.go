@@ -43,8 +43,10 @@ func Run(ctx context.Context, args []string, out, errOut io.Writer) int {
 		return 0
 	}
 	d := &library.Error{Code: "internal", Message: err.Error()}
-	if errors.As(err, &d) {
-	} // Preserve domain error codes across local and HTTP calls.
+	var domain *library.Error
+	if errors.As(err, &domain) {
+		d.Code = domain.Code
+	}
 	if a.json {
 		_ = json.NewEncoder(errOut).Encode(map[string]any{"error": d})
 	} else {
