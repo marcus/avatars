@@ -26,7 +26,7 @@ Choose a stable lowercase style ID and a short display name. Existing saved avat
 
 Implement a complete composition from each seed. Vary a few meaningful characteristics rather than adding arbitrary noise. Bound every geometric choice so features remain inside the silhouette and crop. Do not change a shared random helper in a way that alters another style.
 
-Return self-contained `Artwork` with its native width, height, media type, and bytes. Use the shared exporters for sizing and circle masking. Native dimensions belong to the artwork and may differ by style. Keep generator calls deterministic and safe for concurrent use, with all mutable random state local to one call. Handle cancellation. Avoid fonts, network resources, external images, scripts, and new rendering dependencies for procedural SVG styles.
+Return self-contained `Artwork` with its native width, height, media type, and bytes. Use the shared exporters for sizing and circle masking. Native dimensions belong to the artwork and may differ by style. Publish matching `Style.NativeWidth` and `Style.NativeHeight` so clients can frame previews from `native_width` and `native_height` metadata. Explicit dimensions in saved links take precedence. Keep generator calls deterministic and safe for concurrent use, with all mutable random state local to one call. Handle cancellation. Avoid fonts, network resources, external images, scripts, and new rendering dependencies for procedural SVG styles.
 
 ## Add only the inputs the style needs
 
@@ -43,7 +43,11 @@ For each new input:
 
 Use a narrow typed input and a small adapter extension when required. A schema engine, plugin loader, or arbitrary options map is unnecessary for one enum. Keep the existing input-free `Generator` and `Engine.Render` usable where practical; put optional input support behind a documented seam. The core must not switch on a style ID to implement that style's rules.
 
-The current Go seam uses `Style.Inputs` for discovery, `Engine.ResolveInputs` for shared defaulting and validation, and the optional `InputGenerator.GenerateWithInputs` method for rendering. Callers with an input use `Engine.RenderWithInputs`; ordinary generators and callers continue to use `Generate` and `Engine.Render`. Add another typed descriptor only when a shipped style needs it.
+The current Go seam uses `Style.Inputs` for discovery, `Engine.ResolveInputs` for shared defaulting and validation, and the optional `InputGenerator.GenerateWithInputs` method for rendering. Callers with an input use `Engine.RenderWithInputs`; ordinary generators and callers continue to use `Generate` and `Engine.Render`. The typed inputs are currently `Inputs.Color` with `StyleInputs.Color`, and `Inputs.Animal` with `StyleInputs.Animal`. Add another typed descriptor only when a shipped style needs it.
+
+When adding a second input, validate every supplied field before returning. A valid color must not short-circuit rejection of an unsupported animal. Built-in input generators use `resolveStyleInputs` for direct calls as well as engine calls, so neither route silently ignores another style's fields. Keep the input-free `Generate` path on the same defaults.
+
+The studio's `generationInputsForStyle` filters its small set of known controls through style metadata. Add a control there when adding a typed API field, without copying enum values into JavaScript. Store unsubmitted choices per style; route selection restores a saved recipe, while background refresh leaves those choices alone. Check mobile layouts with each supported control and with all controls hidden.
 
 ## Build and prove one journey
 

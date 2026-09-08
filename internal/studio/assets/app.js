@@ -75,7 +75,9 @@ function routeURL(collectionId = null, avatarId = null) {
   if (collectionId) params.set("collection", collectionId);
   if (avatarId) {
     params.set("avatar", avatarId);
-    params = writeExportView(params, readExportControls() || readExportView(new URLSearchParams(location.search)));
+    const style = state.styles.find((item) => item.id === avatarFor(avatarId)?.style);
+    const view = state.selected ? readExportControls() : null;
+    params = writeExportView(params, view || readExportView(new URLSearchParams(), style));
     params.set("background", state.previewBackground);
   }
   return params.size ? `/?${params}` : "/";
