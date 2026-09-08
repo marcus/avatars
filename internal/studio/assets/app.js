@@ -1,11 +1,11 @@
-import { generationInputsForStyle, inputChoiceForRecipe, inputFor, nativeRatio, readExportView, writeExportView } from "/view.mjs";
+import { generationInputsForStyle, inputChoiceForRecipe, inputFor, nativeRatio, readExportView, readPreviewBackground, writeExportView } from "/view.mjs";
 
 const $ = (id) => document.getElementById(id);
 const state = {
   collections: [], styles: [], formats: [], collectionId: null, avatarId: null,
   selected: null, loaded: false, generating: false, refreshing: false,
   librarySignature: "", gridSignature: "", request: 0, routeRequest: 0,
-  inputsByStyle: {},
+  inputsByStyle: {}, previewBackground: "dark",
 };
 let toastTimer;
 let lastSelected = null;
@@ -76,6 +76,7 @@ function routeURL(collectionId = null, avatarId = null) {
   if (avatarId) {
     params.set("avatar", avatarId);
     params = writeExportView(params, readExportControls() || readExportView(new URLSearchParams(location.search)));
+    params.set("background", state.previewBackground);
   }
   return params.size ? `/?${params}` : "/";
 }
@@ -307,6 +308,7 @@ async function resolveRoute({ scroll = false, restoreView = true } = {}) {
       $("export-form").elements.shape.value = view.shape;
       $("export-width").value = view.width;
       $("export-height").value = view.height;
+      setPreviewBackground(readPreviewBackground(params));
     }
   }
   render();
@@ -470,8 +472,18 @@ function syncExportURL() {
   const view = readExportControls();
   if (!state.avatarId || !view) return;
   const url = new URL(location.href);
-  url.search = writeExportView(url.searchParams, view).toString();
+  const params = writeExportView(url.searchParams, view);
+  params.set("background", state.previewBackground);
+  url.search = params.toString();
   history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+}
+
+function setPreviewBackground(value) {
+  state.previewBackground = readPreviewBackground(new URLSearchParams({ background: value }));
+  $("preview-stage").dataset.background = state.previewBackground;
+  for (const input of $("preview-background").querySelectorAll("input")) {
+    input.checked = input.value === state.previewBackground;
+  }
 }
 
 function updatePreview() {
@@ -561,6 +573,10 @@ $("copy-collection").addEventListener("click", () => copyLink(routeURL(state.col
 $("thumbnail-size").addEventListener("input", (event) => { $("portrait-grid").dataset.size = event.target.value; });
 $("menu-toggle").addEventListener("click", () => setLibraryOpen(!$("library").classList.contains("open")));
 $("sidebar-scrim").addEventListener("click", () => setLibraryOpen(false));
+$("preview-background").addEventListener("change", (event) => {
+  setPreviewBackground(event.target.value);
+  syncExportURL();
+});
 $("export-form").addEventListener("submit", exportAvatar);
 $("export-form").addEventListener("change", (event) => {
   if (event.target.name === "shape") {

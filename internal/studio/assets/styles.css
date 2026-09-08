@@ -1312,3 +1312,18 @@
   .generation-toolbar:not(:has(.generation-input:not([hidden]))) .count-field{
     grid-column:3}
 }
+
+/* Inspector surrounds change the preview only; exported pixels stay untouched. */
+.preview-stage img { background: #1d1e20; }
+.preview-stage[data-background="light"] img { background: #f3f1eb; }
+.preview-stage[data-background="gray"] img { background: #858787; }
+.preview-background { margin: 14px 22px 0; padding: 0; border: 0; display: flex; gap: 5px; }
+.preview-background legend { color: #9da098; font-size: 10px; margin-bottom: 8px; }
+.preview-background label { flex: 1; cursor: pointer; position: relative; }
+.preview-background input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.preview-background label > span { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 7px 4px; border: 1px solid #3d403b; border-radius: 4px; color: #a8ada0; font-size: 10px; }
+.preview-background input:checked + span { background: #363b31; border-color: #828d68; color: #e4e9d8; }
+.preview-background input:focus-visible + span { outline: 2px solid #aebc8b; outline-offset: 2px; }
+.background-dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid #ffffff40; background: #1d1e20; }
+.background-dot.light { background: #f3f1eb; }
+.background-dot.gray { background: #858787; }

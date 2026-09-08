@@ -54,3 +54,9 @@ export function generationInputsForStyle(styles, styleId, requested = {}) {
   }
   return inputs;
 }
+
+// Preview surrounds are presentation state, never renderer inputs.
+export function readPreviewBackground(params) {
+  const value = params.get("background");
+  return ["dark", "light", "gray"].includes(value) ? value : "dark";
+}

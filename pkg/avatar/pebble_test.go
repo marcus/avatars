@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"image"
 	"image/png"
 	"io"
 	"strings"
@@ -79,7 +80,7 @@ func TestPebbleRenderingContract(t *testing.T) {
 			t.Fatalf("missing %s in %s", want, svg)
 		}
 	}
-	if strings.Count(svg, "<path ") != 1 || strings.Count(svg, "<ellipse ") != 2 {
+	if strings.Count(svg, "<path ")+strings.Count(svg, "<ellipse ") != 3 {
 		t.Fatalf("Pebble must contain one body and exactly two eyes: %s", svg)
 	}
 	seed := `<script>alert("seed leak")</script>`
@@ -130,4 +131,126 @@ func TestPebbleSmallAndCirclePNGExports(t *testing.T) {
 			})
 		}
 	}
+}
+
+// Protect the visual constraints without fixing the renderer to ellipse eyes.
+func TestPebbleCastSimplicityAndFraming(t *testing.T) {
+	ctx := context.Background()
+	e := New()
+	for i := 0; i < 128; i++ {
+		seed := fmt.Sprintf("walnut-proof:%d", i)
+		a, err := (Pebble{}).Generate(ctx, seed)
+		if err != nil {
+			t.Fatal(err)
+		}
+		b, err := (Pebble{}).Generate(ctx, seed)
+		if err != nil || !bytes.Equal(a.Data, b.Data) {
+			t.Fatalf("%s is not deterministic: %v", seed, err)
+		}
+		decoder := xml.NewDecoder(bytes.NewReader(a.Data))
+		features := 0
+		for {
+			token, err := decoder.Token()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if tag, ok := token.(xml.StartElement); ok {
+				switch tag.Name.Local {
+				case "svg":
+				case "path", "ellipse":
+					features++
+					wantFill := "#FFF4DC"
+					if features == 1 {
+						wantFill = "#92744F"
+					}
+					fill := ""
+					for _, attr := range tag.Attr {
+						if attr.Name.Local == "fill" {
+							fill = attr.Value
+						}
+					}
+					if fill != wantFill {
+						t.Fatalf("%s feature %d fill = %q", seed, features, fill)
+					}
+				default:
+					t.Fatalf("%s contains extra feature %q", seed, tag.Name.Local)
+				}
+			}
+		}
+		if features != 3 {
+			t.Fatalf("%s has %d features; want one body and two eyes", seed, features)
+		}
+		// Every fixed recipe has the same geometry across the complete palette.
+		for _, color := range pebbleColors {
+			colored, err := (Pebble{}).GenerateWithInputs(ctx, seed, Inputs{Color: color.Value})
+			if err != nil {
+				t.Fatal(err)
+			}
+			normalized := strings.ReplaceAll(string(colored.Data), color.Swatch, "#92744F")
+			normalized = strings.ReplaceAll(normalized, color.EyeColor, "#FFF4DC")
+			if normalized != string(a.Data) {
+				t.Fatalf("%s color %s changes geometry", seed, color.Value)
+			}
+		}
+		for _, size := range []int{24, 64} {
+			opts := Options{Width: size, Height: size}
+			square, err := e.Render(ctx, "pebble", seed, "png", opts)
+			if err != nil {
+				t.Fatal(err)
+			}
+			opts.Circle = true
+			circle, err := e.Render(ctx, "pebble", seed, "png", opts)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !bytes.Equal(square, circle) {
+				t.Fatalf("%s at %dpx loses artwork in the circle crop", seed, size)
+			}
+			im, err := png.Decode(bytes.NewReader(square))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := pebbleEyeComponents(im); got != 2 {
+				t.Fatalf("%s at %dpx has %d distinct eye marks", seed, size, got)
+			}
+		}
+	}
+}
+
+// Count connected ivory marks in an actual Walnut PNG, including antialiasing.
+func pebbleEyeComponents(im image.Image) int {
+	pixels := map[image.Point]bool{}
+	for y := im.Bounds().Min.Y; y < im.Bounds().Max.Y; y++ {
+		for x := im.Bounds().Min.X; x < im.Bounds().Max.X; x++ {
+			r, _, _, a := im.At(x, y).RGBA()
+			if a > 0xf000 && r*65535/a > 0xa000 {
+				pixels[image.Pt(x, y)] = true
+			}
+		}
+	}
+	components := 0
+	for p := range pixels {
+		if !pixels[p] {
+			continue
+		}
+		components++
+		queue := []image.Point{p}
+		delete(pixels, p)
+		for len(queue) > 0 {
+			p, queue = queue[0], queue[1:]
+			for dy := -1; dy <= 1; dy++ {
+				for dx := -1; dx <= 1; dx++ {
+					n := p.Add(image.Pt(dx, dy))
+					if pixels[n] {
+						delete(pixels, n)
+						queue = append(queue, n)
+					}
+				}
+			}
+		}
+	}
+	return components
 }

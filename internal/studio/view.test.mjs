@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { generationInputsForStyle, inputChoiceForRecipe, inputFor, inputValueForStyle, readExportView, writeExportView } from "./assets/view.mjs";
+import { generationInputsForStyle, inputChoiceForRecipe, inputFor, inputValueForStyle, readExportView, readPreviewBackground, writeExportView } from "./assets/view.mjs";
 
 const styles = [
   { id: "companions", native_width: 128, native_height: 128, inputs: { animal: { default: "dog", values: [
@@ -74,4 +74,15 @@ test("native size drives default framing while copied dimensions take precedence
   assert.deepEqual(readExportView(new URLSearchParams(), style), { shape: "portrait", width: 256, height: 256 });
   assert.deepEqual(readExportView(new URLSearchParams("width=512"), style), { shape: "portrait", width: 512, height: 512 });
   assert.deepEqual(readExportView(new URLSearchParams("width=512&height=288"), style), { shape: "portrait", width: 512, height: 288 });
+});
+
+test("preview background links accept named surrounds and default safely", () => {
+  for (const background of ["dark", "light", "gray"]) {
+    const params = writeExportView(new URLSearchParams({ background }), { shape: "circle", width: 512, height: 512 });
+    assert.equal(readPreviewBackground(params), background);
+    assert.deepEqual(readExportView(params), { shape: "circle", width: 512, height: 512 });
+  }
+  for (const query of ["", "background=red", "background=LIGHT"]) {
+    assert.equal(readPreviewBackground(new URLSearchParams(query)), "dark");
+  }
 });

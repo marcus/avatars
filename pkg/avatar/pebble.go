@@ -86,51 +86,84 @@ func pebbleSVG(seed string, color ColorChoice) string {
 		return int(hash % uint32(max))
 	}
 
-	cx := 32 + next(3) - 1
-	top := 11 + next(4)
-	bottom := 52 + next(3)
-	left := 10 + next(4)
-	right := 51 + next(4)
-	topX := cx + next(5) - 2
-	bottomX := cx + next(7) - 3
-	shoulderY := 18 + next(4)
-	hipY := 46 + next(4)
-
+	// Keep the mass pudgy, but let a seed choose a recognisable proportion.
+	// Width and height move together instead of independently distorting a blob.
+	proportions := [][2]float64{{24, 17}, {18, 23}, {22, 20}, {20, 22}, {23, 18}}
+	proportion := proportions[next(len(proportions))]
+	rx := proportion[0] + float64(next(3)-1)*.5
+	ry := proportion[1] + float64(next(3)-1)*.5
+	cx, cy := 32.0, 33.0
+	lean := float64(next(9) - 4)
+	topX, bottomX := cx+lean, cx-lean*.35
+	top, bottom := cy-ry, cy+ry
+	left, right := cx-rx, cx+rx
+	leftY := cy + float64(next(5))
+	rightY := cy + float64(next(5))
+	// Unequal cheeks and a broad, softly resting base carry the body gesture.
+	crown := .52 + float64(next(4))*.04
 	path := fmt.Sprintf(
-		"M%d %d"+
-			" C%d %d %d %d %d %d"+
-			" C%d %d %d %d %d %d"+
-			" C%d %d %d %d %d %d"+
-			" C%d %d %d %d %d %d"+
-			" C%d %d %d %d %d %d"+
-			" C%d %d %d %d %d %d"+
-			" C%d %d %d %d %d %d Z",
+		"M%.2f %.2f"+
+			" C%.2f %.2f %.2f %.2f %.2f %.2f"+
+			" C%.2f %.2f %.2f %.2f %.2f %.2f"+
+			" C%.2f %.2f %.2f %.2f %.2f %.2f"+
+			" C%.2f %.2f %.2f %.2f %.2f %.2f Z",
 		topX, top,
-		topX+7, top-2+next(3), right-2, shoulderY-3, right, shoulderY+7,
-		right+1, 33, right-1, hipY-1, right-6, hipY+3,
-		right-10, bottom, bottomX+7, bottom+2, bottomX, bottom,
-		bottomX-8, bottom+1, left+7, bottom-1, left+4, hipY,
-		left, hipY-4, left-1, 34, left+1, 29,
-		left+2, 23, left+5, shoulderY, left+10, shoulderY-3,
-		left+14, top+1, topX-5, top-1, topX, top,
+		topX+rx*crown, top, right, rightY-ry*.68, right, rightY,
+		right, rightY+ry*.68, bottomX+rx*.72, bottom, bottomX, bottom,
+		bottomX-rx*.72, bottom, left, leftY+ry*.62, left, leftY,
+		left, leftY-ry*.65, topX-rx*crown, top, topX, top,
 	)
 
-	eyeY := 31 + next(4) - 1
-	spacing := 12 + next(5)
-	gaze := next(3) - 1
-	leftEyeX := cx - spacing/2 + gaze
-	rightEyeX := cx + (spacing+1)/2 + gaze
-	leftRX := 1.35 + float64(next(4))*.12
-	rightRX := 1.35 + float64(next(4))*.12
-	leftRY := .72 + float64(next(3))*.12
-	rightRY := .72 + float64(next(3))*.12
-	leftTilt := next(9) - 4
-	rightTilt := next(9) - 4
-
+	// Choose the whole expression first. Small paired variations keep the eyes
+	// related; independent eye angles easily turn a gentle face into a scowl.
+	mood := next(7)
+	spacing := 12.0 + float64(next(4))
+	faceX := cx + lean*.3 + float64(next(5)-2)
+	faceY := cy + float64(next(5)-2)
+	leftRX, rightRX, leftRY, rightRY := 1.55, 1.55, 1.95, 1.95
+	leftArc, rightArc := false, false
+	switch mood {
+	case 0: // Quiet, close to the original tiny horizontal eyes.
+		leftRX, rightRX, leftRY, rightRY = 1.8, 1.8, .95, .95
+	case 1: // Curious: one eye opens a little more and the face looks up.
+		leftRY, rightRY = 2.5, 1.65
+		faceY -= 2
+	case 2: // Sleepy, with both soft eye marks still present.
+		leftRX, rightRX, leftRY, rightRY = 2.1, 2.1, .85, .85
+		faceY += 1
+	case 3: // Shy: a lower, closer-set face.
+		spacing = 9.5 + float64(next(3))
+		leftRX, rightRX, leftRY, rightRY = 1.35, 1.35, 1.7, 1.7
+		faceY += 3
+	case 4: // Contented soft squints, drawn as two filled arches.
+		leftArc, rightArc = true, true
+	case 5: // A friendly wink, never opposing angry eye angles.
+		if next(2) == 0 {
+			leftArc = true
+		} else {
+			rightArc = true
+		}
+	case 6: // Wide-eyed, with a little more space to breathe.
+		spacing += 1
+		leftRY, rightRY = 2.35, 2.35
+	}
+	faceTilt := float64(next(5)-2) * .45
+	leftEyeX, rightEyeX := faceX-spacing/2, faceX+spacing/2
 	var out strings.Builder
 	fmt.Fprintf(&out, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="%s" fill="%s"/>`, path, color.Swatch)
-	fmt.Fprintf(&out, `<ellipse cx="%d" cy="%d" rx="%.2f" ry="%.2f" fill="%s" transform="rotate(%d %d %d)"/>`, leftEyeX, eyeY, leftRX, leftRY, color.EyeColor, leftTilt, leftEyeX, eyeY)
-	fmt.Fprintf(&out, `<ellipse cx="%d" cy="%d" rx="%.2f" ry="%.2f" fill="%s" transform="rotate(%d %d %d)"/>`, rightEyeX, eyeY+next(3)-1, rightRX, rightRY, color.EyeColor, rightTilt, rightEyeX, eyeY)
+	pebbleEye(&out, leftEyeX, faceY-faceTilt, leftRX, leftRY, leftArc, color.EyeColor)
+	pebbleEye(&out, rightEyeX, faceY+faceTilt, rightRX, rightRY, rightArc, color.EyeColor)
 	out.WriteString(`</svg>`)
 	return out.String()
+}
+
+func pebbleEye(out *strings.Builder, x, y, rx, ry float64, arc bool, fill string) {
+	if arc {
+		// A filled arch avoids stroke/rasterizer differences at tiny export sizes.
+		fmt.Fprintf(out, `<path d="M%.2f %.2f C%.2f %.2f %.2f %.2f %.2f %.2f C%.2f %.2f %.2f %.2f %.2f %.2f Z" fill="%s"/>`,
+			x-2.1, y+.65, x-2.3, y-2.5, x+2.3, y-2.5, x+2.1, y+.65,
+			x+.9, y-.8, x-.9, y-.8, x-2.1, y+.65, fill)
+		return
+	}
+	fmt.Fprintf(out, `<ellipse cx="%.2f" cy="%.2f" rx="%.2f" ry="%.2f" fill="%s"/>`, x, y, rx, ry, fill)
 }
