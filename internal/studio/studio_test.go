@@ -27,10 +27,10 @@ func TestEmbeddedStudioRoutes(t *testing.T) {
 
 func TestStudioCardAssetsUseBrowserMIMETypes(t *testing.T) {
 	for target, expected := range map[string]string{
-		"/card-grid.css":             "text/css",
-		"/card-grid.mjs":             "text/javascript",
-		"/card-physics.mjs":          "text/javascript",
-		"/card-sound.mjs":            "text/javascript",
+		"/card-grid.css":            "text/css",
+		"/card-grid.mjs":            "text/javascript",
+		"/card-physics.mjs":         "text/javascript",
+		"/card-sound.mjs":           "text/javascript",
 		"/vendor/matter/matter.mjs": "text/javascript",
 	} {
 		response := httptest.NewRecorder()
