@@ -1,4 +1,4 @@
-import { colorChoiceForRecipe, colorInputFor, colorValueForStyle, readExportView, readPreviewBackground, writeExportView } from "/view.mjs";
+import { generationInputsForStyle, inputChoiceForRecipe, inputFor, nativeRatio, readExportView, readPreviewBackground, writeExportView } from "/view.mjs";
 import { createCardGrid, reconcileKeyedChildren } from "/card-grid.mjs";
 
 const $ = (id) => document.getElementById(id);
@@ -6,7 +6,7 @@ const state = {
   collections: [], styles: [], formats: [], collectionId: null, avatarId: null,
   selected: null, loaded: false, generating: false, refreshing: false,
   librarySignature: "", gridSignature: "", request: 0, routeRequest: 0,
-  colorByStyle: {}, previewBackground: "dark",
+  inputsByStyle: {}, previewBackground: "dark",
 };
 let toastTimer;
 let lastSelected = null;
@@ -77,7 +77,9 @@ function routeURL(collectionId = null, avatarId = null) {
   if (collectionId) params.set("collection", collectionId);
   if (avatarId) {
     params.set("avatar", avatarId);
-    params = writeExportView(params, readExportControls() || readExportView(new URLSearchParams(location.search)));
+    const style = state.styles.find((item) => item.id === avatarFor(avatarId)?.style);
+    const view = state.selected ? readExportControls() : null;
+    params = writeExportView(params, view || readExportView(new URLSearchParams(), style));
     params.set("background", state.previewBackground);
   }
   return params.size ? `/?${params}` : "/";
@@ -267,9 +269,11 @@ function renderInspector() {
   $("portrait-collection").textContent = collection?.name || "View collection";
   $("portrait-collection").href = routeURL(avatar.collection_id);
   $("portrait-style").textContent = styleName(avatar.style);
-  const savedColor = colorChoiceForRecipe(state.styles, avatar);
-  $("portrait-color-row").hidden = !savedColor;
-  $("portrait-color").textContent = savedColor?.label || "";
+  for (const name of ["color", "animal"]) {
+    const choice = inputChoiceForRecipe(state.styles, avatar, name);
+    $(`portrait-${name}-row`).hidden = !choice;
+    $(`portrait-${name}`).textContent = choice?.label || "";
+  }
   $("portrait-date").textContent = formatDate(avatar.created_at, true);
   $("portrait-date").title = new Date(avatar.created_at).toLocaleString();
   $("preview-caption").textContent = `${styleName(avatar.style).toUpperCase()} / ${["gorey", "gorey-expanded"].includes(avatar.style) ? "PEN & INK" : "PORTRAIT"}`;
@@ -294,13 +298,6 @@ async function resolveRoute({ scroll = false, restoreView = true } = {}) {
   const params = new URLSearchParams(location.search);
   state.collectionId = params.get("collection");
   state.avatarId = params.get("avatar");
-  if (restoreView && state.avatarId) {
-    const view = readExportView(params);
-    $("export-form").elements.shape.value = view.shape;
-    $("export-width").value = view.width;
-    $("export-height").value = view.height;
-    setPreviewBackground(readPreviewBackground(params));
-  }
   state.selected = null;
   try {
     if (state.collectionId && !collectionFor(state.collectionId)) {
@@ -327,8 +324,14 @@ async function resolveRoute({ scroll = false, restoreView = true } = {}) {
     const style = state.selected?.style || collectionFor(state.collectionId)?.style;
     if (state.styles.some((item) => item.id === style)) $("style").value = style;
     const recipe = state.selected || collectionFor(state.collectionId)?.avatars[0];
-    const recipeColor = recipe ? colorValueForStyle(state.styles, style, recipe.inputs?.color) : undefined;
-    renderColorInput(recipeColor);
+    renderGenerationInputs(recipe ? generationInputsForStyle(state.styles, style, recipe.inputs) : undefined);
+    if (state.avatarId) {
+      const view = readExportView(params, state.styles.find((item) => item.id === state.selected?.style));
+      $("export-form").elements.shape.value = view.shape;
+      $("export-width").value = view.width;
+      $("export-height").value = view.height;
+      setPreviewBackground(readPreviewBackground(params));
+    }
   }
   render();
   if (scroll && state.avatarId) [...$("portrait-grid").children].find((card) => card.dataset.avatar === state.avatarId)?.scrollIntoView({ block: "nearest" });
@@ -355,36 +358,36 @@ function renderStyles() {
     return option;
   }));
   if (state.styles.some((style) => style.id === previous)) $("style").value = previous;
+  else if (state.styles.some((style) => style.id === "gorey")) $("style").value = "gorey";
   $("style").disabled = !state.styles.length;
-  renderColorInput();
+  renderGenerationInputs();
   setGenerating(state.generating);
 }
 
-function renderColorInput(preferred) {
+function renderGenerationInputs(preferred = {}) {
   const styleId = $("style").value;
-  const input = colorInputFor(state.styles, styleId);
-  const field = $("color-field");
-  field.hidden = !input;
-  if (!input) {
-    $("color").replaceChildren();
-    $("color-swatch").style.removeProperty("--swatch");
-    return;
+  const selected = generationInputsForStyle(state.styles, styleId, {
+    ...state.inputsByStyle[styleId], ...preferred,
+  });
+  for (const name of ["color", "animal"]) {
+    const input = inputFor(state.styles, styleId, name);
+    $(`${name}-field`).hidden = !input;
+    $(name).replaceChildren(...(input?.values || []).map((choice) => {
+      const option = element("option", "", choice.label);
+      option.value = choice.value;
+      return option;
+    }));
+    if (input) $(name).value = selected[name];
   }
-  $("color").replaceChildren(...input.values.map((choice) => {
-    const option = element("option", "", choice.label);
-    option.value = choice.value;
-    return option;
-  }));
-  const selected = colorValueForStyle(state.styles, styleId, preferred || state.colorByStyle[styleId]);
-  $("color").value = selected;
-  state.colorByStyle[styleId] = selected;
+  state.inputsByStyle[styleId] = selected;
   updateColorSwatch();
 }
 
 function updateColorSwatch() {
-  const input = colorInputFor(state.styles, $("style").value);
+  const input = inputFor(state.styles, $("style").value, "color");
   const choice = input?.values.find((item) => item.value === $("color").value);
   if (choice) $("color-swatch").style.setProperty("--swatch", choice.swatch);
+  else $("color-swatch").style.removeProperty("--swatch");
 }
 
 function setGenerating(generating) {
@@ -445,8 +448,8 @@ async function generate(event) {
   $("notice").hidden = true;
   ++state.request; // An earlier library read must not replace this new collection.
   const body = { style: $("style").value, count: Number($("count").value) };
-  const color = colorValueForStyle(state.styles, body.style, $("color").value);
-  if (color) body.inputs = { color };
+  const inputs = generationInputsForStyle(state.styles, body.style, { color: $("color").value, animal: $("animal").value });
+  if (Object.keys(inputs).length) body.inputs = inputs;
   const name = $("collection-name").value.trim();
   if (name) body.name = name;
   try {
@@ -575,10 +578,10 @@ $("portrait-grid").addEventListener("keydown", (event) => {
   cards[Math.min(cards.length - 1, Math.max(0, next))]?.focus();
 });
 $("generate-form").addEventListener("submit", generate);
-$("style").addEventListener("change", () => renderColorInput());
-$("color").addEventListener("change", () => {
-  state.colorByStyle[$("style").value] = $("color").value;
-  updateColorSwatch();
+$("style").addEventListener("change", () => renderGenerationInputs());
+for (const name of ["color", "animal"]) $(name).addEventListener("change", () => {
+  state.inputsByStyle[$("style").value][name] = $(name).value;
+  if (name === "color") updateColorSwatch();
 });
 $("empty-generate").addEventListener("click", generate);
 $("refresh").addEventListener("click", () => refresh({ loud: true }));
@@ -619,7 +622,7 @@ $("export-form").addEventListener("submit", exportAvatar);
 $("export-form").addEventListener("change", (event) => {
   if (event.target.name === "shape") {
     const width = Number($("export-width").value);
-    if (width >= 1 && width <= 2048) $("export-height").value = Math.min(2048, circleSelected() ? width : Math.round(width * 9 / 8));
+    if (width >= 1 && width <= 2048) $("export-height").value = Math.min(2048, circleSelected() ? width : Math.round(width * nativeRatio(state.styles.find((style) => style.id === state.selected?.style))));
   }
   syncExportURL();
   updatePreview();

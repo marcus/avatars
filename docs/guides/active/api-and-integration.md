@@ -34,7 +34,15 @@ Pebble accepts one style-owned input. The default is Walnut, and saved recipes a
 {"style":"pebble","inputs":{"color":"sage"},"count":12}
 ```
 
-Use `GET /api/v1/styles` to discover the accepted color values, labels, swatches, and default. Other styles reject a nonempty color input.
+Companions accepts `animal`, with values `dog` and `cat`. Its default is `dog`. Every saved companion recipe contains `"inputs":{"animal":"dog"}` or `"inputs":{"animal":"cat"}`, including when the input was omitted:
+
+```json
+{"style":"companions","inputs":{"animal":"cat"},"count":12}
+```
+
+Use `GET /api/v1/styles` or `avatars styles --json` to discover supported inputs. Companions publishes `inputs.animal` with `default`, and `values` containing `value` and `label` (Dogs or Cats). Pebble publishes `inputs.color` with the same fields plus color swatches. Styles reject nonempty inputs they do not support; Companions refuses color and Pebble refuses animal. Unknown nested fields and values are refused before persistence. Existing records without inputs remain valid.
+
+Style discovery also reports `native_width` and `native_height` for built-in styles. These describe artwork geometry, independent of export dimensions.
 
 For one avatar, a supplied seed is used verbatim. For a batch, seeds are `SEED:0`, `SEED:1`, and so on. A batch is saved as one record; callers never see a partially saved collection. A successful retry creates another collection with new IDs, even when it reuses a seed.
 
@@ -67,18 +75,21 @@ API URLs are relative to the service origin. CLI JSON expands them into absolute
 
 ## Export images
 
-Saved image routes accept `width`, `height`, and `circle`. Omitted dimensions preserve the artwork's native ratio, which is 64 × 72 for the portrait styles and 64 × 64 for Pebble. If only one dimension is provided, the other is derived from the native ratio. A circular export defaults to the larger native dimension, and one supplied dimension sets both sides. With both dimensions supplied, the circle is inscribed in the requested canvas. Each dimension must be 1–2048.
+Saved image routes accept `width`, `height`, and `circle`. Omitted dimensions preserve the artwork's native ratio, which is 64 × 72 for Gorey, Gorey Expanded, and Picasso, 64 × 64 for Pebble, and 128 × 128 for Companions. If only one dimension is provided, the other is derived from the native ratio. A circular export defaults to the larger native dimension, and one supplied dimension sets both sides. With both dimensions supplied, the circle is inscribed in the requested canvas. Each dimension must be 1–2048.
 
 ```text
 /api/v1/avatars/av_ID.png?width=256&height=256&circle=true
 ```
 
-Stateless rendering additionally accepts required `seed` and optional `style`, `color`, and `format` (`svg` by default). It never writes a collection. An empty seed is valid for stateless rendering and has the same deterministic meaning as in the TypeScript reference. URL-encode seeds with your HTTP client's query parameter support.
+Stateless rendering additionally accepts required `seed` and optional `style`, `color`, `animal`, and `format` (`svg` by default). It never writes a collection. An empty seed is valid for stateless rendering and has the same deterministic meaning as in the TypeScript reference. URL-encode seeds with your HTTP client's query parameter support.
 
 ```text
 /api/v1/render?seed=agent-42&style=gorey&format=svg
 /api/v1/render?seed=agent-42&style=pebble&color=sage&format=svg
+/api/v1/render?seed=sample&style=companions&animal=dog&format=png
 ```
+
+Each scalar query parameter may appear only once. Saved image routes refuse `animal` and `color` overrides and render the stored recipe.
 
 SVG uses `image/svg+xml`; PNG uses `image/png`. The filename appears in Content-Disposition. The service does not cache mutable library queries.
 
@@ -102,6 +113,9 @@ A generator that supports a typed appearance input publishes its choices through
 image, err := engine.RenderWithInputs(ctx, "pebble", "agent-42", "png",
     avatar.Inputs{Color: "sage"},
     avatar.Options{Width: 256, Height: 256})
+
+pets, err := engine.RenderWithInputs(ctx, "companions", "sample", "svg",
+    avatar.Inputs{Animal: "cat"}, avatar.Options{})
 ```
 
 `Engine.ResolveInputs` is the shared validation boundary. It resolves the style default before a recipe is saved and rejects an input unsupported by the selected style. Saved exports pass the stored recipe to `RenderWithInputs` and expose no appearance override.
@@ -114,7 +128,7 @@ Saved records contain rendering recipes. Preserve the output contract for an exi
 
 ```sh
 make fmt-check vet test-race build
-node --test port/agent-portrait.test.ts
+node --test internal/studio/*.test.mjs port/agent-portrait.test.ts
 ```
 
 The Go suite verifies TypeScript fixture parity, image exports, circular transparency, shared CLI/HTTP behavior, persistence across restart, and concurrent subprocess writes. Node is needed only to run or regenerate the reference fixtures, not to build or use Avatars.

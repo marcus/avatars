@@ -19,24 +19,38 @@ type Artwork struct {
 }
 
 type Style struct {
-	ID          string       `json:"id"`
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	Inputs      *StyleInputs `json:"inputs,omitempty"`
+	NativeWidth  int          `json:"native_width,omitempty"`
+	NativeHeight int          `json:"native_height,omitempty"`
+	ID           string       `json:"id"`
+	Name         string       `json:"name"`
+	Description  string       `json:"description"`
+	Inputs       *StyleInputs `json:"inputs,omitempty"`
 }
 
 // Inputs identifies the appearance choices that are part of a generated
 // avatar's recipe. Export dimensions and cropping remain in Options.
 type Inputs struct {
-	Color string `json:"color,omitempty"`
+	Color  string `json:"color,omitempty"`
+	Animal string `json:"animal,omitempty"`
 }
 
-func (i Inputs) Empty() bool { return i.Color == "" }
+func (i Inputs) Empty() bool { return i.Color == "" && i.Animal == "" }
 
 // StyleInputs publishes the small set of generation inputs supported by a
 // style. The descriptors are shared by validation, clients, and renderers.
 type StyleInputs struct {
-	Color *ColorInput `json:"color,omitempty"`
+	Color  *ColorInput  `json:"color,omitempty"`
+	Animal *AnimalInput `json:"animal,omitempty"`
+}
+
+type AnimalInput struct {
+	Default string         `json:"default"`
+	Values  []AnimalChoice `json:"values"`
+}
+
+type AnimalChoice struct {
+	Value string `json:"value"`
+	Label string `json:"label"`
 }
 
 type ColorInput struct {
@@ -136,6 +150,7 @@ func New() *Engine {
 	_ = e.RegisterGenerator(GoreyExpanded{})
 	_ = e.RegisterGenerator(Picasso{})
 	_ = e.RegisterGenerator(Pebble{})
+	_ = e.RegisterGenerator(Companions{})
 	_ = e.RegisterExporter(SVGExporter{})
 	_ = e.RegisterExporter(PNGExporter{})
 	return e
@@ -225,22 +240,55 @@ func (e *Engine) ResolveInputs(style string, inputs Inputs) (Inputs, error) {
 	if !ok {
 		return Inputs{}, fmt.Errorf("%w: %q", ErrUnknownStyle, style)
 	}
-	spec := g.Style().Inputs
-	if spec == nil || spec.Color == nil {
+	return resolveStyleInputs(g.Style(), inputs)
+}
+
+// resolveStyleInputs also serves direct generator calls, keeping defaults and
+// unsupported-input refusal the same with or without an Engine.
+func resolveStyleInputs(style Style, inputs Inputs) (Inputs, error) {
+	spec := style.Inputs
+	if spec == nil {
+		spec = &StyleInputs{}
+	}
+	if spec.Color == nil {
 		if inputs.Color != "" {
-			return Inputs{}, fmt.Errorf("%w: style %q does not support color", ErrInvalidInputs, style)
+			return Inputs{}, fmt.Errorf("%w: style %q does not support color", ErrInvalidInputs, style.ID)
 		}
-		return Inputs{}, nil
-	}
-	if inputs.Color == "" {
-		inputs.Color = spec.Color.Default
-	}
-	for _, choice := range spec.Color.Values {
-		if choice.Value == inputs.Color {
-			return inputs, nil
+	} else {
+		if inputs.Color == "" {
+			inputs.Color = spec.Color.Default
+		}
+		valid := false
+		for _, choice := range spec.Color.Values {
+			if choice.Value == inputs.Color {
+				valid = true
+				break
+			}
+		}
+		if !valid {
+			return Inputs{}, fmt.Errorf("%w: invalid color %q for style %q", ErrInvalidInputs, inputs.Color, style.ID)
 		}
 	}
-	return Inputs{}, fmt.Errorf("%w: invalid color %q for style %q", ErrInvalidInputs, inputs.Color, style)
+	if spec.Animal == nil {
+		if inputs.Animal != "" {
+			return Inputs{}, fmt.Errorf("%w: style %q does not support animal", ErrInvalidInputs, style.ID)
+		}
+	} else {
+		if inputs.Animal == "" {
+			inputs.Animal = spec.Animal.Default
+		}
+		valid := false
+		for _, choice := range spec.Animal.Values {
+			if choice.Value == inputs.Animal {
+				valid = true
+				break
+			}
+		}
+		if !valid {
+			return Inputs{}, fmt.Errorf("%w: invalid animal %q for style %q", ErrInvalidInputs, inputs.Animal, style.ID)
+		}
+	}
+	return inputs, nil
 }
 
 func (e *Engine) Render(ctx context.Context, style, seed, format string, options Options) ([]byte, error) {

@@ -10,7 +10,7 @@ import (
 type GoreyExpanded struct{}
 
 func (GoreyExpanded) Style() Style {
-	return Style{ID: "gorey-expanded", Name: "Gorey Expanded", Description: "An extended cast of engraved portraits, with varied faces, hair, hats, and dress."}
+	return Style{NativeWidth: 64, NativeHeight: 72, ID: "gorey-expanded", Name: "Gorey Expanded", Description: "An extended cast of engraved portraits, with varied faces, hair, hats, and dress."}
 }
 func (GoreyExpanded) Generate(ctx context.Context, seed string) (Artwork, error) {
 	if err := ctx.Err(); err != nil {

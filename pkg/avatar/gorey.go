@@ -11,7 +11,7 @@ import (
 type Gorey struct{}
 
 func (Gorey) Style() Style {
-	return Style{ID: "gorey", Name: "Gorey", Description: "Engraved pen-and-ink portraits on warm paper."}
+	return Style{NativeWidth: 64, NativeHeight: 72, ID: "gorey", Name: "Gorey", Description: "Engraved pen-and-ink portraits on warm paper."}
 }
 
 func (Gorey) Generate(ctx context.Context, seed string) (Artwork, error) {
