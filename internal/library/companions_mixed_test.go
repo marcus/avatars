@@ -3,11 +3,12 @@ package library_test
 import (
 	"bytes"
 	"context"
+	"path/filepath"
+	"testing"
+
 	"github.com/marcus/avatars/internal/library"
 	"github.com/marcus/avatars/internal/store"
 	"github.com/marcus/avatars/pkg/avatar"
-	"path/filepath"
-	"testing"
 )
 
 func TestMixedCompanionBatchPersistsAndReopensConcreteRecipes(t *testing.T) {

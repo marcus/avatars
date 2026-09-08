@@ -2,14 +2,15 @@ package cli_test
 
 import (
 	"encoding/json"
+	"net/http/httptest"
+	"path/filepath"
+	"testing"
+
 	"github.com/marcus/avatars/internal/httpapi"
 	"github.com/marcus/avatars/internal/library"
 	"github.com/marcus/avatars/internal/store"
 	"github.com/marcus/avatars/internal/studio"
 	"github.com/marcus/avatars/pkg/avatar"
-	"net/http/httptest"
-	"path/filepath"
-	"testing"
 )
 
 func TestMixedCompanionLocalHTTPAndSavedParity(t *testing.T) {
