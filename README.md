@@ -24,6 +24,8 @@ make build
 
 The studio opens at `http://127.0.0.1:7447`. It includes a collection browser, portrait grid, and export inspector. Choose a style and batch size, then generate. Select a portrait to adjust export dimensions, apply a circular crop, download SVG or PNG, or copy its direct link with the selected shape and dimensions.
 
+The inspector offers Dark, Light, and Gray preview backgrounds. Copied portrait links retain the selected surround, shape, and dimensions. Background choices affect the preview only; SVG and PNG exports keep their original transparency.
+
 The service runs in the foreground until you press Ctrl-C. It serves both the API and the embedded studio. No Node.js runtime or frontend build is needed.
 
 ## Generate from the CLI

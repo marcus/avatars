@@ -79,6 +79,8 @@ Check the smallest intended sizes, eye contrast, spacing, silhouette margins, an
 
 Record the commands, proof paths, visual findings, and any remaining concerns in the controlling plan. Generated samples may stay in an ignored local proof directory; commit a small deterministic recipe or script if it makes future review reproducible. Avoid large generated image dumps.
 
+For expressive characters, choose a few coherent face arrangements before adding bounded variation. A changed outline alone can produce many different files that still feel like the same character. Compare labeled seeds before and after a refinement, and inspect eyes at small sizes instead of requiring one particular SVG element for every expression.
+
 ## Handoff and completion
 
 Commit coherent changes and request an independent review. Give the reviewer the brief and acceptance evidence. Repair findings, rerun affected checks, and update the guide to describe the resulting extension seam accurately.
