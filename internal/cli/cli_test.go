@@ -144,3 +144,42 @@ func TestFailedExportReportsSavedCollection(t *testing.T) {
 		t.Fatal(code, out, err)
 	}
 }
+
+func TestStylesGeneralizeAcrossCLIAndHTTP(t *testing.T) {
+	cleanEnv(t)
+	s, e := store.New(filepath.Join(t.TempDir(), "collections.jsonl"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	engine := avatar.New()
+	server := httptest.NewServer(httpapi.New(library.New(engine, s), engine, studio.Handler()))
+	defer server.Close()
+	code, out, err := invoke(t, "styles", "--url", server.URL, "--json")
+	if code != 0 {
+		t.Fatal(err)
+	}
+	for _, style := range []string{"gorey", "gorey-expanded", "picasso"} {
+		if !strings.Contains(out, `"id": "`+style+`"`) {
+			t.Fatal("missing style", style, out)
+		}
+		code, data, err := invoke(t, "generate", "--url", server.URL, "--style", style, "--seed", "integration", "--json")
+		if code != 0 {
+			t.Fatal(style, err)
+		}
+		var c library.Collection
+		if e := json.Unmarshal([]byte(data), &c); e != nil {
+			t.Fatal(e)
+		}
+		if c.Style != style || len(c.Avatars) != 1 || c.Avatars[0].Style != style {
+			t.Fatal(c)
+		}
+		code, saved, err := invoke(t, "export", c.Avatars[0].ID, "--url", server.URL)
+		if code != 0 {
+			t.Fatal(err)
+		}
+		code, rendered, err := invoke(t, "render", "--style", style, "--seed", "integration")
+		if code != 0 || saved != rendered {
+			t.Fatal("cross-surface rendering mismatch", style, err)
+		}
+	}
+}

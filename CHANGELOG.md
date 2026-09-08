@@ -10,3 +10,5 @@
 - CLI generation, browsing, export, stateless rendering, structured help, and HTTP access.
 - Embedded avatar studio with a portrait grid, collections, direct links, and export inspector.
 - Loopback HTTP API over the same application core used by local CLI commands.
+- Gorey Expanded adds a wider cast of engraved characters; Picasso adds restrained cubist portraits through the same generator interface.
+- Portrait links preserve export shape and dimensions, and the service supports an explicit Tailscale HTTPS proxy origin.

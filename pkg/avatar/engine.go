@@ -98,6 +98,8 @@ type Engine struct {
 func New() *Engine {
 	e := &Engine{}
 	_ = e.RegisterGenerator(Gorey{})
+	_ = e.RegisterGenerator(GoreyExpanded{})
+	_ = e.RegisterGenerator(Picasso{})
 	_ = e.RegisterExporter(SVGExporter{})
 	_ = e.RegisterExporter(PNGExporter{})
 	return e

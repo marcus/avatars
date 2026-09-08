@@ -2,7 +2,15 @@
 
 A local avatar generator with a CLI, HTTP API, and creative studio. Generate a collection, pick a portrait, and export it as SVG or PNG. Avatars created by agents appear in the same library as those created in the studio.
 
-The first style, **Gorey**, draws engraved pen-and-ink characters with varied faces, hair, clothes, and paper tones. Generation is random by default. Programs can provide a seed to reproduce a portrait exactly.
+Three styles are available:
+
+| Style | Character |
+| --- | --- |
+| **Gorey** (`gorey`) | The original engraved pen-and-ink portraits, preserved exactly. |
+| **Gorey Expanded** (`gorey-expanded`) | A wider cast with more face shapes, ages, hairstyles, clothes, and accessories. |
+| **Picasso** (`picasso`) | Recognizable faces drawn with bold contours, muted color, and restrained cubist planes. |
+
+Generation is random by default. Programs can provide a seed to reproduce a portrait exactly. Each style uses the same SVG/PNG exporters and library workflow.
 
 ## Start the studio
 
@@ -13,7 +21,7 @@ make build
 ./bin/avatars serve --open
 ```
 
-The studio opens at `http://127.0.0.1:7447`. It includes a collection browser, portrait grid, and export inspector. Choose a style and batch size, then generate. Select a portrait to adjust export dimensions, apply a circular crop, download SVG or PNG, or copy its direct link.
+The studio opens at `http://127.0.0.1:7447`. It includes a collection browser, portrait grid, and export inspector. Choose a style and batch size, then generate. Select a portrait to adjust export dimensions, apply a circular crop, download SVG or PNG, or copy its direct link with the selected shape and dimensions.
 
 The service runs in the foreground until you press Ctrl-C. It serves both the API and the embedded studio. No Node.js runtime or frontend build is needed.
 
@@ -24,6 +32,7 @@ In another terminal:
 ```sh
 # Save random portraits and return links to the collection and each avatar.
 ./bin/avatars generate --count 12 --name "First cast" --json
+./bin/avatars generate --style picasso --count 12 --name "Picasso studies" --json
 
 # Browse the same library shown in the studio.
 ./bin/avatars list --json
