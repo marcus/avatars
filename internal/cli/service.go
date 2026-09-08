@@ -74,6 +74,9 @@ func (a *app) serviceCommand(ctx context.Context, args []string) error {
 			}
 			return a.emitService(serviceResult{State: "stopped", Status: lifecycle.Status{Endpoint: endpoint}, LifecycleSocket: socket, LogPath: logPath})
 		}
+		if err := validateService(ctx, status, "", socket); err != nil {
+			return err
+		}
 		return a.emitService(serviceResult{State: "running", Status: status, LifecycleSocket: socket, LogPath: logPath})
 	}
 	if verb == "stop" {
@@ -92,14 +95,8 @@ func (a *app) serviceCommand(ctx context.Context, args []string) error {
 		return a.emitService(serviceResult{State: "stopping", Status: status, LifecycleSocket: socket, LogPath: logPath})
 	}
 	if probeErr == nil {
-		if status.Service != "avatars" || status.APIVersion != "v1" {
-			return fmt.Errorf("incompatible service at %s", endpoint)
-		}
-		if wantedDataDir != "" {
-			running, canonErr := canonicalDataDir(status.DataDir)
-			if canonErr != nil || running == "" || running != wantedDataDir {
-				return fmt.Errorf("running service uses data directory %q; refusing requested %q", status.DataDir, wantedDataDir)
-			}
+		if err := validateService(ctx, status, wantedDataDir, socket); err != nil {
+			return err
 		}
 		return a.emitService(serviceResult{State: "running", Status: status, LifecycleSocket: socket, LogPath: logPath})
 	}
@@ -119,6 +116,9 @@ func (a *app) serviceCommand(ctx context.Context, args []string) error {
 	if status, err = probeService(readyCtx, endpoint); err == nil {
 		if status.Endpoint == "" {
 			status.Endpoint = endpoint
+		}
+		if err := validateService(readyCtx, status, wantedDataDir, socket); err != nil {
+			return err
 		}
 		return a.emitService(serviceResult{State: "running", Status: status, LifecycleSocket: socket, LogPath: logPath})
 	}
@@ -144,11 +144,10 @@ func (a *app) serviceCommand(ctx context.Context, args []string) error {
 			if status.Endpoint == "" {
 				status.Endpoint = endpoint
 			}
-			if status.Service != "avatars" || status.LaunchMode != lifecycle.Auto {
+			if status.LaunchMode != lifecycle.Auto {
 				return fmt.Errorf("unexpected service answered readiness at %s", endpoint)
 			}
-			controlled, controlErr := lifecycleStatus(readyCtx, socket)
-			if controlErr != nil || controlled.InstanceID != status.InstanceID {
+			if validationErr := validateService(readyCtx, status, wantedDataDir, socket); validationErr != nil {
 				select {
 				case <-readyCtx.Done():
 					return fmt.Errorf("service lifecycle readiness timed out: %w (log: %s)", readyCtx.Err(), logPath)
@@ -164,6 +163,25 @@ func (a *app) serviceCommand(ctx context.Context, args []string) error {
 		case <-ticker.C:
 		}
 	}
+}
+
+func validateService(ctx context.Context, status lifecycle.Status, wantedDataDir, socket string) error {
+	if status.Service != "avatars" || status.APIVersion != "v1" {
+		return fmt.Errorf("incompatible service at %s", status.Endpoint)
+	}
+	if wantedDataDir != "" {
+		running, err := canonicalDataDir(status.DataDir)
+		if err != nil || running == "" || running != wantedDataDir {
+			return fmt.Errorf("running service uses data directory %q; refusing requested %q", status.DataDir, wantedDataDir)
+		}
+	}
+	if status.LaunchMode == lifecycle.Auto {
+		controlled, err := lifecycleStatus(ctx, socket)
+		if err != nil || controlled.InstanceID == "" || controlled.InstanceID != status.InstanceID {
+			return fmt.Errorf("auto service at %s is missing matching lifecycle control", status.Endpoint)
+		}
+	}
+	return nil
 }
 
 func canonicalDataDir(path string) (string, error) {

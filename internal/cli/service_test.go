@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"github.com/marcus/avatars/internal/lifecycle"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -53,5 +54,16 @@ func TestProbeRejectsForeignAndMalformedHealth(t *testing.T) {
 			t.Fatal("accepted foreign health response")
 		}
 		server.Close()
+	}
+}
+
+func TestValidateServiceRejectsForeignAndWrongDataDirectory(t *testing.T) {
+	foreign := lifecycle.Status{Service: "other", APIVersion: "v1", Endpoint: "http://127.0.0.1:1"}
+	if err := validateService(context.Background(), foreign, "", ""); err == nil {
+		t.Fatal("accepted foreign service")
+	}
+	wrong := lifecycle.Status{Service: "avatars", APIVersion: "v1", Endpoint: "http://127.0.0.1:1", DataDir: t.TempDir()}
+	if err := validateService(context.Background(), wrong, filepath.Join(t.TempDir(), "wanted"), ""); err == nil {
+		t.Fatal("accepted wrong data directory")
 	}
 }
