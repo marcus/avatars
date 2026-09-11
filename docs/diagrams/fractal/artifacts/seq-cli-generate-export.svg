@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="sequence-title sequence-description" data-theme="grove" data-theme-appearance="light">
+  <title id="sequence-title">An agent generates, then exports a circular PNG</title><desc id="sequence-description">Local mode: the CLI runs the same core in-process against the shared library file, so the studio sees the result on its next refresh.</desc><metadata>{&quot;journeyId&quot;:&quot;cli-generate-export&quot;,&quot;provenance&quot;:&quot;Not a captured trace. Authored 2026-09-11 from internal/cli/cli.go, internal/cli/commands.go (generate, image, writeImage), internal/library/library.go, pkg/avatar/engine.go, and internal/studio/assets/app.js (refresh).&quot;,&quot;hiddenLanes&quot;:[],&quot;rows&quot;:[{&quot;id&quot;:&quot;generate&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;run&quot;,&quot;route&quot;,&quot;open&quot;,&quot;create&quot;,&quot;resolve&quot;,&quot;save&quot;,&quot;links&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;agent&quot;,&quot;dispatch&quot;,&quot;commands&quot;,&quot;store&quot;,&quot;library&quot;,&quot;engine&quot;]},{&quot;id&quot;:&quot;run&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;run&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;agent&quot;,&quot;dispatch&quot;]},{&quot;id&quot;:&quot;route&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;route&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;dispatch&quot;,&quot;commands&quot;]},{&quot;id&quot;:&quot;open&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;open&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;commands&quot;,&quot;store&quot;]},{&quot;id&quot;:&quot;create&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;create&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;commands&quot;,&quot;library&quot;]},{&quot;id&quot;:&quot;resolve&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;resolve&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;library&quot;,&quot;engine&quot;]},{&quot;id&quot;:&quot;save&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;save&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;library&quot;,&quot;store&quot;]},{&quot;id&quot;:&quot;links&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;links&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;commands&quot;,&quot;agent&quot;]},{&quot;id&quot;:&quot;export&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;run-export&quot;,&quot;route-export&quot;,&quot;render&quot;,&quot;lookup&quot;,&quot;render-engine&quot;,&quot;rasterize&quot;,&quot;write&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;agent&quot;,&quot;dispatch&quot;,&quot;commands&quot;,&quot;library&quot;,&quot;store&quot;,&quot;engine&quot;,&quot;png&quot;]},{&quot;id&quot;:&quot;run-export&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;run-export&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;agent&quot;,&quot;dispatch&quot;]},{&quot;id&quot;:&quot;route-export&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;route-export&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;dispatch&quot;,&quot;commands&quot;]},{&quot;id&quot;:&quot;render&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;render&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;commands&quot;,&quot;library&quot;]},{&quot;id&quot;:&quot;lookup&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;lookup&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;library&quot;,&quot;store&quot;]},{&quot;id&quot;:&quot;render-engine&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;render-engine&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;library&quot;,&quot;engine&quot;]},{&quot;id&quot;:&quot;rasterize&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;rasterize&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;engine&quot;,&quot;png&quot;]},{&quot;id&quot;:&quot;write&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;write&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;commands&quot;,&quot;agent&quot;]},{&quot;id&quot;:&quot;studio-sees-it&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;poll&quot;,&quot;toast&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;sync&quot;,&quot;store&quot;,&quot;person&quot;]},{&quot;id&quot;:&quot;poll&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;poll&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;sync&quot;,&quot;store&quot;]},{&quot;id&quot;:&quot;toast&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;toast&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;sync&quot;,&quot;person&quot;]}]}</metadata>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#84948b"/></marker>
+    <marker id="arrow-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10" fill="none" stroke="#84948b" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="1920" height="1080" fill="#fafbf8"/>
+  <g font-family="Arial, Helvetica, sans-serif" data-export-layer="title">
+    <text x="70" y="43" font-size="11" letter-spacing="2.5" fill="#607c69">FRACTAL / SEQUENCE JOURNEY</text>
+    <text x="70" y="88" text-anchor="start" font-size="34" fill="#243b34"><tspan x="70" dy="0">An agent generates, then exports a circular PNG</tspan></text>
+    <text x="70" y="126" text-anchor="start" font-size="15" fill="#6e7d72"><tspan x="70" dy="0">Local mode: the CLI runs the same core in-process against the shared library file, so the studio sees the result on its next refresh.</tspan></text>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" transform="translate(459.0224570673712 190) scale(0.5019815059445178)"><g data-column="agent" data-members="agent" data-elements="agent">
+    <rect x="102" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#B59669" stroke-width="2"/>
+    <text x="182" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="182" dy="0">Agent</tspan></text>
+    <path d="M182 95V1444" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="dispatch" data-members="dispatch" data-elements="cli.dispatch">
+    <rect x="306" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#B59669" stroke-width="2"/>
+    <text x="386" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="386" dy="0">Command dispatch</tspan></text>
+    <path d="M386 95V1444" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="commands" data-members="commands" data-elements="cli.library_commands">
+    <rect x="510" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#B59669" stroke-width="2"/>
+    <text x="590" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="590" dy="0">generate /</tspan><tspan x="590" dy="19">export</tspan></text>
+    <path d="M590 95V1444" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="library" data-members="library" data-elements="core.library">
+    <rect x="714" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#739886" stroke-width="2"/>
+    <text x="794" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="794" dy="0">Library service</tspan></text>
+    <path d="M794 95V1444" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="engine" data-members="engine" data-elements="core.engine">
+    <rect x="918" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#739886" stroke-width="2"/>
+    <text x="998" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="998" dy="0">Engine</tspan></text>
+    <path d="M998 95V1444" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="png" data-members="png" data-elements="core.exporters.png">
+    <rect x="1122" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#739886" stroke-width="2"/>
+    <text x="1202" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1202" dy="0">PNG exporter</tspan></text>
+    <path d="M1202 95V1444" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="store" data-members="store" data-elements="storage.jsonl">
+    <rect x="1326" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#89A579" stroke-width="2"/>
+    <text x="1406" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1406" dy="0">JSONL store</tspan></text>
+    <path d="M1406 95V1444" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="sync" data-members="sync" data-elements="studio.sync">
+    <rect x="1530" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="1610" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1610" dy="0">Studio refresh</tspan></text>
+    <path d="M1610 95V1444" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="person" data-members="person" data-elements="person">
+    <rect x="1734" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="1814" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1814" dy="0">Marcus</tspan></text>
+    <path d="M1814 95V1444" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-row-id="generate" data-message-ids="run,route,open,create,resolve,save,links" data-participant-ids="agent,dispatch,commands,store,library,engine" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="137" width="1880" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="160" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">1. avatars generate --style pebble --color random --count 12 --json</tspan></text>
+        
+        <text x="1896" y="158.5" text-anchor="end" font-size="11" fill="#78867c">7 interactions</text>
+      </g><g data-row-id="run" data-message-ids="run" data-participant-ids="agent,dispatch" data-row-type="message" data-kind="call">
+      <rect x="104" y="186" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="284" y="209" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="284" dy="0">Parse --json; no --url, so local mode</tspan></text>
+      
+      <path d="M182 225H378" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="route" data-message-ids="route" data-participant-ids="dispatch,commands" data-row-type="message" data-kind="call">
+      <rect x="308" y="250" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="488" y="273" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="488" dy="0">generate with validated flags</tspan></text>
+      
+      <path d="M386 289H582" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="open" data-message-ids="open" data-participant-ids="commands,store" data-row-type="message" data-kind="call">
+      <rect x="818" y="314" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="998" y="337" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="998" dy="0">Open $XDG_DATA_HOME/avatars/collections.jsonl</tspan><tspan x="998" dy="17">(create if missing, mode 0600)</tspan></text>
+      
+      <path d="M590 368H1398" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="create" data-message-ids="create" data-participant-ids="commands,library" data-row-type="message" data-kind="call">
+      <rect x="512" y="393" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="692" y="416" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="692" dy="0">Create(request)</tspan></text>
+      
+      <path d="M590 432H786" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="resolve" data-message-ids="resolve" data-participant-ids="library,engine" data-row-type="message" data-kind="call">
+      <rect x="716" y="457" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="896" y="480" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="896" dy="0">Resolve inputs; Random becomes a concrete color</tspan><tspan x="896" dy="17">per seed</tspan></text>
+      
+      <path d="M794 511H990" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="save" data-message-ids="save" data-participant-ids="library,store" data-row-type="message" data-kind="call">
+      <rect x="920" y="536" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="1100" y="559" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1100" dy="0">Save(collection) with flock + fsync</tspan></text>
+      
+      <path d="M794 575H1398" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="links" data-message-ids="links" data-participant-ids="commands,agent" data-row-type="message" data-kind="return">
+      <rect x="206" y="600" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="386" y="623" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="386" dy="0">JSON with absolute studio links</tspan><tspan x="386" dy="17">(http://127.0.0.1:7447/?avatar=av_…)</tspan></text>
+      
+      <path d="M590 654H190" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g><g data-row-id="export" data-message-ids="run-export,route-export,render,lookup,render-engine,rasterize,write" data-participant-ids="agent,dispatch,commands,library,store,engine,png" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="679" width="1880" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="702" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">2. avatars export av_… --format png --size 256 --circle --out icon.png</tspan></text>
+        
+        <text x="1896" y="700.5" text-anchor="end" font-size="11" fill="#78867c">7 interactions</text>
+      </g><g data-row-id="run-export" data-message-ids="run-export" data-participant-ids="agent,dispatch" data-row-type="message" data-kind="call">
+      <rect x="104" y="728" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="284" y="751" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="284" dy="0">export with format, size, circle, out</tspan></text>
+      
+      <path d="M182 767H378" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="route-export" data-message-ids="route-export" data-participant-ids="dispatch,commands" data-row-type="message" data-kind="call">
+      <rect x="308" y="792" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="488" y="815" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="488" dy="0">export</tspan></text>
+      
+      <path d="M386 831H582" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="render" data-message-ids="render" data-participant-ids="commands,library" data-row-type="message" data-kind="call">
+      <rect x="512" y="856" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="692" y="879" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="692" dy="0">Render(id, png, {256×256, circle})</tspan></text>
+      
+      <path d="M590 895H786" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="lookup" data-message-ids="lookup" data-participant-ids="library,store" data-row-type="message" data-kind="call">
+      <rect x="920" y="920" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="1100" y="943" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1100" dy="0">List and find the saved recipe</tspan></text>
+      
+      <path d="M794 959H1398" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="render-engine" data-message-ids="render-engine" data-participant-ids="library,engine" data-row-type="message" data-kind="call">
+      <rect x="716" y="984" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="896" y="1007" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="896" dy="0">RenderWithInputs(style, seed, png, saved inputs,</tspan><tspan x="896" dy="17">options)</tspan></text>
+      
+      <path d="M794 1038H990" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="rasterize" data-message-ids="rasterize" data-participant-ids="engine,png" data-row-type="message" data-kind="call">
+      <rect x="920" y="1063" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="1100" y="1086" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1100" dy="0">Export(native SVG, normalized options):</tspan><tspan x="1100" dy="17">rasterize, clip viewport, mask circle</tspan></text>
+      
+      <path d="M998 1117H1194" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="write" data-message-ids="write" data-participant-ids="commands,agent" data-row-type="message" data-kind="return">
+      <rect x="206" y="1142" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="386" y="1165" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="386" dy="0">Create icon.png exclusively (never overwrite);</tspan><tspan x="386" dy="17">exit 0</tspan></text>
+      
+      <path d="M590 1196H190" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g><g data-row-id="studio-sees-it" data-message-ids="poll,toast" data-participant-ids="sync,store,person" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="1221" width="1880" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="1244" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">3. The studio notices</tspan></text>
+        
+        <text x="1896" y="1242.5" text-anchor="end" font-size="11" fill="#78867c">2 interactions</text>
+      </g><g data-row-id="poll" data-message-ids="poll" data-participant-ids="sync,store" data-row-type="message" data-kind="async">
+      <rect x="1328" y="1270" width="360" height="85" rx="7" fill="#fafbf8"/>
+      <text x="1508" y="1293" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1508" dy="0">Next 5 s poll: GET /api/v1/collections makes the</tspan><tspan x="1508" dy="17">service re-read the same file</tspan></text>
+      <text x="1508" y="1334" text-anchor="middle" font-size="11" fill="#78867c"><tspan x="1508" dy="0">The running service and the CLI share collections.jsonl;</tspan><tspan x="1508" dy="15">each List re-reads it under a shared lock.</tspan></text>
+      <path d="M1610 1360H1414" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow-open)"/>
+    </g><g data-row-id="toast" data-message-ids="toast" data-participant-ids="sync,person" data-row-type="message" data-kind="return">
+      <rect x="1532" y="1385" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="1712" y="1408" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1712" dy="0">Toast “12 new portraits in your library”; cards</tspan><tspan x="1712" dy="17">reconciled by ID</tspan></text>
+      
+      <path d="M1610 1439H1806" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g></g>
+  <g font-family="Arial, Helvetica, sans-serif" data-export-layer="footer">
+    <path d="M70 992H1850" stroke="#dce2db"/>
+    <text x="70" y="1027" font-size="12" font-weight="600" letter-spacing="1" fill="#607c69">CURRENT · 16 INTERACTIONS</text>
+    <text x="620" y="1027" font-size="11" fill="#78867c">SOURCE · Not a captured trace. Authored 2026-09-11 from internal/cli/cli.go, internal/cli/commands.go (generate, image, writeImage), internal/library/library.go, pkg/avatar/engine.go, and internal/studio/assets/app.js (refres…</text>
+  </g>
+  </svg>

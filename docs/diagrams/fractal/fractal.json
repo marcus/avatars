@@ -1,0 +1,199 @@
+{
+  "version": 1,
+  "id": "avatars",
+  "title": "Avatars",
+  "description": "A local avatar generator: one Go binary with a CLI, an HTTP API, and an embedded studio, all over one deterministic core.",
+  "provenance": "Authored 2026-09-11 from the repository at commit 3c936bd. Current elements were traced from cmd/avatars/main.go through internal/cli (cli.go, commands.go, client.go, serve.go, service.go), internal/library, internal/store, internal/httpapi, internal/lifecycle, internal/discovery, pkg/avatar (engine.go, svg.go, png.go, and each style file), and the studio client under internal/studio (studio.go, assets/index.html, app.js, view.mjs, card-grid.mjs, card-physics.mjs, card-sound.mjs, CARD_SYSTEM.md). README.md and docs/guides/active/api-and-integration.md were used for product meaning. Proposed elements come from docs/plans/active/requested-styles-service.md; its Part 1 (service ensure/status/stop) is delivered and modeled as current, later phases are proposed. Comms Web and Tailscale Serve are external and described only as this repository sees them; the Comms Web element rests on the plan document, not on that repository’s code. Intentionally shallow: individual style drawing routines, CSS, and the Matter.js internals are summarized, not modeled.",
+  "boundaries": [
+    {
+      "id": "one-binary",
+      "title": "One Go binary",
+      "description": "Everything here ships in bin/avatars: the CLI, the core, the store adapter, the HTTP service, and the embedded studio files. No Node runtime, no CGO, no separate frontend build.",
+      "kind": "process",
+      "members": [
+        "cli.dispatch",
+        "cli.library_commands",
+        "cli.remote_client",
+        "cli.serve",
+        "cli.service_cmd",
+        "core.library",
+        "core.discovery",
+        "core.engine",
+        "core.styles",
+        "core.exporters",
+        "storage.jsonl",
+        "service.guard",
+        "service.api",
+        "service.studio_files",
+        "service.lifecycle"
+      ],
+      "color": "#739886"
+    },
+    {
+      "id": "browser",
+      "title": "Runs in the browser",
+      "description": "Plain ES modules served from the same origin. The client holds no secrets and keeps only one preference (card sound) locally; everything else is derived from the API and the URL.",
+      "kind": "process",
+      "members": [
+        "studio",
+        "studio.shell",
+        "studio.app",
+        "studio.api_client",
+        "studio.router",
+        "studio.sync",
+        "studio.generate",
+        "studio.inspector",
+        "studio.view_rules",
+        "studio.cards",
+        "studio.physics",
+        "studio.sound"
+      ],
+      "color": "#759EB5"
+    },
+    {
+      "id": "loopback",
+      "title": "Loopback only, one trusted proxy",
+      "description": "The listener binds a loopback address and refuses any other Host. Remote access exists only when Tailscale Serve is configured and its exact HTTPS origin is passed as --public-url; even then mutations must come from that origin.",
+      "kind": "network",
+      "members": [
+        "service.guard",
+        "service.api",
+        "service.studio_files",
+        "tailscale"
+      ],
+      "color": "#9A91C4"
+    },
+    {
+      "id": "shutdown",
+      "title": "Who may stop the service",
+      "description": "Only avatars service stop, only for an instance started by service ensure, and only through the mode-0600 Unix socket with the matching instance_id. Foreground and supervised services are stopped by their owner; the TCP API has no shutdown route.",
+      "kind": "permission",
+      "members": [
+        "cli.service_cmd",
+        "service.lifecycle",
+        "storage.runtime"
+      ],
+      "color": "#C48282"
+    },
+    {
+      "id": "recipes",
+      "title": "Recipes are the truth, not images",
+      "description": "A saved avatar is style + seed + resolved inputs. Every SVG or PNG is recomputed from that recipe by the same deterministic generators, so the library stays small, diffable, and repairable.",
+      "kind": "ownership",
+      "members": [
+        "core.library",
+        "core.engine",
+        "storage.jsonl",
+        "storage.file"
+      ],
+      "color": "#2F6F5E"
+    },
+    {
+      "id": "adapters",
+      "title": "Adapter seams",
+      "description": "Places designed to be swapped without refactoring the app: style generators and export formats behind the engine registry, the JSONL store behind the Store interface, and in the browser the card physics and sound behind headless adapters.",
+      "kind": "ownership",
+      "members": [
+        "core.styles",
+        "core.exporters",
+        "storage.jsonl",
+        "studio.physics",
+        "studio.sound"
+      ],
+      "color": "#D9A441"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "overview",
+      "title": "One binary, three surfaces",
+      "description": "Agents use the CLI, browsers use the studio, other apps use the HTTP API — and all of them reach the same core and the same JSONL library.",
+      "expanded": [],
+      "proposed": false,
+      "lens": "structure"
+    },
+    {
+      "id": "agent-path",
+      "title": "An agent generates, lists, and exports",
+      "description": "The CLI either runs the application core in-process against the local library or, with --url, forwards the identical request to a running service. Either way the output is JSON and stable links.",
+      "expanded": [
+        "cli",
+        "core",
+        "storage"
+      ],
+      "proposed": false,
+      "lens": "structure"
+    },
+    {
+      "id": "generation",
+      "title": "From seed to image",
+      "description": "Inside the core: the engine resolves a style's inputs per seed, asks the generator for native SVG, normalizes the requested size, and hands the artwork to a format adapter.",
+      "expanded": [
+        "core",
+        "core.styles",
+        "core.exporters"
+      ],
+      "proposed": false,
+      "lens": "structure",
+      "scope": "core"
+    },
+    {
+      "id": "service",
+      "title": "The local service and its on-demand lifecycle",
+      "description": "serve mounts the guarded API and studio on loopback. service ensure probes health, takes a lock, starts a detached child, and proves its identity over a private socket before handing an endpoint to a consuming app.",
+      "expanded": [
+        "cli",
+        "service",
+        "storage"
+      ],
+      "proposed": false,
+      "lens": "structure"
+    },
+    {
+      "id": "web-client",
+      "title": "Inside the studio web client",
+      "description": "A framework-free page: the URL is the state, a small API client is the only way out, pure view rules are shared by the toolbar, inspector, and router, and the tactile card grid sits on a headless physics adapter.",
+      "scope": "studio",
+      "expanded": [
+        "studio"
+      ],
+      "proposed": false,
+      "lens": "structure"
+    },
+    {
+      "id": "web-client-api",
+      "title": "How the studio talks to the service",
+      "description": "Every studio capability maps to a public /api/v1 route: collections and styles through JSON, thumbnails and previews through image URLs, downloads through the same image routes. Nothing is browser-only.",
+      "expanded": [
+        "studio",
+        "service"
+      ],
+      "proposed": false,
+      "lens": "structure"
+    },
+    {
+      "id": "trust",
+      "title": "What runs where, and who may change what",
+      "description": "One binary, a same-origin browser client (shown whole), a loopback listener with one trusted proxy, a private shutdown path, and recipes as the only durable truth.",
+      "expanded": [
+        "cli",
+        "service",
+        "storage",
+        "core"
+      ],
+      "proposed": false,
+      "lens": "trust"
+    },
+    {
+      "id": "requested-styles",
+      "title": "Proposed: styles requested from the studio",
+      "description": "Planned work from the active plan. A request becomes an isolated agent attempt, the result is a versioned bundle that plugs into the existing engine, and sign-in plus hosting follow only after the local proof.",
+      "expanded": [
+        "requested"
+      ],
+      "proposed": true,
+      "lens": "structure",
+      "theme": "graphite"
+    }
+  ]
+}

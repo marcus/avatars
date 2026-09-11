@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="sequence-title sequence-description" data-theme="grove" data-theme-appearance="light">
+  <title id="sequence-title">Open a shared portrait link</title><desc id="sequence-description">A copied portrait link carries the avatar, shape, dimensions, and preview background. The studio restores that exact view, fetching the avatar and its collection if they are not yet in memory.</desc><metadata>{&quot;journeyId&quot;:&quot;studio-deep-link&quot;,&quot;provenance&quot;:&quot;Not a captured trace. Authored 2026-09-11 from internal/studio/assets/app.js (refresh, resolveRoute, renderInspector, updatePreview) and internal/studio/assets/view.mjs (readExportView, readPreviewBackground).&quot;,&quot;hiddenLanes&quot;:[],&quot;rows&quot;:[{&quot;id&quot;:&quot;open&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;open&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;person&quot;,&quot;shell&quot;]},{&quot;id&quot;:&quot;load&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;initial&quot;,&quot;lists&quot;,&quot;lists-ok&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;shell&quot;,&quot;sync&quot;,&quot;api&quot;]},{&quot;id&quot;:&quot;initial&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;initial&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;shell&quot;,&quot;sync&quot;]},{&quot;id&quot;:&quot;lists&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;lists&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;sync&quot;,&quot;api&quot;]},{&quot;id&quot;:&quot;lists-ok&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;lists-ok&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;api&quot;,&quot;sync&quot;]},{&quot;id&quot;:&quot;resolve&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;route&quot;,&quot;missing&quot;,&quot;view&quot;,&quot;inputs&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;sync&quot;,&quot;router&quot;,&quot;api&quot;,&quot;rules&quot;]},{&quot;id&quot;:&quot;route&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;route&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;sync&quot;,&quot;router&quot;]},{&quot;id&quot;:&quot;missing&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;missing&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;router&quot;,&quot;api&quot;]},{&quot;id&quot;:&quot;view&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;view&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;router&quot;,&quot;rules&quot;]},{&quot;id&quot;:&quot;inputs&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;inputs&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;router&quot;,&quot;rules&quot;]},{&quot;id&quot;:&quot;present&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;render&quot;,&quot;preview&quot;,&quot;shown&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;router&quot;,&quot;inspector&quot;,&quot;api&quot;,&quot;person&quot;]},{&quot;id&quot;:&quot;render&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;render&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;router&quot;,&quot;inspector&quot;]},{&quot;id&quot;:&quot;preview&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;preview&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;inspector&quot;,&quot;api&quot;]},{&quot;id&quot;:&quot;shown&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;shown&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;inspector&quot;,&quot;person&quot;]}]}</metadata>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#84948b"/></marker>
+    <marker id="arrow-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10" fill="none" stroke="#84948b" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="1920" height="1080" fill="#fafbf8"/>
+  <g font-family="Arial, Helvetica, sans-serif" data-export-layer="title">
+    <text x="70" y="43" font-size="11" letter-spacing="2.5" fill="#607c69">FRACTAL / SEQUENCE JOURNEY</text>
+    <text x="70" y="88" text-anchor="start" font-size="34" fill="#243b34"><tspan x="70" dy="0">Open a shared portrait link</tspan></text>
+    <text x="70" y="126" text-anchor="start" font-size="15" fill="#6e7d72"><tspan x="70" dy="0">A copied portrait link carries the avatar, shape, dimensions, and preview background. The studio restores that exact view, fetching the avatar and its collection if they are not yet in memory.</tspan></text>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" transform="translate(374.915797914996 190) scale(0.6094627105052125)"><g data-column="person" data-members="person" data-elements="person">
+    <rect x="102.00000000000001" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="205.71428571428572" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="205.71428571428572" dy="0">Marcus</tspan></text>
+    <path d="M205.71428571428572 76V1177" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="shell" data-members="shell" data-elements="studio.shell">
+    <rect x="353.42857142857144" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="457.14285714285717" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="457.14285714285717" dy="0">Page shell</tspan></text>
+    <path d="M457.14285714285717 76V1177" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="sync" data-members="sync" data-elements="studio.sync">
+    <rect x="604.8571428571429" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="708.5714285714286" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="708.5714285714286" dy="0">Library refresh</tspan></text>
+    <path d="M708.5714285714286 76V1177" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="router" data-members="router" data-elements="studio.router">
+    <rect x="856.2857142857142" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="959.9999999999999" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="959.9999999999999" dy="0">Router</tspan></text>
+    <path d="M959.9999999999999 76V1177" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="rules" data-members="rules" data-elements="studio.view_rules">
+    <rect x="1107.7142857142858" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="1211.4285714285716" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1211.4285714285716" dy="0">View rules</tspan></text>
+    <path d="M1211.4285714285716 76V1177" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="inspector" data-members="inspector" data-elements="studio.inspector">
+    <rect x="1359.142857142857" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="1462.857142857143" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1462.857142857143" dy="0">Inspector</tspan></text>
+    <path d="M1462.857142857143 76V1177" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="api" data-members="api" data-elements="service.api">
+    <rect x="1610.5714285714284" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#9A91C4" stroke-width="2"/>
+    <text x="1714.2857142857142" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1714.2857142857142" dy="0">/api/v1</tspan></text>
+    <path d="M1714.2857142857142 76V1177" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-row-id="open" data-message-ids="open" data-participant-ids="person,shell" data-row-type="message" data-kind="call">
+      <rect x="151.42857142857144" y="118" width="360" height="68" rx="7" fill="#fafbf8"/>
+      <text x="331.42857142857144" y="141" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="331.42857142857144" dy="0">Open</tspan><tspan x="331.42857142857144" dy="17">/?avatar=av_…&amp;shape=circle&amp;width=256&amp;height=2</tspan><tspan x="331.42857142857144" dy="17">56&amp;background=light</tspan></text>
+      
+      <path d="M205.71428571428572 191H449.14285714285717" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="load" data-message-ids="initial,lists,lists-ok" data-participant-ids="shell,sync,api" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="216" width="1804" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="239" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">1. Initial load</tspan></text>
+        
+        <text x="1820" y="237.5" text-anchor="end" font-size="11" fill="#78867c">3 interactions</text>
+      </g><g data-row-id="initial" data-message-ids="initial" data-participant-ids="shell,sync" data-row-type="message" data-kind="call">
+      <rect x="402.8571428571429" y="265" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="582.8571428571429" y="288" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="582.8571428571429" dy="0">refresh({initial: true})</tspan></text>
+      
+      <path d="M457.14285714285717 304H700.5714285714286" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="lists" data-message-ids="lists" data-participant-ids="sync,api" data-row-type="message" data-kind="call">
+      <rect x="1031.4285714285713" y="329" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="1211.4285714285713" y="352" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1211.4285714285713" dy="0">GET /collections and GET /styles in parallel</tspan><tspan x="1211.4285714285713" dy="17">(Promise.allSettled)</tspan></text>
+      
+      <path d="M708.5714285714286 383H1706.2857142857142" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="lists-ok" data-message-ids="lists-ok" data-participant-ids="api,sync" data-row-type="message" data-kind="return">
+      <rect x="1031.4285714285713" y="408" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="1211.4285714285713" y="431" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1211.4285714285713" dy="0">Collections newest first; style descriptors with</tspan><tspan x="1211.4285714285713" dy="17">inputs and native size</tspan></text>
+      
+      <path d="M1714.2857142857142 462H716.5714285714286" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g><g data-row-id="resolve" data-message-ids="route,missing,view,inputs" data-participant-ids="sync,router,api,rules" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="487" width="1804" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="510" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">2. Resolve the route</tspan></text>
+        
+        <text x="1820" y="508.5" text-anchor="end" font-size="11" fill="#78867c">4 interactions</text>
+      </g><g data-row-id="route" data-message-ids="route" data-participant-ids="sync,router" data-row-type="message" data-kind="call">
+      <rect x="654.2857142857142" y="536" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="834.2857142857142" y="559" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="834.2857142857142" dy="0">resolveRoute({scroll: true, restoreView: true})</tspan></text>
+      
+      <path d="M708.5714285714286 575H951.9999999999999" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="missing" data-message-ids="missing" data-participant-ids="router,api" data-row-type="message" data-kind="call">
+      <rect x="1157.142857142857" y="600" width="360" height="85" rx="7" fill="#fafbf8"/>
+      <text x="1337.142857142857" y="623" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1337.142857142857" dy="0">GET /avatars/{id}, then its collection, if not</tspan><tspan x="1337.142857142857" dy="17">already loaded</tspan></text>
+      <text x="1337.142857142857" y="664" text-anchor="middle" font-size="11" fill="#78867c"><tspan x="1337.142857142857" dy="0">A stale response is ignored when a newer navigation has</tspan><tspan x="1337.142857142857" dy="15">started.</tspan></text>
+      <path d="M959.9999999999999 690H1706.2857142857142" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="view" data-message-ids="view" data-participant-ids="router,rules" data-row-type="message" data-kind="call">
+      <rect x="905.7142857142858" y="715" width="360" height="68" rx="7" fill="#fafbf8"/>
+      <text x="1085.7142857142858" y="738" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1085.7142857142858" dy="0">readExportView + readPreviewBackground: invalid</tspan><tspan x="1085.7142857142858" dy="17">values fall back to defaults; height derives from</tspan><tspan x="1085.7142857142858" dy="17">the style&apos;s native ratio</tspan></text>
+      
+      <path d="M959.9999999999999 788H1203.4285714285716" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="inputs" data-message-ids="inputs" data-participant-ids="router,rules" data-row-type="message" data-kind="call">
+      <rect x="905.7142857142858" y="813" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="1085.7142857142858" y="836" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1085.7142857142858" dy="0">generationInputsForStyle: preselect the toolbar</tspan><tspan x="1085.7142857142858" dy="17">to match the portrait</tspan></text>
+      
+      <path d="M959.9999999999999 867H1203.4285714285716" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="present" data-message-ids="render,preview,shown" data-participant-ids="router,inspector,api,person" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="892" width="1804" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="915" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">3. Present</tspan></text>
+        
+        <text x="1820" y="913.5" text-anchor="end" font-size="11" fill="#78867c">3 interactions</text>
+      </g><g data-row-id="render" data-message-ids="render" data-participant-ids="router,inspector" data-row-type="message" data-kind="call">
+      <rect x="1031.4285714285713" y="941" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="1211.4285714285713" y="964" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1211.4285714285713" dy="0">render(): select the card, open the inspector,</tspan><tspan x="1211.4285714285713" dy="17">scroll it into view</tspan></text>
+      
+      <path d="M959.9999999999999 995H1454.857142857143" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="preview" data-message-ids="preview" data-participant-ids="inspector,api" data-row-type="message" data-kind="async">
+      <rect x="1408.5714285714284" y="1020" width="360" height="68" rx="7" fill="#fafbf8"/>
+      <text x="1588.5714285714284" y="1043" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1588.5714285714284" dy="0">&lt;img</tspan><tspan x="1588.5714285714284" dy="17">src=/avatars/{id}.svg?width=256&amp;height=256&amp;cir</tspan><tspan x="1588.5714285714284" dy="17">cle=true&gt;</tspan></text>
+      
+      <path d="M1462.857142857143 1093H1706.2857142857142" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow-open)"/>
+    </g><g data-row-id="shown" data-message-ids="shown" data-participant-ids="inspector,person" data-row-type="message" data-kind="return">
+      <rect x="654.2857142857143" y="1118" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="834.2857142857143" y="1141" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="834.2857142857143" dy="0">Circular preview on a light surround; SVG and PNG</tspan><tspan x="834.2857142857143" dy="17">ready to download</tspan></text>
+      
+      <path d="M1462.857142857143 1172H213.71428571428572" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g></g>
+  <g font-family="Arial, Helvetica, sans-serif" data-export-layer="footer">
+    <path d="M70 992H1850" stroke="#dce2db"/>
+    <text x="70" y="1027" font-size="12" font-weight="600" letter-spacing="1" fill="#607c69">CURRENT · 11 INTERACTIONS</text>
+    <text x="620" y="1027" font-size="11" fill="#78867c">SOURCE · Not a captured trace. Authored 2026-09-11 from internal/studio/assets/app.js (refresh, resolveRoute, renderInspector, updatePreview) and internal/studio/assets/view.mjs (readExportView, readPreviewBackground).</text>
+  </g>
+  </svg>

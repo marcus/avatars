@@ -106,6 +106,10 @@ Homebrew binary links in `/opt/homebrew/bin` (or `brew --prefix/bin`) are safely
 - **CLI (`cmd/avatars`)**:
   - Thin command wrapper over core library packages.
 
+### Keep the architecture model current
+
+`docs/diagrams/fractal/` holds the Fractal model of this system (`model.c4`, `fractal.json`, `sequences.json`) and exported scenes under `artifacts/`. When a change alters the design — a new command, route, style, exporter, store, boundary, or journey, or a proposal that lands — update the affected elements, scenes, and journeys in the same change, keep stable `uid` values, cite the source files you touched as evidence, and re-run `~/code/fractal/bin/fractal validate --directory docs/diagrams/fractal --json` before committing. Re-export scenes you changed with `bin/fractal export`. Model responsibilities, not every file. Authoring guidance: `~/code/fractal/skills/fractal/SKILL.md`. The model is registered in the local Fractal catalog as `avatars`.
+
 ---
 
 ## 6. Runtime Environment Awareness

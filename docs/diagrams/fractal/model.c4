@@ -1,0 +1,393 @@
+// Authored architecture for Avatars. Evidence paths are relative to the repository root.
+// Current elements were traced from cmd/avatars/main.go through internal/cli into the
+// application core, the HTTP service, and the embedded studio client. Proposed elements
+// come from docs/plans/active/requested-styles-service.md and are shown only in proposed scenes.
+specification {
+  element actor
+  element external
+  element subsystem
+  element component
+  element adapter
+  element store
+  relationship calls
+  relationship dispatches
+  relationship reads
+  relationship writes
+  relationship serves
+  relationship renders
+  relationship loads
+  relationship controls
+  relationship probes
+  relationship implements
+  tag current
+  tag proposed
+}
+
+model {
+  // ---------------------------------------------------------------- actors
+  person = actor 'Marcus in a browser' {
+    description 'Opens the studio, generates collections, inspects portraits, and downloads SVG or PNG. Usually on another machine, so the tailnet URL matters more than localhost.'
+    metadata { uid 'person' fractalColor '#759EB5' evidence ['README.md'] }
+  }
+
+  agent = actor 'Agent or script' {
+    description 'Uses the CLI with --json, or the HTTP API directly. Discovers the contract with avatars capabilities and avatars instructions.'
+    metadata { uid 'agent' fractalColor '#B59669' evidence ['internal/discovery/discovery.go', 'README.md'] }
+  }
+
+  consumer = external 'Consuming app (Comms Web)' {
+    description 'A separate local service that runs avatars service ensure --json on the machine and then renders portraits through the HTTP API. Modeled in its own repository.'
+    metadata { uid 'consumer' fractalColor '#C48282' evidence ['docs/plans/active/requested-styles-service.md'] }
+  }
+
+  tailscale = external 'Tailscale Serve' {
+    description 'Optional HTTPS proxy in front of the loopback listener. The service accepts its exact origin only when --public-url or AVATARS_PUBLIC_URL names it. The repository configures no Tailscale route; Serve is the operator’s choice.'
+    metadata { uid 'tailscale' fractalColor '#C48282' evidence ['internal/httpapi/origin.go', 'internal/discovery/discovery.go'] }
+  }
+
+  // ---------------------------------------------------------------- CLI
+  cli = subsystem 'Command line' {
+    description 'The agent-first surface. Every command is non-interactive, supports --json, and either uses the application core in-process or forwards to a running service with --url.'
+    metadata { uid 'cli' fractalColor '#B59669' evidence ['cmd/avatars/main.go', 'internal/cli/cli.go'] }
+
+    dispatch = component 'Command dispatch' {
+      description 'Parses global flags (--json, --data-dir, --url), routes to a command, and maps domain errors to exit codes: 0 success, 1 failure, 2 invalid invocation. --url and --data-dir are mutually exclusive because the server owns its library.'
+      metadata { uid 'cli.dispatch' fractalColor '#B59669' evidence ['internal/cli/cli.go'] }
+    }
+
+    library_commands = component 'generate · list · show · export · render · styles' {
+      description 'Saved-library commands, stateless render, and style discovery. Local mode opens the library through the core; remote mode sends the same request over HTTP. Relative avatar and collection URLs are rewritten into absolute links (the default studio origin, or --url). Output files are created exclusively and never overwritten.'
+      metadata { uid 'cli.library_commands' fractalColor '#B59669' evidence ['internal/cli/commands.go'] }
+    }
+
+    remote_client = adapter 'HTTP client (--url)' {
+      description 'Forwards a command to a running service with a 30 s timeout, no redirects, and a 32 MiB response cap, and decodes the shared error envelope into the same domain errors local mode produces.'
+      metadata { uid 'cli.remote_client' fractalColor '#B59669' evidence ['internal/cli/client.go'] }
+    }
+
+    serve = component 'serve' {
+      description 'Binds a loopback-only listener, mounts the API with the embedded studio, and runs until Ctrl-C. Launch mode foreground, auto, or supervised; auto requires a lifecycle socket. --open launches the browser.'
+      metadata { uid 'cli.serve' fractalColor '#B59669' evidence ['internal/cli/serve.go'] }
+    }
+
+    service_cmd = component 'service ensure · status · stop' {
+      description 'On-demand lifecycle for integrations. ensure reuses a compatible service or takes an endpoint-specific flock, starts one detached serve child, and polls health until its lifecycle identity matches. status never starts anything. stop only reaches an auto-started instance.'
+      metadata { uid 'cli.service_cmd' fractalColor '#B59669' evidence ['internal/cli/service.go', 'internal/cli/lifecycle_lock_unix.go', 'internal/cli/process_unix.go'] }
+    }
+  }
+
+  // ---------------------------------------------------------------- core
+  core = subsystem 'Application core' {
+    description 'Shared by every surface. Owns the saved-avatar workflow, deterministic generation, and export. No transport or storage details live here.'
+    metadata { uid 'core' fractalColor '#739886' evidence ['internal/library/library.go', 'pkg/avatar/engine.go'] }
+
+    library = component 'Library service' {
+      description 'Create, List, Collection, Avatar, Render. Validates count 1..100, name ≤120 chars, seed ≤4096 bytes; mints col_/av_ IDs; resolves each avatar’s concrete recipe inputs; reads the store on every list so a long-running studio sees CLI-created collections at once.'
+      metadata { uid 'core.library' fractalColor '#739886' evidence ['internal/library/library.go'] }
+    }
+
+    discovery = component 'Discovery & instructions' {
+      description 'One table of operations with their CLI usage and HTTP method/path, the agent instructions text, and the capabilities document with limits. Feeds help output and the /api/v1 discovery routes.'
+      metadata { uid 'core.discovery' fractalColor '#739886' evidence ['internal/discovery/discovery.go'] }
+    }
+
+    engine = component 'Generation engine' {
+      description 'Registry of style generators and format exporters. Resolves and validates appearance inputs from each style’s published descriptor, rejects oversized dimensions before generating, normalizes options against native artwork size, then exports. No style-specific branches.'
+      metadata { uid 'core.engine' fractalColor '#739886' evidence ['pkg/avatar/engine.go'] }
+    }
+
+    styles = component 'Style generators' {
+      description 'Six compiled generators. Each hashes the seed with FNV-1a (over code points for the portrait styles, UTF-8 bytes for Companions and Field Birds) and an xorshift PRNG into pure numeric geometry, so no input text leaks into markup. Output is self-contained SVG at a native size.'
+      metadata { uid 'core.styles' fractalColor '#739886' evidence ['pkg/avatar/gorey.go', 'pkg/avatar/engine.go'] }
+
+      gorey = adapter 'Gorey' {
+        description 'The original engraved pen-and-ink portrait, 64×72, preserved exactly from the TypeScript reference. No appearance inputs.'
+        metadata { uid 'core.styles.gorey' fractalColor '#739886' evidence ['pkg/avatar/gorey.go', 'port/agent-portrait.ts'] }
+      }
+      gorey_expanded = adapter 'Gorey Expanded' {
+        description 'A wider cast: more face shapes, ages, hairstyles, clothes, and accessories on the same 64×72 canvas.'
+        metadata { uid 'core.styles.gorey_expanded' fractalColor '#739886' evidence ['pkg/avatar/gorey_expanded.go'] }
+      }
+      picasso = adapter 'Picasso' {
+        description 'Bold contours, muted color, restrained cubist planes, 64×72.'
+        metadata { uid 'core.styles.picasso' fractalColor '#739886' evidence ['pkg/avatar/picasso.go'] }
+      }
+      pebble = adapter 'Pebble' {
+        description '64×64 pudgy characters. Publishes a color input with 15 palette values plus Random; Random is resolved per seed into a concrete saved color without consuming geometry randomness.'
+        metadata { uid 'core.styles.pebble' fractalColor '#739886' evidence ['pkg/avatar/pebble.go'] }
+      }
+      companions = adapter 'Companions' {
+        description '128×128 dogs and cats. Publishes an animal input (dog default, cat, mixed); Mixed picks one species per seed so a saved recipe always holds dog or cat.'
+        metadata { uid 'core.styles.companions' fractalColor '#739886' evidence ['pkg/avatar/companions.go'] }
+      }
+      field_birds = adapter 'Field Birds' {
+        description '160×160 invented bird species: eight body types, twelve palettes, all chosen from the seed alone. No inputs.'
+        metadata { uid 'core.styles.field_birds' fractalColor '#739886' evidence ['pkg/avatar/field_birds.go'] }
+      }
+    }
+
+    exporters = component 'Export adapters' {
+      description 'Format adapters behind one Exporter interface. Both fit or center-crop to the requested rectangle, apply the circle mask, and refuse anything that is not self-contained SVG.'
+      metadata { uid 'core.exporters' fractalColor '#739886' evidence ['pkg/avatar/engine.go'] }
+
+      svg = adapter 'SVG exporter' {
+        description 'Returns native SVG verbatim at native size; otherwise validates the markup and wraps it in a sized outer SVG with a translate/scale group and an optional clipPath circle.'
+        metadata { uid 'core.exporters.svg' fractalColor '#739886' evidence ['pkg/avatar/svg.go'] }
+      }
+      png = adapter 'PNG exporter' {
+        description 'Pure-Go rasterization with oksvg and rasterx (no CGO, no network, no scripts). Clips to the native viewport and applies an analytic one-pixel circle mask.'
+        metadata { uid 'core.exporters.png' fractalColor '#739886' evidence ['pkg/avatar/png.go'] }
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------- storage
+  storage = subsystem 'Library storage' {
+    description 'Recipes are the source of truth; image bytes are recomputed on demand. One narrow Store interface (Save, List) so the JSONL adapter can be replaced without touching callers.'
+    metadata { uid 'storage' fractalColor '#89A579' evidence ['internal/library/library.go', 'internal/store/jsonl.go'] }
+
+    jsonl = adapter 'JSONL store' {
+      description 'One collection per line. Every operation opens and flocks the file independently, so multiple processes and goroutines coexist. Save re-validates the whole log, refuses duplicate IDs, appends, and fsyncs. A corrupt or truncated line stops reads with a repair message instead of being discarded.'
+      metadata { uid 'storage.jsonl' fractalColor '#89A579' evidence ['internal/store/jsonl.go'] }
+    }
+
+    file = store 'collections.jsonl' {
+      description 'Lives under $XDG_DATA_HOME/avatars (default ~/.local/share/avatars), mode 0600. --data-dir or AVATARS_DATA_DIR selects an isolated library; CLI and service must agree on it.'
+      metadata { uid 'storage.file' fractalColor '#89A579' evidence ['internal/cli/cli.go', 'internal/store/jsonl.go'] }
+    }
+
+    runtime = store 'Lifecycle runtime files' {
+      description 'Per-endpoint directory under $XDG_RUNTIME_DIR or the user cache dir: service.sock (mode 0600), service.lifecycle.lock, and service.log. Partitioned by a hash of the endpoint so two listen addresses never share state.'
+      metadata { uid 'storage.runtime' fractalColor '#89A579' evidence ['internal/lifecycle/lifecycle.go'] }
+    }
+  }
+
+  // ---------------------------------------------------------------- service
+  service = subsystem 'Local HTTP service' {
+    description 'One http.Server on 127.0.0.1:7447 by default. Serves the JSON API, image routes, and the embedded studio from the same origin, plus a private Unix-socket control plane.'
+    metadata { uid 'service' fractalColor '#9A91C4' evidence ['internal/httpapi/httpapi.go', 'internal/cli/serve.go'] }
+
+    guard = component 'Host & origin guard' {
+      description 'Wraps every request. Accepts only loopback hosts or the one configured public HTTPS origin; refuses cross-origin mutations by Origin and Sec-Fetch-Site; sets CSP, nosniff, no-referrer, and Cache-Control: no-store on API responses (studio files switch to no-cache). Forwarded headers never grant access.'
+      metadata { uid 'service.guard' fractalColor '#9A91C4' evidence ['internal/httpapi/httpapi.go', 'internal/httpapi/origin.go'] }
+    }
+
+    api = component 'JSON API /api/v1' {
+      description 'Versioned routes with one error envelope: {"error":{"code":"invalid_request|not_found|internal"}}. Unknown fields, repeated query values, and unknown parameters are refused.'
+      metadata { uid 'service.api' fractalColor '#9A91C4' evidence ['internal/httpapi/httpapi.go'] }
+
+      discovery_routes = component 'health · styles · capabilities · instructions' {
+        description 'GET /health returns the lifecycle status (service, api_version, instance_id, pid, launch_mode, data_dir). /styles publishes each generator’s descriptor and native size; /capabilities and /instructions mirror the CLI discovery text.'
+        metadata { uid 'service.api.discovery' fractalColor '#9A91C4' evidence ['internal/httpapi/httpapi.go', 'internal/lifecycle/lifecycle.go'] }
+      }
+      collections = component 'collections' {
+        description 'GET /collections lists newest first; POST /collections (JSON only, ≤64 KiB, no unknown fields) creates a saved batch and answers 201 with a Location header; GET /collections/{id} fetches one.'
+        metadata { uid 'service.api.collections' fractalColor '#9A91C4' evidence ['internal/httpapi/httpapi.go'] }
+      }
+      avatars = component 'avatars & images' {
+        description 'GET /avatars/{id} returns the recipe; GET /avatars/{id}.svg|.png renders it with width, height, and circle only — appearance overrides are refused for saved avatars. Images are sent inline with a filename.'
+        metadata { uid 'service.api.avatars' fractalColor '#9A91C4' evidence ['internal/httpapi/httpapi.go'] }
+      }
+      render = component 'render (stateless)' {
+        description 'GET /render?seed=…&style=…&format=…&color=…&animal=… produces a reproducible image without saving anything. Seed ≤4096 bytes.'
+        metadata { uid 'service.api.render' fractalColor '#9A91C4' evidence ['internal/httpapi/httpapi.go'] }
+      }
+    }
+
+    studio_files = component 'Embedded studio files' {
+      description 'go:embed of internal/studio/assets, served at / for GET and HEAD only. An explicit allowlist of paths (index, app.js, view.mjs, card modules, Matter.js) — anything else is 404. No Node runtime or frontend build.'
+      metadata { uid 'service.studio_files' fractalColor '#9A91C4' evidence ['internal/studio/studio.go'] }
+    }
+
+    lifecycle = component 'Lifecycle control socket' {
+      description 'A second tiny HTTP server on a Unix socket (mode 0600) started before the listener is announced. GET /v1/status reports identity; POST /v1/shutdown needs the exact instance_id and only works in auto launch mode. Shutdown is never reachable through the TCP API.'
+      metadata { uid 'service.lifecycle' fractalColor '#9A91C4' evidence ['internal/lifecycle/lifecycle.go'] }
+    }
+  }
+
+  // ---------------------------------------------------------------- studio web client
+  studio = subsystem 'Studio web client' {
+    description 'A single page of plain ES modules — no framework, no bundler. It talks only to its own origin through the public HTTP API, so everything it can do, an agent can do.'
+    metadata { uid 'studio' fractalColor '#759EB5' evidence ['internal/studio/assets/index.html', 'internal/studio/assets/app.js'] }
+
+    shell = component 'Page shell' {
+      description 'Header with connection status, library sidebar (collapsible on narrow screens), main panel with generation toolbar and portrait grid, inspector aside, toast and notice regions, inline SVG icon symbols. Dark studio theme in styles.css plus card-grid.css.'
+      metadata { uid 'studio.shell' fractalColor '#759EB5' evidence ['internal/studio/assets/index.html', 'internal/studio/assets/styles.css'] }
+    }
+
+    app = component 'App state & rendering' {
+      description 'One state object (collections, styles, formats, current collection/avatar, selection). render() redraws library, grid, and inspector; cheap JSON signatures skip untouched sections and keyed reconciliation keeps focus and card identity across refreshes.'
+      metadata { uid 'studio.app' fractalColor '#759EB5' evidence ['internal/studio/assets/app.js'] }
+    }
+
+    api_client = adapter 'Same-origin API client' {
+      description 'fetch with cache: no-store, credentials same-origin, a 30 s timeout, Accept: application/json. Turns the shared error envelope, timeouts, and network failures into one plain-language message.'
+      metadata { uid 'studio.api_client' fractalColor '#759EB5' evidence ['internal/studio/assets/app.js'] }
+    }
+
+    router = component 'URL routing & deep links' {
+      description 'The URL is the state: ?collection=, ?avatar=, plus shape, width, height, and background. pushState on navigation, popstate restores; a deep link to an unknown avatar or collection is fetched on demand. Stale route resolutions are dropped by sequence number.'
+      metadata { uid 'studio.router' fractalColor '#759EB5' evidence ['internal/studio/assets/app.js', 'internal/studio/assets/view.mjs'] }
+    }
+
+    sync = component 'Library refresh' {
+      description 'Reloads collections (and styles once) every 5 s while visible, on window focus, and on visibility change. Skips while generating, retries failed thumbnails up to three times, flips the connection badge, and toasts “N new portraits” when another process added some.'
+      metadata { uid 'studio.sync' fractalColor '#759EB5' evidence ['internal/studio/assets/app.js'] }
+    }
+
+    generate = component 'Generation toolbar' {
+      description 'Style select built from /styles; color and animal fields appear only when the chosen style publishes that input, with per-style memory of the last choice. Count 1/4/12/24 and optional name → POST /collections, then navigates to the new collection.'
+      metadata { uid 'studio.generate' fractalColor '#759EB5' evidence ['internal/studio/assets/app.js', 'internal/studio/assets/view.mjs'] }
+    }
+
+    inspector = component 'Inspector & export' {
+      description 'Live preview of the selected recipe at the chosen shape and size on a dark, light, or gray surround (preview only — exports stay transparent). Switching shape recomputes height from width (native ratio for portrait, square for circle). SVG/PNG download fetches the image route into a blob; Copy link captures the whole view.'
+      metadata { uid 'studio.inspector' fractalColor '#759EB5' evidence ['internal/studio/assets/app.js', 'internal/studio/assets/view.mjs'] }
+    }
+
+    view_rules = component 'View rules (pure)' {
+      description 'State-free helpers: parse and write export view params, native aspect ratio per style, resolve a style’s input value or default, and suggest the mixed choice (Random, Mixed) when a saved collection varies. Unit-tested without a browser.'
+      metadata { uid 'studio.view_rules' fractalColor '#759EB5' evidence ['internal/studio/assets/view.mjs', 'internal/studio/view.test.mjs'] }
+    }
+
+    cards = component 'Tactile card grid' {
+      description 'Portrait cards sit at deterministic slight angles and can be dragged, thrown, and re-arranged; keyboard arrows still move focus. Preserves poses across refreshes, respects prefers-reduced-motion, re-lays out on resize. Adapted from OpenTangle with provenance recorded.'
+      metadata { uid 'studio.cards' fractalColor '#759EB5' evidence ['internal/studio/assets/card-grid.mjs', 'internal/studio/assets/card-grid.css', 'internal/studio/CARD_SYSTEM.md'] }
+    }
+
+    physics = adapter 'Card physics (Matter.js)' {
+      description 'Headless tabletop adapter over a vendored Matter.js 0.20.0 ESM build: fixed 120 Hz stepping, zero gravity, bounded throw and drag speeds, sleeping bodies. Owns no clock and no DOM.'
+      metadata { uid 'studio.physics' fractalColor '#759EB5' evidence ['internal/studio/assets/card-physics.mjs', 'internal/studio/assets/vendor/matter/matter.mjs'] }
+    }
+
+    sound = adapter 'Card sound' {
+      description 'A single procedural paper-slide voice on Web Audio, unlocked only from a trusted pointer gesture and driven by card speed. The on/off preference persists in localStorage as avatars-card-sound; it is the only state the browser keeps.'
+      metadata { uid 'studio.sound' fractalColor '#759EB5' evidence ['internal/studio/assets/card-sound.mjs'] }
+    }
+  }
+
+  // ---------------------------------------------------------------- proposed
+  requested = subsystem 'Requested styles (proposed)' {
+    #proposed
+    description 'Planned: describe a style in the studio, let a local agent worker author it as a versioned bundle, review a contact sheet, and activate it into the catalog. Part 1 (the on-demand service) is delivered; everything here remains proposed.'
+    metadata { uid 'requested' fractalColor '#A98243' evidence ['docs/plans/active/requested-styles-service.md'] }
+
+    requests = component 'Style requests & attempts' {
+      description 'Durable StyleRequest and Attempt records with states queued → running → needs-attention / failed / ready-for-review → accepted. Proposed CLI: requests create/show/list/events/cancel/retry; same operations over HTTP and in the studio.'
+      metadata { uid 'requested.requests' fractalColor '#A98243' evidence ['docs/plans/active/requested-styles-service.md'] }
+    }
+
+    worker = component 'Agent worker (AgentRunner)' {
+      description 'One local worker behind an AgentRunner adapter, acpx first. Gets an isolated workspace, the committed authoring guide, and a pinned SDK; never gets app secrets, Git push, or authority to activate a style.'
+      metadata { uid 'requested.worker' fractalColor '#A98243' evidence ['docs/plans/active/requested-styles-service.md', 'docs/guides/active/creating-styles.md'] }
+    }
+
+    bundles = component 'Style bundles & ProcessGenerator' {
+      description 'Immutable versioned bundles (manifest, source, build artifact, fixtures, previews, checks) loaded through a process adapter that speaks a small JSON protocol and implements the existing Generator contract, so SVG/PNG export stays shared.'
+      metadata { uid 'requested.bundles' fractalColor '#A98243' evidence ['docs/plans/active/requested-styles-service.md'] }
+    }
+
+    catalog = store 'Request store & style catalog' {
+      description 'RequestStore, StyleCatalog, and artifact store interfaces, JSONL first. Atomic catalog snapshots; versions are never overwritten; saved recipes pin a version digest.'
+      metadata { uid 'requested.catalog' fractalColor '#A98243' evidence ['docs/plans/active/requested-styles-service.md'] }
+    }
+
+    access = component 'Sign-in & invited access' {
+      description 'Google OIDC identifies a person; an allowlist or invitation grants access. Owner, requester, and viewer permissions stay distinct; scripts get scoped revocable credentials.'
+      metadata { uid 'requested.access' fractalColor '#A98243' evidence ['docs/plans/active/requested-styles-service.md'] }
+    }
+
+    hosting = component 'Hosted delivery' {
+      description 'A public web/API service separable from the worker, with an asset-store adapter for immutable exports, private-by-default collections, and explicit sharing.'
+      metadata { uid 'requested.hosting' fractalColor '#A98243' evidence ['docs/plans/active/requested-styles-service.md'] }
+    }
+  }
+
+  // ---------------------------------------------------------------- relationships: people and outside
+  person .calls studio.shell 'Opens the studio (127.0.0.1:7447 or the tailnet URL)' { metadata { uid 'person-studio' } }
+  person .calls tailscale 'Reaches the studio from another device over HTTPS' { metadata { uid 'person-tailscale' } }
+  tailscale .calls service.guard 'Forwards HTTPS to the loopback listener as the configured public origin' { metadata { uid 'tailscale-guard' } }
+  agent .calls cli.dispatch 'Runs avatars … --json' { metadata { uid 'agent-cli' } }
+  agent .calls service.guard 'Calls /api/v1 directly (curl, HTTP client)' { metadata { uid 'agent-http' } }
+  consumer .calls cli.service_cmd 'Runs avatars service ensure --json to obtain an endpoint' { metadata { uid 'consumer-ensure' } }
+  consumer .calls service.guard 'Renders portraits over loopback HTTP' { metadata { uid 'consumer-render' } }
+
+  // ---------------------------------------------------------------- relationships: CLI
+  cli.dispatch .dispatches cli.library_commands 'generate, list, show, export, render' { metadata { uid 'dispatch-library' } }
+  cli.dispatch .dispatches cli.serve 'serve' { metadata { uid 'dispatch-serve' } }
+  cli.dispatch .dispatches cli.service_cmd 'service ensure|status|stop' { metadata { uid 'dispatch-service' } }
+  cli.dispatch .reads core.discovery 'help, capabilities, instructions' { metadata { uid 'dispatch-discovery' } }
+  cli.library_commands .calls core.library 'Local mode: create, list, fetch, render saved recipes' { metadata { uid 'commands-library' } }
+  cli.library_commands .calls core.engine 'Local render: stateless image from a seed' { metadata { uid 'commands-engine' } }
+  cli.library_commands .calls cli.remote_client 'Remote mode (--url / AVATARS_URL)' { metadata { uid 'commands-remote' } }
+  cli.remote_client .calls service.guard 'Same JSON and image requests as the studio' { metadata { uid 'remote-service' } }
+  cli.serve .serves service.guard 'Mounts the API and studio on a loopback listener' { metadata { uid 'serve-guard' } }
+  cli.serve .controls service.lifecycle 'Starts the control socket before the listener is announced' { metadata { uid 'serve-lifecycle' } }
+  cli.service_cmd .probes service.api.discovery_routes 'GET /api/v1/health (750 ms budget)' { metadata { uid 'service-probe' } }
+  cli.service_cmd .controls service.lifecycle 'Validates instance identity; POST /v1/shutdown for stop' { metadata { uid 'service-lifecycle' } }
+  cli.service_cmd .dispatches cli.serve 'Starts a detached serve --launch-mode auto child' { metadata { uid 'service-spawn' } }
+  cli.service_cmd .writes storage.runtime 'Takes the flock and appends the child log' { metadata { uid 'service-runtime' } }
+
+  // ---------------------------------------------------------------- relationships: service
+  service.guard .dispatches service.api 'Routes /api/' { metadata { uid 'guard-api' } }
+  service.guard .dispatches service.studio_files 'Routes everything else' { metadata { uid 'guard-studio' } }
+  service.api.collections .calls core.library 'Create, List, Collection' { metadata { uid 'api-collections-library' } }
+  service.api.avatars .calls core.library 'Avatar, Render' { metadata { uid 'api-avatars-library' } }
+  service.api.render .calls core.engine 'RenderWithInputs' { metadata { uid 'api-render-engine' } }
+  service.api.discovery_routes .reads core.engine 'Styles and formats' { metadata { uid 'api-discovery-engine' } }
+  service.api.discovery_routes .reads core.discovery 'Capabilities and instructions' { metadata { uid 'api-discovery-discovery' } }
+  service.lifecycle .writes storage.runtime 'Binds service.sock and removes it on exit' { metadata { uid 'lifecycle-runtime' } }
+  service.studio_files .serves studio.shell 'Serves the embedded HTML, CSS, and modules' { metadata { uid 'files-shell' } }
+
+  // ---------------------------------------------------------------- relationships: core
+  core.library .calls core.engine 'Resolve inputs per seed; render a saved recipe' { metadata { uid 'library-engine' } }
+  core.library .writes storage.jsonl 'Save a whole collection through the Store interface' { metadata { uid 'library-store-save' } }
+  core.library .reads storage.jsonl 'List on every call' { metadata { uid 'library-store-list' } }
+  storage.jsonl .writes storage.file 'flock, validate, append, fsync' { metadata { uid 'jsonl-file' } }
+  core.engine .calls core.styles 'Generate native SVG for a seed and resolved inputs' { metadata { uid 'engine-styles' } }
+  core.engine .calls core.exporters 'Export at normalized dimensions' { metadata { uid 'engine-exporters' } }
+  core.styles.gorey .implements core.engine 'Generator' { metadata { uid 'gorey-generator' } }
+  core.styles.gorey_expanded .implements core.engine 'Generator' { metadata { uid 'expanded-generator' } }
+  core.styles.picasso .implements core.engine 'Generator' { metadata { uid 'picasso-generator' } }
+  core.styles.pebble .implements core.engine 'InputGenerator + RecipeInputResolver' { metadata { uid 'pebble-generator' } }
+  core.styles.companions .implements core.engine 'InputGenerator + RecipeInputResolver' { metadata { uid 'companions-generator' } }
+  core.styles.field_birds .implements core.engine 'Generator' { metadata { uid 'birds-generator' } }
+  core.exporters.svg .implements core.engine 'Exporter svg' { metadata { uid 'svg-exporter' } }
+  core.exporters.png .implements core.engine 'Exporter png' { metadata { uid 'png-exporter' } }
+
+  // ---------------------------------------------------------------- relationships: studio
+  studio.shell .loads studio.app 'Loads app.js as an ES module' { metadata { uid 'shell-app' } }
+  studio.app .renders studio.shell 'Fills library, grid, inspector, toasts, and notices' { metadata { uid 'app-shell' } }
+  studio.app .calls studio.router 'Resolve the route after every load or navigation' { metadata { uid 'app-router' } }
+  studio.app .calls studio.sync 'Initial load, then polling and focus refreshes' { metadata { uid 'app-sync' } }
+  studio.app .calls studio.generate 'Wire the toolbar' { metadata { uid 'app-generate' } }
+  studio.app .calls studio.inspector 'Render the selection' { metadata { uid 'app-inspector' } }
+  studio.app .calls studio.cards 'Reconcile and arrange portrait cards' { metadata { uid 'app-cards' } }
+  studio.sync .calls studio.api_client 'GET /collections, GET /styles' { metadata { uid 'sync-client' } }
+  studio.generate .calls studio.api_client 'POST /collections' { metadata { uid 'generate-client' } }
+  studio.router .calls studio.api_client 'Fetch a deep-linked collection or avatar' { metadata { uid 'router-client' } }
+  studio.api_client .calls service.guard 'Same-origin fetch to /api/v1' { metadata { uid 'client-service' } }
+  studio.app .loads service.api.avatars 'Thumbnails: <img src=/api/v1/avatars/{id}.svg>' { metadata { uid 'app-thumbnails' } }
+  studio.inspector .loads service.api.avatars 'Preview image and SVG/PNG download' { metadata { uid 'inspector-images' } }
+  studio.generate .reads studio.view_rules 'Which inputs a style accepts; the mixed suggestion' { metadata { uid 'generate-rules' } }
+  studio.inspector .reads studio.view_rules 'Export view defaults and native ratio' { metadata { uid 'inspector-rules' } }
+  studio.router .reads studio.view_rules 'Parse and write view params' { metadata { uid 'router-rules' } }
+  studio.cards .calls studio.physics 'grab, move, release, step' { metadata { uid 'cards-physics' } }
+  studio.cards .calls studio.sound 'unlock on gesture; update with card speed' { metadata { uid 'cards-sound' } }
+
+  // ---------------------------------------------------------------- relationships: proposed
+  person .calls requested.requests 'Requests a style from the studio' { #proposed metadata { uid 'person-requests' } }
+  agent .calls requested.requests 'requests create/show/list --json' { #proposed metadata { uid 'agent-requests' } }
+  requested.access .controls requested.requests 'Authorizes submission, events, review, activation' { metadata { uid 'access-requests' } }
+  requested.requests .dispatches requested.worker 'One active attempt per request' { metadata { uid 'requests-worker' } }
+  requested.requests .writes requested.catalog 'Persist requests and attempts before dispatch' { metadata { uid 'requests-catalog' } }
+  requested.worker .writes requested.bundles 'Produces a candidate bundle and previews' { metadata { uid 'worker-bundles' } }
+  requested.bundles .writes requested.catalog 'Accepting activates an immutable version' { metadata { uid 'bundles-catalog' } }
+  requested.bundles .implements core.engine 'ProcessGenerator satisfies the Generator contract' { metadata { uid 'bundles-engine' } }
+  requested.hosting .reads requested.catalog 'Serves immutable exports and shared links' { metadata { uid 'hosting-catalog' } }
+  requested.hosting .calls core.library 'Same application core behind a hosted API' { metadata { uid 'hosting-core' } }
+}
+
+views {
+  view index { include * }
+}

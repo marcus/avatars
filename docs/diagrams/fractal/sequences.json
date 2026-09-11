@@ -1,0 +1,822 @@
+{
+  "version": 1,
+  "journeys": [
+    {
+      "id": "studio-generate",
+      "title": "Generate a collection in the studio",
+      "description": "Marcus picks a style and a batch size; the browser posts one request, the core saves recipes, and thumbnails are rendered on demand from those recipes.",
+      "provenance": "Not a captured trace. Authored 2026-09-11 from internal/studio/assets/app.js (generate, navigate, renderGrid), internal/httpapi/httpapi.go (create), internal/library/library.go (Create), and internal/store/jsonl.go (Save).",
+      "status": "current",
+      "participants": [
+        {
+          "id": "person",
+          "element": "person",
+          "title": "Marcus"
+        },
+        {
+          "id": "toolbar",
+          "element": "studio.generate",
+          "title": "Generation toolbar"
+        },
+        {
+          "id": "grid",
+          "element": "studio.app",
+          "title": "App & grid"
+        },
+        {
+          "id": "client",
+          "element": "studio.api_client",
+          "title": "API client"
+        },
+        {
+          "id": "guard",
+          "element": "service.guard",
+          "title": "Origin guard"
+        },
+        {
+          "id": "collections",
+          "element": "service.api.collections",
+          "title": "POST /collections"
+        },
+        {
+          "id": "library",
+          "element": "core.library",
+          "title": "Library service"
+        },
+        {
+          "id": "engine",
+          "element": "core.engine",
+          "title": "Engine"
+        },
+        {
+          "id": "store",
+          "element": "storage.jsonl",
+          "title": "JSONL store"
+        },
+        {
+          "id": "images",
+          "element": "service.api.avatars",
+          "title": "Image routes"
+        }
+      ],
+      "groups": [
+        {
+          "id": "browser",
+          "title": "Browser",
+          "participants": [
+            "toolbar",
+            "grid",
+            "client"
+          ]
+        },
+        {
+          "id": "service",
+          "title": "Local service",
+          "participants": [
+            "guard",
+            "collections",
+            "library",
+            "engine",
+            "store",
+            "images"
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "type": "phase",
+          "id": "submit",
+          "title": "1. Submit the request",
+          "description": "Only inputs the chosen style publishes are sent; the toolbar is disabled while creating.",
+          "steps": [
+            {
+              "type": "message",
+              "id": "choose",
+              "from": "person",
+              "to": "toolbar",
+              "title": "Choose style, color/animal, count, name; press Generate",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "post",
+              "from": "toolbar",
+              "to": "client",
+              "title": "POST /api/v1/collections {style, count, inputs?, name?}",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "fetch",
+              "from": "client",
+              "to": "guard",
+              "title": "Same-origin fetch, Content-Type application/json",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "guard-ok",
+              "from": "guard",
+              "to": "collections",
+              "title": "Loopback host, same origin: route the mutation",
+              "kind": "call",
+              "description": "A cross-site Origin or a non-loopback Host would have been refused with 403 before reaching the API."
+            }
+          ]
+        },
+        {
+          "type": "phase",
+          "id": "save",
+          "title": "2. Save recipes, not images",
+          "steps": [
+            {
+              "type": "message",
+              "id": "create",
+              "from": "collections",
+              "to": "library",
+              "title": "Create(request) after strict JSON decoding",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "resolve-inputs",
+              "from": "library",
+              "to": "engine",
+              "title": "ResolveInputs: apply the style's defaults and validate",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "resolve-recipe",
+              "from": "library",
+              "to": "engine",
+              "title": "ResolveRecipeInputs per seed (Random → concrete color, Mixed → dog or cat)",
+              "kind": "call",
+              "description": "Fresh cryptographic seeds unless one was supplied; batches derive seed:index."
+            },
+            {
+              "type": "message",
+              "id": "store-save",
+              "from": "library",
+              "to": "store",
+              "title": "Save(collection)",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "store-ok",
+              "from": "store",
+              "to": "library",
+              "title": "flock, validate log, refuse duplicate IDs, append, fsync",
+              "kind": "return"
+            },
+            {
+              "type": "message",
+              "id": "created",
+              "from": "collections",
+              "to": "client",
+              "title": "201 Created + Location, collection with avatar URLs",
+              "kind": "return"
+            }
+          ]
+        },
+        {
+          "type": "phase",
+          "id": "show",
+          "title": "3. Show the new collection",
+          "steps": [
+            {
+              "type": "message",
+              "id": "navigate",
+              "from": "toolbar",
+              "to": "person",
+              "title": "Navigate to /?collection=col_…; toast “12 portraits created”",
+              "kind": "return"
+            },
+            {
+              "type": "message",
+              "id": "thumbs",
+              "from": "grid",
+              "to": "images",
+              "title": "Cards load <img src=/api/v1/avatars/{id}.svg>",
+              "kind": "async"
+            },
+            {
+              "type": "message",
+              "id": "render-thumb",
+              "from": "images",
+              "to": "library",
+              "title": "Render(id, svg): regenerate from the saved recipe",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "thumb-bytes",
+              "from": "images",
+              "to": "grid",
+              "title": "image/svg+xml, Cache-Control: no-store",
+              "kind": "return"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cli-generate-export",
+      "title": "An agent generates, then exports a circular PNG",
+      "description": "Local mode: the CLI runs the same core in-process against the shared library file, so the studio sees the result on its next refresh.",
+      "provenance": "Not a captured trace. Authored 2026-09-11 from internal/cli/cli.go, internal/cli/commands.go (generate, image, writeImage), internal/library/library.go, pkg/avatar/engine.go, and internal/studio/assets/app.js (refresh).",
+      "status": "current",
+      "participants": [
+        {
+          "id": "agent",
+          "element": "agent",
+          "title": "Agent"
+        },
+        {
+          "id": "dispatch",
+          "element": "cli.dispatch",
+          "title": "Command dispatch"
+        },
+        {
+          "id": "commands",
+          "element": "cli.library_commands",
+          "title": "generate / export"
+        },
+        {
+          "id": "library",
+          "element": "core.library",
+          "title": "Library service"
+        },
+        {
+          "id": "engine",
+          "element": "core.engine",
+          "title": "Engine"
+        },
+        {
+          "id": "png",
+          "element": "core.exporters.png",
+          "title": "PNG exporter"
+        },
+        {
+          "id": "store",
+          "element": "storage.jsonl",
+          "title": "JSONL store"
+        },
+        {
+          "id": "sync",
+          "element": "studio.sync",
+          "title": "Studio refresh"
+        },
+        {
+          "id": "person",
+          "element": "person",
+          "title": "Marcus"
+        }
+      ],
+      "groups": [
+        {
+          "id": "cli",
+          "title": "CLI process",
+          "participants": [
+            "dispatch",
+            "commands",
+            "library",
+            "engine",
+            "png",
+            "store"
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "type": "phase",
+          "id": "generate",
+          "title": "1. avatars generate --style pebble --color random --count 12 --json",
+          "steps": [
+            {
+              "type": "message",
+              "id": "run",
+              "from": "agent",
+              "to": "dispatch",
+              "title": "Parse --json; no --url, so local mode",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "route",
+              "from": "dispatch",
+              "to": "commands",
+              "title": "generate with validated flags",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "open",
+              "from": "commands",
+              "to": "store",
+              "title": "Open $XDG_DATA_HOME/avatars/collections.jsonl (create if missing, mode 0600)",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "create",
+              "from": "commands",
+              "to": "library",
+              "title": "Create(request)",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "resolve",
+              "from": "library",
+              "to": "engine",
+              "title": "Resolve inputs; Random becomes a concrete color per seed",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "save",
+              "from": "library",
+              "to": "store",
+              "title": "Save(collection) with flock + fsync",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "links",
+              "from": "commands",
+              "to": "agent",
+              "title": "JSON with absolute studio links (http://127.0.0.1:7447/?avatar=av_…)",
+              "kind": "return"
+            }
+          ]
+        },
+        {
+          "type": "phase",
+          "id": "export",
+          "title": "2. avatars export av_… --format png --size 256 --circle --out icon.png",
+          "steps": [
+            {
+              "type": "message",
+              "id": "run-export",
+              "from": "agent",
+              "to": "dispatch",
+              "title": "export with format, size, circle, out",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "route-export",
+              "from": "dispatch",
+              "to": "commands",
+              "title": "export",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "render",
+              "from": "commands",
+              "to": "library",
+              "title": "Render(id, png, {256×256, circle})",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "lookup",
+              "from": "library",
+              "to": "store",
+              "title": "List and find the saved recipe",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "render-engine",
+              "from": "library",
+              "to": "engine",
+              "title": "RenderWithInputs(style, seed, png, saved inputs, options)",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "rasterize",
+              "from": "engine",
+              "to": "png",
+              "title": "Export(native SVG, normalized options): rasterize, clip viewport, mask circle",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "write",
+              "from": "commands",
+              "to": "agent",
+              "title": "Create icon.png exclusively (never overwrite); exit 0",
+              "kind": "return"
+            }
+          ]
+        },
+        {
+          "type": "phase",
+          "id": "studio-sees-it",
+          "title": "3. The studio notices",
+          "steps": [
+            {
+              "type": "message",
+              "id": "poll",
+              "from": "sync",
+              "to": "store",
+              "title": "Next 5 s poll: GET /api/v1/collections makes the service re-read the same file",
+              "kind": "async",
+              "description": "The running service and the CLI share collections.jsonl; each List re-reads it under a shared lock."
+            },
+            {
+              "type": "message",
+              "id": "toast",
+              "from": "sync",
+              "to": "person",
+              "title": "Toast “12 new portraits in your library”; cards reconciled by ID",
+              "kind": "return"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "service-ensure",
+      "title": "Comms Web ensures the service, then renders",
+      "description": "A consuming app never starts a duplicate: ensure reuses a compatible instance or starts exactly one detached child under a lock and proves its identity over the private socket.",
+      "provenance": "Not a captured trace. Authored 2026-09-11 from internal/cli/service.go (serviceCommand, validateService, probeService), internal/cli/lifecycle_lock_unix.go, internal/cli/process_unix.go, internal/cli/serve.go, and internal/lifecycle/lifecycle.go. The caller-side caching note comes from docs/plans/active/requested-styles-service.md.",
+      "status": "current",
+      "participants": [
+        {
+          "id": "consumer",
+          "element": "consumer",
+          "title": "Comms Web"
+        },
+        {
+          "id": "ensure",
+          "element": "cli.service_cmd",
+          "title": "service ensure"
+        },
+        {
+          "id": "runtime",
+          "element": "storage.runtime",
+          "title": "Runtime files"
+        },
+        {
+          "id": "serve",
+          "element": "cli.serve",
+          "title": "serve (child)"
+        },
+        {
+          "id": "control",
+          "element": "service.lifecycle",
+          "title": "Control socket"
+        },
+        {
+          "id": "health",
+          "element": "service.api.discovery",
+          "title": "GET /health"
+        },
+        {
+          "id": "render",
+          "element": "service.api.render",
+          "title": "GET /render"
+        }
+      ],
+      "groups": [
+        {
+          "id": "child",
+          "title": "Detached service process",
+          "participants": [
+            "serve",
+            "control",
+            "health",
+            "render"
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "type": "phase",
+          "id": "probe",
+          "title": "1. Is a compatible service already up?",
+          "steps": [
+            {
+              "type": "message",
+              "id": "call-ensure",
+              "from": "consumer",
+              "to": "ensure",
+              "title": "avatars service ensure --json",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "first-probe",
+              "from": "ensure",
+              "to": "health",
+              "title": "GET /api/v1/health with a 750 ms budget",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "dial-fail",
+              "from": "health",
+              "to": "ensure",
+              "title": "Dial failure → nothing is listening",
+              "kind": "return",
+              "description": "Any incompatible answer — wrong service or api_version, a mismatched data_dir, or an auto instance whose control socket identity doesn't match — is refused rather than replaced. A compatible foreground or supervised instance is simply reused."
+            }
+          ]
+        },
+        {
+          "type": "phase",
+          "id": "start",
+          "title": "2. Start exactly one child",
+          "steps": [
+            {
+              "type": "message",
+              "id": "lock",
+              "from": "ensure",
+              "to": "runtime",
+              "title": "flock service.lifecycle.lock (waits up to --timeout)",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "recheck",
+              "from": "ensure",
+              "to": "health",
+              "title": "Re-probe under the lock in case a peer won the race",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "spawn",
+              "from": "ensure",
+              "to": "serve",
+              "title": "Start detached: serve --launch-mode auto --lifecycle-socket … (setsid, log appended)",
+              "kind": "async"
+            },
+            {
+              "type": "message",
+              "id": "bind-socket",
+              "from": "serve",
+              "to": "control",
+              "title": "Bind service.sock (0600) before announcing the listener",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "listen",
+              "from": "serve",
+              "to": "health",
+              "title": "Serve API + studio on the loopback address",
+              "kind": "call"
+            }
+          ]
+        },
+        {
+          "type": "phase",
+          "id": "verify",
+          "title": "3. Prove identity, then hand over",
+          "steps": [
+            {
+              "type": "message",
+              "id": "poll-health",
+              "from": "ensure",
+              "to": "health",
+              "title": "Poll health every 30 ms until it answers",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "health-status",
+              "from": "health",
+              "to": "ensure",
+              "title": "service=avatars, api_version=v1, instance_id, pid, launch_mode=auto, data_dir",
+              "kind": "return"
+            },
+            {
+              "type": "message",
+              "id": "socket-status",
+              "from": "ensure",
+              "to": "control",
+              "title": "GET /v1/status over the Unix socket",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "socket-ok",
+              "from": "control",
+              "to": "ensure",
+              "title": "Same instance_id → the HTTP service and its control plane match",
+              "kind": "return"
+            },
+            {
+              "type": "message",
+              "id": "result",
+              "from": "ensure",
+              "to": "consumer",
+              "title": "{status: running, endpoint, pid, instance_id, lifecycle_socket, log_path}",
+              "kind": "return"
+            }
+          ]
+        },
+        {
+          "type": "phase",
+          "id": "use",
+          "title": "4. Render through the endpoint",
+          "steps": [
+            {
+              "type": "message",
+              "id": "render-call",
+              "from": "consumer",
+              "to": "render",
+              "title": "GET /api/v1/render?style=…&seed=…&format=svg",
+              "kind": "call",
+              "description": "Comms Web caches results by recipe on its side (per the active plan)."
+            },
+            {
+              "type": "message",
+              "id": "render-bytes",
+              "from": "render",
+              "to": "consumer",
+              "title": "image/svg+xml",
+              "kind": "return"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "studio-deep-link",
+      "title": "Open a shared portrait link",
+      "description": "A copied portrait link carries the avatar, shape, dimensions, and preview background. The studio restores that exact view, fetching the avatar and its collection if they are not yet in memory.",
+      "provenance": "Not a captured trace. Authored 2026-09-11 from internal/studio/assets/app.js (refresh, resolveRoute, renderInspector, updatePreview) and internal/studio/assets/view.mjs (readExportView, readPreviewBackground).",
+      "status": "current",
+      "participants": [
+        {
+          "id": "person",
+          "element": "person",
+          "title": "Marcus"
+        },
+        {
+          "id": "shell",
+          "element": "studio.shell",
+          "title": "Page shell"
+        },
+        {
+          "id": "sync",
+          "element": "studio.sync",
+          "title": "Library refresh"
+        },
+        {
+          "id": "router",
+          "element": "studio.router",
+          "title": "Router"
+        },
+        {
+          "id": "rules",
+          "element": "studio.view_rules",
+          "title": "View rules"
+        },
+        {
+          "id": "inspector",
+          "element": "studio.inspector",
+          "title": "Inspector"
+        },
+        {
+          "id": "api",
+          "element": "service.api",
+          "title": "/api/v1"
+        }
+      ],
+      "groups": [
+        {
+          "id": "browser",
+          "title": "Browser",
+          "participants": [
+            "shell",
+            "sync",
+            "router",
+            "rules",
+            "inspector"
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "type": "message",
+          "id": "open",
+          "from": "person",
+          "to": "shell",
+          "title": "Open /?avatar=av_…&shape=circle&width=256&height=256&background=light",
+          "kind": "call"
+        },
+        {
+          "type": "phase",
+          "id": "load",
+          "title": "1. Initial load",
+          "steps": [
+            {
+              "type": "message",
+              "id": "initial",
+              "from": "shell",
+              "to": "sync",
+              "title": "refresh({initial: true})",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "lists",
+              "from": "sync",
+              "to": "api",
+              "title": "GET /collections and GET /styles in parallel (Promise.allSettled)",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "lists-ok",
+              "from": "api",
+              "to": "sync",
+              "title": "Collections newest first; style descriptors with inputs and native size",
+              "kind": "return"
+            }
+          ]
+        },
+        {
+          "type": "phase",
+          "id": "resolve",
+          "title": "2. Resolve the route",
+          "steps": [
+            {
+              "type": "message",
+              "id": "route",
+              "from": "sync",
+              "to": "router",
+              "title": "resolveRoute({scroll: true, restoreView: true})",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "missing",
+              "from": "router",
+              "to": "api",
+              "title": "GET /avatars/{id}, then its collection, if not already loaded",
+              "kind": "call",
+              "description": "A stale response is ignored when a newer navigation has started."
+            },
+            {
+              "type": "message",
+              "id": "view",
+              "from": "router",
+              "to": "rules",
+              "title": "readExportView + readPreviewBackground: invalid values fall back to defaults; height derives from the style's native ratio",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "inputs",
+              "from": "router",
+              "to": "rules",
+              "title": "generationInputsForStyle: preselect the toolbar to match the portrait",
+              "kind": "call"
+            }
+          ]
+        },
+        {
+          "type": "phase",
+          "id": "present",
+          "title": "3. Present",
+          "steps": [
+            {
+              "type": "message",
+              "id": "render",
+              "from": "router",
+              "to": "inspector",
+              "title": "render(): select the card, open the inspector, scroll it into view",
+              "kind": "call"
+            },
+            {
+              "type": "message",
+              "id": "preview",
+              "from": "inspector",
+              "to": "api",
+              "title": "<img src=/avatars/{id}.svg?width=256&height=256&circle=true>",
+              "kind": "async"
+            },
+            {
+              "type": "message",
+              "id": "shown",
+              "from": "inspector",
+              "to": "person",
+              "title": "Circular preview on a light surround; SVG and PNG ready to download",
+              "kind": "return"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="sequence-title sequence-description" data-theme="grove" data-theme-appearance="light">
+  <title id="sequence-title">Comms Web ensures the service, then renders</title><desc id="sequence-description">A consuming app never starts a duplicate: ensure reuses a compatible instance or starts exactly one detached child under a lock and proves its identity over the private socket.</desc><metadata>{&quot;journeyId&quot;:&quot;service-ensure&quot;,&quot;provenance&quot;:&quot;Not a captured trace. Authored 2026-09-11 from internal/cli/service.go (serviceCommand, validateService, probeService), internal/cli/lifecycle_lock_unix.go, internal/cli/process_unix.go, internal/cli/serve.go, and internal/lifecycle/lifecycle.go. The caller-side caching note comes from docs/plans/active/requested-styles-service.md.&quot;,&quot;hiddenLanes&quot;:[],&quot;rows&quot;:[{&quot;id&quot;:&quot;probe&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;call-ensure&quot;,&quot;first-probe&quot;,&quot;dial-fail&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;consumer&quot;,&quot;ensure&quot;,&quot;health&quot;]},{&quot;id&quot;:&quot;call-ensure&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;call-ensure&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;consumer&quot;,&quot;ensure&quot;]},{&quot;id&quot;:&quot;first-probe&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;first-probe&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;ensure&quot;,&quot;health&quot;]},{&quot;id&quot;:&quot;dial-fail&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;dial-fail&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;health&quot;,&quot;ensure&quot;]},{&quot;id&quot;:&quot;start&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;lock&quot;,&quot;recheck&quot;,&quot;spawn&quot;,&quot;bind-socket&quot;,&quot;listen&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;ensure&quot;,&quot;runtime&quot;,&quot;health&quot;,&quot;serve&quot;,&quot;control&quot;]},{&quot;id&quot;:&quot;lock&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;lock&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;ensure&quot;,&quot;runtime&quot;]},{&quot;id&quot;:&quot;recheck&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;recheck&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;ensure&quot;,&quot;health&quot;]},{&quot;id&quot;:&quot;spawn&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;spawn&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;ensure&quot;,&quot;serve&quot;]},{&quot;id&quot;:&quot;bind-socket&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;bind-socket&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;serve&quot;,&quot;control&quot;]},{&quot;id&quot;:&quot;listen&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;listen&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;serve&quot;,&quot;health&quot;]},{&quot;id&quot;:&quot;verify&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;poll-health&quot;,&quot;health-status&quot;,&quot;socket-status&quot;,&quot;socket-ok&quot;,&quot;result&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;ensure&quot;,&quot;health&quot;,&quot;control&quot;,&quot;consumer&quot;]},{&quot;id&quot;:&quot;poll-health&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;poll-health&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;ensure&quot;,&quot;health&quot;]},{&quot;id&quot;:&quot;health-status&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;health-status&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;health&quot;,&quot;ensure&quot;]},{&quot;id&quot;:&quot;socket-status&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;socket-status&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;ensure&quot;,&quot;control&quot;]},{&quot;id&quot;:&quot;socket-ok&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;socket-ok&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;control&quot;,&quot;ensure&quot;]},{&quot;id&quot;:&quot;result&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;result&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;ensure&quot;,&quot;consumer&quot;]},{&quot;id&quot;:&quot;use&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;render-call&quot;,&quot;render-bytes&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;consumer&quot;,&quot;render&quot;]},{&quot;id&quot;:&quot;render-call&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;render-call&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;consumer&quot;,&quot;render&quot;]},{&quot;id&quot;:&quot;render-bytes&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;render-bytes&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;render&quot;,&quot;consumer&quot;]}]}</metadata>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#84948b"/></marker>
+    <marker id="arrow-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10" fill="none" stroke="#84948b" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="1920" height="1080" fill="#fafbf8"/>
+  <g font-family="Arial, Helvetica, sans-serif" data-export-layer="title">
+    <text x="70" y="43" font-size="11" letter-spacing="2.5" fill="#607c69">FRACTAL / SEQUENCE JOURNEY</text>
+    <text x="70" y="88" text-anchor="start" font-size="34" fill="#243b34"><tspan x="70" dy="0">Comms Web ensures the service, then renders</tspan></text>
+    <text x="70" y="126" text-anchor="start" font-size="15" fill="#6e7d72"><tspan x="70" dy="0">A consuming app never starts a duplicate: ensure reuses a compatible instance or starts exactly one detached child under a lock and proves its identity over the private socket.</tspan></text>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" transform="translate(485.6176853055917 190) scale(0.494148244473342)"><g data-column="consumer" data-members="consumer" data-elements="consumer">
+    <rect x="102.00000000000001" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#C48282" stroke-width="2"/>
+    <text x="205.71428571428572" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="205.71428571428572" dy="0">Comms Web</tspan></text>
+    <path d="M205.71428571428572 76V1468" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="ensure" data-members="ensure" data-elements="cli.service_cmd">
+    <rect x="353.42857142857144" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#B59669" stroke-width="2"/>
+    <text x="457.14285714285717" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="457.14285714285717" dy="0">service ensure</tspan></text>
+    <path d="M457.14285714285717 76V1468" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="runtime" data-members="runtime" data-elements="storage.runtime">
+    <rect x="604.8571428571429" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#89A579" stroke-width="2"/>
+    <text x="708.5714285714286" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="708.5714285714286" dy="0">Runtime files</tspan></text>
+    <path d="M708.5714285714286 76V1468" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="serve" data-members="serve" data-elements="cli.serve">
+    <rect x="856.2857142857142" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#B59669" stroke-width="2"/>
+    <text x="959.9999999999999" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="959.9999999999999" dy="0">serve (child)</tspan></text>
+    <path d="M959.9999999999999 76V1468" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="control" data-members="control" data-elements="service.lifecycle">
+    <rect x="1107.7142857142858" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#9A91C4" stroke-width="2"/>
+    <text x="1211.4285714285716" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1211.4285714285716" dy="0">Control socket</tspan></text>
+    <path d="M1211.4285714285716 76V1468" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="health" data-members="health" data-elements="service.api.discovery">
+    <rect x="1359.142857142857" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#9A91C4" stroke-width="2"/>
+    <text x="1462.857142857143" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1462.857142857143" dy="0">GET /health</tspan></text>
+    <path d="M1462.857142857143 76V1468" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="render" data-members="render" data-elements="service.api.render">
+    <rect x="1610.5714285714284" y="32" width="207.42857142857142" height="44" rx="12" fill="#ffffff" stroke="#9A91C4" stroke-width="2"/>
+    <text x="1714.2857142857142" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1714.2857142857142" dy="0">GET /render</tspan></text>
+    <path d="M1714.2857142857142 76V1468" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-row-id="probe" data-message-ids="call-ensure,first-probe,dial-fail" data-participant-ids="consumer,ensure,health" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="118" width="1804" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="141" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">1. Is a compatible service already up?</tspan></text>
+        
+        <text x="1820" y="139.5" text-anchor="end" font-size="11" fill="#78867c">3 interactions</text>
+      </g><g data-row-id="call-ensure" data-message-ids="call-ensure" data-participant-ids="consumer,ensure" data-row-type="message" data-kind="call">
+      <rect x="151.42857142857144" y="167" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="331.42857142857144" y="190" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="331.42857142857144" dy="0">avatars service ensure --json</tspan></text>
+      
+      <path d="M205.71428571428572 206H449.14285714285717" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="first-probe" data-message-ids="first-probe" data-participant-ids="ensure,health" data-row-type="message" data-kind="call">
+      <rect x="780" y="231" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="960" y="254" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="960" dy="0">GET /api/v1/health with a 750 ms budget</tspan></text>
+      
+      <path d="M457.14285714285717 270H1454.857142857143" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="dial-fail" data-message-ids="dial-fail" data-participant-ids="health,ensure" data-row-type="message" data-kind="return">
+      <rect x="780" y="295" width="360" height="111" rx="7" fill="#fafbf8"/>
+      <text x="960" y="318" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="960" dy="0">Dial failure → nothing is listening</tspan></text>
+      <text x="960" y="340" text-anchor="middle" font-size="11" fill="#78867c"><tspan x="960" dy="0">Any incompatible answer — wrong service or api_version, a</tspan><tspan x="960" dy="15">mismatched data_dir, or an auto instance whose control</tspan><tspan x="960" dy="15">socket identity doesn&apos;t match — is refused rather than</tspan><tspan x="960" dy="15">replaced. A compatible foreground or supervised instance</tspan><tspan x="960" dy="15">is simply reused.</tspan></text>
+      <path d="M1462.857142857143 411H465.14285714285717" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g><g data-row-id="start" data-message-ids="lock,recheck,spawn,bind-socket,listen" data-participant-ids="ensure,runtime,health,serve,control" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="436" width="1804" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="459" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">2. Start exactly one child</tspan></text>
+        
+        <text x="1820" y="457.5" text-anchor="end" font-size="11" fill="#78867c">5 interactions</text>
+      </g><g data-row-id="lock" data-message-ids="lock" data-participant-ids="ensure,runtime" data-row-type="message" data-kind="call">
+      <rect x="402.8571428571429" y="485" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="582.8571428571429" y="508" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="582.8571428571429" dy="0">flock service.lifecycle.lock (waits up to</tspan><tspan x="582.8571428571429" dy="17">--timeout)</tspan></text>
+      
+      <path d="M457.14285714285717 539H700.5714285714286" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="recheck" data-message-ids="recheck" data-participant-ids="ensure,health" data-row-type="message" data-kind="call">
+      <rect x="780" y="564" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="960" y="587" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="960" dy="0">Re-probe under the lock in case a peer won the</tspan><tspan x="960" dy="17">race</tspan></text>
+      
+      <path d="M457.14285714285717 618H1454.857142857143" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="spawn" data-message-ids="spawn" data-participant-ids="ensure,serve" data-row-type="message" data-kind="async">
+      <rect x="528.5714285714286" y="643" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="708.5714285714286" y="666" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="708.5714285714286" dy="0">Start detached: serve --launch-mode auto</tspan><tspan x="708.5714285714286" dy="17">--lifecycle-socket … (setsid, log appended)</tspan></text>
+      
+      <path d="M457.14285714285717 697H951.9999999999999" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow-open)"/>
+    </g><g data-row-id="bind-socket" data-message-ids="bind-socket" data-participant-ids="serve,control" data-row-type="message" data-kind="call">
+      <rect x="905.7142857142858" y="722" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="1085.7142857142858" y="745" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1085.7142857142858" dy="0">Bind service.sock (0600) before announcing the</tspan><tspan x="1085.7142857142858" dy="17">listener</tspan></text>
+      
+      <path d="M959.9999999999999 776H1203.4285714285716" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="listen" data-message-ids="listen" data-participant-ids="serve,health" data-row-type="message" data-kind="call">
+      <rect x="1031.4285714285713" y="801" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="1211.4285714285713" y="824" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1211.4285714285713" dy="0">Serve API + studio on the loopback address</tspan></text>
+      
+      <path d="M959.9999999999999 840H1454.857142857143" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="verify" data-message-ids="poll-health,health-status,socket-status,socket-ok,result" data-participant-ids="ensure,health,control,consumer" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="865" width="1804" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="888" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">3. Prove identity, then hand over</tspan></text>
+        
+        <text x="1820" y="886.5" text-anchor="end" font-size="11" fill="#78867c">5 interactions</text>
+      </g><g data-row-id="poll-health" data-message-ids="poll-health" data-participant-ids="ensure,health" data-row-type="message" data-kind="call">
+      <rect x="780" y="914" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="960" y="937" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="960" dy="0">Poll health every 30 ms until it answers</tspan></text>
+      
+      <path d="M457.14285714285717 953H1454.857142857143" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="health-status" data-message-ids="health-status" data-participant-ids="health,ensure" data-row-type="message" data-kind="return">
+      <rect x="780" y="978" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="960" y="1001" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="960" dy="0">service=avatars, api_version=v1, instance_id, pid,</tspan><tspan x="960" dy="17">launch_mode=auto, data_dir</tspan></text>
+      
+      <path d="M1462.857142857143 1032H465.14285714285717" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g><g data-row-id="socket-status" data-message-ids="socket-status" data-participant-ids="ensure,control" data-row-type="message" data-kind="call">
+      <rect x="654.2857142857143" y="1057" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="834.2857142857143" y="1080" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="834.2857142857143" dy="0">GET /v1/status over the Unix socket</tspan></text>
+      
+      <path d="M457.14285714285717 1096H1203.4285714285716" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="socket-ok" data-message-ids="socket-ok" data-participant-ids="control,ensure" data-row-type="message" data-kind="return">
+      <rect x="654.2857142857143" y="1121" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="834.2857142857143" y="1144" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="834.2857142857143" dy="0">Same instance_id → the HTTP service and its</tspan><tspan x="834.2857142857143" dy="17">control plane match</tspan></text>
+      
+      <path d="M1211.4285714285716 1175H465.14285714285717" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g><g data-row-id="result" data-message-ids="result" data-participant-ids="ensure,consumer" data-row-type="message" data-kind="return">
+      <rect x="151.42857142857144" y="1200" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="331.42857142857144" y="1223" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="331.42857142857144" dy="0">{status: running, endpoint, pid, instance_id,</tspan><tspan x="331.42857142857144" dy="17">lifecycle_socket, log_path}</tspan></text>
+      
+      <path d="M457.14285714285717 1254H213.71428571428572" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g><g data-row-id="use" data-message-ids="render-call,render-bytes" data-participant-ids="consumer,render" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="1279" width="1804" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="1302" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">4. Render through the endpoint</tspan></text>
+        
+        <text x="1820" y="1300.5" text-anchor="end" font-size="11" fill="#78867c">2 interactions</text>
+      </g><g data-row-id="render-call" data-message-ids="render-call" data-participant-ids="consumer,render" data-row-type="message" data-kind="call">
+      <rect x="780" y="1328" width="360" height="66" rx="7" fill="#fafbf8"/>
+      <text x="960" y="1351" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="960" dy="0">GET /api/v1/render?style=…&amp;seed=…&amp;format=svg</tspan></text>
+      <text x="960" y="1373" text-anchor="middle" font-size="11" fill="#78867c"><tspan x="960" dy="0">Comms Web caches results by recipe on its side (per the</tspan><tspan x="960" dy="15">active plan).</tspan></text>
+      <path d="M205.71428571428572 1399H1706.2857142857142" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="render-bytes" data-message-ids="render-bytes" data-participant-ids="render,consumer" data-row-type="message" data-kind="return">
+      <rect x="780" y="1424" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="960" y="1447" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="960" dy="0">image/svg+xml</tspan></text>
+      
+      <path d="M1714.2857142857142 1463H213.71428571428572" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g></g>
+  <g font-family="Arial, Helvetica, sans-serif" data-export-layer="footer">
+    <path d="M70 992H1850" stroke="#dce2db"/>
+    <text x="70" y="1027" font-size="12" font-weight="600" letter-spacing="1" fill="#607c69">CURRENT · 15 INTERACTIONS</text>
+    <text x="620" y="1027" font-size="11" fill="#78867c">SOURCE · Not a captured trace. Authored 2026-09-11 from internal/cli/service.go (serviceCommand, validateService, probeService), internal/cli/lifecycle_lock_unix.go, internal/cli/process_unix.go, internal/cli/serve.go, and int…</text>
+  </g>
+  </svg>

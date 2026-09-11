@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="sequence-title sequence-description" data-theme="grove" data-theme-appearance="light">
+  <title id="sequence-title">Generate a collection in the studio</title><desc id="sequence-description">Marcus picks a style and a batch size; the browser posts one request, the core saves recipes, and thumbnails are rendered on demand from those recipes.</desc><metadata>{&quot;journeyId&quot;:&quot;studio-generate&quot;,&quot;provenance&quot;:&quot;Not a captured trace. Authored 2026-09-11 from internal/studio/assets/app.js (generate, navigate, renderGrid), internal/httpapi/httpapi.go (create), internal/library/library.go (Create), and internal/store/jsonl.go (Save).&quot;,&quot;hiddenLanes&quot;:[],&quot;rows&quot;:[{&quot;id&quot;:&quot;submit&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;choose&quot;,&quot;post&quot;,&quot;fetch&quot;,&quot;guard-ok&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;person&quot;,&quot;toolbar&quot;,&quot;client&quot;,&quot;guard&quot;,&quot;collections&quot;]},{&quot;id&quot;:&quot;choose&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;choose&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;person&quot;,&quot;toolbar&quot;]},{&quot;id&quot;:&quot;post&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;post&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;toolbar&quot;,&quot;client&quot;]},{&quot;id&quot;:&quot;fetch&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;fetch&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;client&quot;,&quot;guard&quot;]},{&quot;id&quot;:&quot;guard-ok&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;guard-ok&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;guard&quot;,&quot;collections&quot;]},{&quot;id&quot;:&quot;save&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;create&quot;,&quot;resolve-inputs&quot;,&quot;resolve-recipe&quot;,&quot;store-save&quot;,&quot;store-ok&quot;,&quot;created&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;collections&quot;,&quot;library&quot;,&quot;engine&quot;,&quot;store&quot;,&quot;client&quot;]},{&quot;id&quot;:&quot;create&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;create&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;collections&quot;,&quot;library&quot;]},{&quot;id&quot;:&quot;resolve-inputs&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;resolve-inputs&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;library&quot;,&quot;engine&quot;]},{&quot;id&quot;:&quot;resolve-recipe&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;resolve-recipe&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;library&quot;,&quot;engine&quot;]},{&quot;id&quot;:&quot;store-save&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;store-save&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;library&quot;,&quot;store&quot;]},{&quot;id&quot;:&quot;store-ok&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;store-ok&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;store&quot;,&quot;library&quot;]},{&quot;id&quot;:&quot;created&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;created&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;collections&quot;,&quot;client&quot;]},{&quot;id&quot;:&quot;show&quot;,&quot;type&quot;:&quot;phase&quot;,&quot;messageIds&quot;:[&quot;navigate&quot;,&quot;thumbs&quot;,&quot;render-thumb&quot;,&quot;thumb-bytes&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;toolbar&quot;,&quot;person&quot;,&quot;grid&quot;,&quot;images&quot;,&quot;library&quot;]},{&quot;id&quot;:&quot;navigate&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;navigate&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;toolbar&quot;,&quot;person&quot;]},{&quot;id&quot;:&quot;thumbs&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;thumbs&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;grid&quot;,&quot;images&quot;]},{&quot;id&quot;:&quot;render-thumb&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;render-thumb&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;images&quot;,&quot;library&quot;]},{&quot;id&quot;:&quot;thumb-bytes&quot;,&quot;type&quot;:&quot;message&quot;,&quot;messageIds&quot;:[&quot;thumb-bytes&quot;],&quot;hiddenMessageIds&quot;:[],&quot;participantIds&quot;:[&quot;images&quot;,&quot;grid&quot;]}]}</metadata>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#84948b"/></marker>
+    <marker id="arrow-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10" fill="none" stroke="#84948b" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="1920" height="1080" fill="#fafbf8"/>
+  <g font-family="Arial, Helvetica, sans-serif" data-export-layer="title">
+    <text x="70" y="43" font-size="11" letter-spacing="2.5" fill="#607c69">FRACTAL / SEQUENCE JOURNEY</text>
+    <text x="70" y="88" text-anchor="start" font-size="34" fill="#243b34"><tspan x="70" dy="0">Generate a collection in the studio</tspan></text>
+    <text x="70" y="126" text-anchor="start" font-size="15" fill="#6e7d72"><tspan x="70" dy="0">Marcus picks a style and a batch size; the browser posts one request, the core saves recipes, and thumbnails are rendered on demand from those recipes.</tspan></text>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" transform="translate(370.43723554301823 189.99999999999994) scale(0.535966149506347)"><g data-column="person" data-members="person" data-elements="person">
+    <rect x="102" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="182" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="182" dy="0">Marcus</tspan></text>
+    <path d="M182 95V1348" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="toolbar" data-members="toolbar" data-elements="studio.generate">
+    <rect x="306" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="386" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="386" dy="0">Generation</tspan><tspan x="386" dy="19">toolbar</tspan></text>
+    <path d="M386 95V1348" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="grid" data-members="grid" data-elements="studio.app">
+    <rect x="510" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="590" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="590" dy="0">App &amp; grid</tspan></text>
+    <path d="M590 95V1348" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="client" data-members="client" data-elements="studio.api_client">
+    <rect x="714" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#759EB5" stroke-width="2"/>
+    <text x="794" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="794" dy="0">API client</tspan></text>
+    <path d="M794 95V1348" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="guard" data-members="guard" data-elements="service.guard">
+    <rect x="918" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#9A91C4" stroke-width="2"/>
+    <text x="998" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="998" dy="0">Origin guard</tspan></text>
+    <path d="M998 95V1348" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="collections" data-members="collections" data-elements="service.api.collections">
+    <rect x="1122" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#9A91C4" stroke-width="2"/>
+    <text x="1202" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1202" dy="0">POST /collections</tspan></text>
+    <path d="M1202 95V1348" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="library" data-members="library" data-elements="core.library">
+    <rect x="1326" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#739886" stroke-width="2"/>
+    <text x="1406" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1406" dy="0">Library service</tspan></text>
+    <path d="M1406 95V1348" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="engine" data-members="engine" data-elements="core.engine">
+    <rect x="1530" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#739886" stroke-width="2"/>
+    <text x="1610" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1610" dy="0">Engine</tspan></text>
+    <path d="M1610 95V1348" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="store" data-members="store" data-elements="storage.jsonl">
+    <rect x="1734" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#89A579" stroke-width="2"/>
+    <text x="1814" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="1814" dy="0">JSONL store</tspan></text>
+    <path d="M1814 95V1348" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-column="images" data-members="images" data-elements="service.api.avatars">
+    <rect x="1938" y="32" width="160" height="63" rx="12" fill="#ffffff" stroke="#9A91C4" stroke-width="2"/>
+    <text x="2018" y="59" text-anchor="middle" font-size="15" fill="#243b34"><tspan x="2018" dy="0">Image routes</tspan></text>
+    <path d="M2018 95V1348" stroke="#dce2db" stroke-width="1.2" stroke-dasharray="5 7"/>
+  </g><g data-row-id="submit" data-message-ids="choose,post,fetch,guard-ok" data-participant-ids="person,toolbar,client,guard,collections" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="137" width="2084" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="160" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">1. Submit the request</tspan></text>
+        <text x="269.87" y="160" text-anchor="start" font-size="11" fill="#78867c"><tspan x="269.87" dy="0">Only inputs the chosen style publishes are sent; the toolbar is disabled while creating.</tspan></text>
+        <text x="2100" y="158.5" text-anchor="end" font-size="11" fill="#78867c">4 interactions</text>
+      </g><g data-row-id="choose" data-message-ids="choose" data-participant-ids="person,toolbar" data-row-type="message" data-kind="call">
+      <rect x="104" y="186" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="284" y="209" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="284" dy="0">Choose style, color/animal, count, name; press</tspan><tspan x="284" dy="17">Generate</tspan></text>
+      
+      <path d="M182 240H378" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="post" data-message-ids="post" data-participant-ids="toolbar,client" data-row-type="message" data-kind="call">
+      <rect x="410" y="265" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="590" y="288" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="590" dy="0">POST /api/v1/collections {style, count, inputs?,</tspan><tspan x="590" dy="17">name?}</tspan></text>
+      
+      <path d="M386 319H786" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="fetch" data-message-ids="fetch" data-participant-ids="client,guard" data-row-type="message" data-kind="call">
+      <rect x="716" y="344" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="896" y="367" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="896" dy="0">Same-origin fetch, Content-Type application/json</tspan></text>
+      
+      <path d="M794 383H990" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="guard-ok" data-message-ids="guard-ok" data-participant-ids="guard,collections" data-row-type="message" data-kind="call">
+      <rect x="920" y="408" width="360" height="66" rx="7" fill="#fafbf8"/>
+      <text x="1100" y="431" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1100" dy="0">Loopback host, same origin: route the mutation</tspan></text>
+      <text x="1100" y="453" text-anchor="middle" font-size="11" fill="#78867c"><tspan x="1100" dy="0">A cross-site Origin or a non-loopback Host would have been</tspan><tspan x="1100" dy="15">refused with 403 before reaching the API.</tspan></text>
+      <path d="M998 479H1194" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="save" data-message-ids="create,resolve-inputs,resolve-recipe,store-save,store-ok,created" data-participant-ids="collections,library,engine,store,client" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="504" width="2084" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="527" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">2. Save recipes, not images</tspan></text>
+        
+        <text x="2100" y="525.5" text-anchor="end" font-size="11" fill="#78867c">6 interactions</text>
+      </g><g data-row-id="create" data-message-ids="create" data-participant-ids="collections,library" data-row-type="message" data-kind="call">
+      <rect x="1124" y="553" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="1304" y="576" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1304" dy="0">Create(request) after strict JSON decoding</tspan></text>
+      
+      <path d="M1202 592H1398" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="resolve-inputs" data-message-ids="resolve-inputs" data-participant-ids="library,engine" data-row-type="message" data-kind="call">
+      <rect x="1328" y="617" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="1508" y="640" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1508" dy="0">ResolveInputs: apply the style&apos;s defaults and</tspan><tspan x="1508" dy="17">validate</tspan></text>
+      
+      <path d="M1406 671H1602" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="resolve-recipe" data-message-ids="resolve-recipe" data-participant-ids="library,engine" data-row-type="message" data-kind="call">
+      <rect x="1328" y="696" width="360" height="85" rx="7" fill="#fafbf8"/>
+      <text x="1508" y="719" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1508" dy="0">ResolveRecipeInputs per seed (Random → concrete</tspan><tspan x="1508" dy="17">color, Mixed → dog or cat)</tspan></text>
+      <text x="1508" y="760" text-anchor="middle" font-size="11" fill="#78867c"><tspan x="1508" dy="0">Fresh cryptographic seeds unless one was supplied;</tspan><tspan x="1508" dy="15">batches derive seed:index.</tspan></text>
+      <path d="M1406 786H1602" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="store-save" data-message-ids="store-save" data-participant-ids="library,store" data-row-type="message" data-kind="call">
+      <rect x="1430" y="811" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="1610" y="834" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1610" dy="0">Save(collection)</tspan></text>
+      
+      <path d="M1406 850H1806" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="store-ok" data-message-ids="store-ok" data-participant-ids="store,library" data-row-type="message" data-kind="return">
+      <rect x="1430" y="875" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="1610" y="898" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1610" dy="0">flock, validate log, refuse duplicate IDs, append,</tspan><tspan x="1610" dy="17">fsync</tspan></text>
+      
+      <path d="M1814 929H1414" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g><g data-row-id="created" data-message-ids="created" data-participant-ids="collections,client" data-row-type="message" data-kind="return">
+      <rect x="818" y="954" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="998" y="977" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="998" dy="0">201 Created + Location, collection with avatar</tspan><tspan x="998" dy="17">URLs</tspan></text>
+      
+      <path d="M1202 1008H802" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g><g data-row-id="show" data-message-ids="navigate,thumbs,render-thumb,thumb-bytes" data-participant-ids="toolbar,person,grid,images,library" data-row-type="phase" data-phase-depth="0" data-collapsed="false">
+        <rect x="58" y="1033" width="2084" height="35" rx="10" fill="#f4f6f3" stroke="#d9e0da"/>
+        <text x="78" y="1056" text-anchor="start" font-size="15" fill="#243b34"><tspan x="78" dy="0">3. Show the new collection</tspan></text>
+        
+        <text x="2100" y="1054.5" text-anchor="end" font-size="11" fill="#78867c">4 interactions</text>
+      </g><g data-row-id="navigate" data-message-ids="navigate" data-participant-ids="toolbar,person" data-row-type="message" data-kind="return">
+      <rect x="104" y="1082" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="284" y="1105" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="284" dy="0">Navigate to /?collection=col_…; toast “12</tspan><tspan x="284" dy="17">portraits created”</tspan></text>
+      
+      <path d="M386 1136H190" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g><g data-row-id="thumbs" data-message-ids="thumbs" data-participant-ids="grid,images" data-row-type="message" data-kind="async">
+      <rect x="1124" y="1161" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="1304" y="1184" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1304" dy="0">Cards load &lt;img src=/api/v1/avatars/{id}.svg&gt;</tspan></text>
+      
+      <path d="M590 1200H2010" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow-open)"/>
+    </g><g data-row-id="render-thumb" data-message-ids="render-thumb" data-participant-ids="images,library" data-row-type="message" data-kind="call">
+      <rect x="1532" y="1225" width="360" height="49" rx="7" fill="#fafbf8"/>
+      <text x="1712" y="1248" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1712" dy="0">Render(id, svg): regenerate from the saved</tspan><tspan x="1712" dy="17">recipe</tspan></text>
+      
+      <path d="M2018 1279H1414" fill="none" stroke="#84948b" stroke-width="2" marker-end="url(#arrow)"/>
+    </g><g data-row-id="thumb-bytes" data-message-ids="thumb-bytes" data-participant-ids="images,grid" data-row-type="message" data-kind="return">
+      <rect x="1124" y="1304" width="360" height="34" rx="7" fill="#fafbf8"/>
+      <text x="1304" y="1327" text-anchor="middle" font-size="13" fill="#66766d"><tspan x="1304" dy="0">image/svg+xml, Cache-Control: no-store</tspan></text>
+      
+      <path d="M2018 1343H598" fill="none" stroke="#84948b" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+    </g></g>
+  <g font-family="Arial, Helvetica, sans-serif" data-export-layer="footer">
+    <path d="M70 992H1850" stroke="#dce2db"/>
+    <text x="70" y="1027" font-size="12" font-weight="600" letter-spacing="1" fill="#607c69">CURRENT · 14 INTERACTIONS</text>
+    <text x="620" y="1027" font-size="11" fill="#78867c">SOURCE · Not a captured trace. Authored 2026-09-11 from internal/studio/assets/app.js (generate, navigate, renderGrid), internal/httpapi/httpapi.go (create), internal/library/library.go (Create), and internal/store/jsonl.g…</text>
+  </g>
+  </svg>
