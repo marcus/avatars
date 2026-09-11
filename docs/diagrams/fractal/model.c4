@@ -313,7 +313,7 @@ model {
   consumer .calls service.guard 'Renders portraits over loopback HTTP' { metadata { uid 'consumer-render' } }
 
   // ---------------------------------------------------------------- relationships: CLI
-  cli.dispatch .dispatches cli.library_commands 'generate, list, show, export, render' { metadata { uid 'dispatch-library' } }
+  cli.dispatch .dispatches cli.library_commands 'generate, list, show, export, render, styles' { metadata { uid 'dispatch-library' } }
   cli.dispatch .dispatches cli.serve 'serve' { metadata { uid 'dispatch-serve' } }
   cli.dispatch .dispatches cli.service_cmd 'service ensure|status|stop' { metadata { uid 'dispatch-service' } }
   cli.dispatch .reads core.discovery 'help, capabilities, instructions' { metadata { uid 'dispatch-discovery' } }
