@@ -11,7 +11,7 @@ $(error set RELEASE_VERSION in the environment, for example: RELEASE_VERSION=v1.
 endif
 endif
 
-.PHONY: build install install-local install-worktree use-homebrew verify-homebrew install-status test test-race vet fmt fmt-check clean release-snapshot check-release-state release release-dry-run release-tap
+.PHONY: logo screenshots build install install-local install-worktree use-homebrew verify-homebrew install-status test test-race vet fmt fmt-check clean release-snapshot check-release-state release release-dry-run release-tap
 
 build:
 	mkdir -p bin
@@ -53,6 +53,12 @@ fmt-check:
 
 clean:
 	rm -rf bin dist
+
+logo:
+	./scripts/sync-logo.sh
+
+screenshots: build
+	node ./scripts/studio-screenshots.mjs
 
 release-snapshot:
 	goreleaser release --snapshot --clean

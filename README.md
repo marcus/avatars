@@ -1,8 +1,32 @@
+<!-- The logo is synced from the project's identity in Ongoing: run `make logo`
+     (scripts/sync-logo.sh) to pull the current revision. Do not edit it by hand. -->
+<p align="center">
+  <img src="docs/images/logo.png" alt="Avatars logo" width="200">
+</p>
+
 # Avatars
 
 A local avatar generator with a CLI, HTTP API, and creative studio. Generate a collection, pick a portrait, and export it as SVG or PNG. Avatars created by agents appear in the same library as those created in the studio.
 
-Six styles are available:
+![The Avatars studio with a Gorey collection open and a portrait selected in the inspector](docs/screenshots/studio-hero.png)
+
+## Install
+
+```sh
+brew install marcus/tap/avatars
+```
+
+Or with Go 1.27 or newer:
+
+```sh
+go install github.com/marcus/avatars/cmd/avatars@latest
+```
+
+Prebuilt archives for macOS and Linux are on the [releases page](https://github.com/marcus/avatars/releases).
+
+## Styles
+
+Six styles are available. Generation is random by default; programs can provide a seed to reproduce a portrait exactly. Each style uses the same SVG/PNG exporters and library workflow.
 
 | Style | Character |
 | --- | --- |
@@ -13,15 +37,28 @@ Six styles are available:
 | **Companions** (`companions`) | Playful dogs and cats with expressive ears, warm coats, and lively ink contours. |
 | **Field Birds** (`field-birds`) | Invented bird species with field-guide proportions, layered feathers, and quiet natural color. |
 
-Generation is random by default. Programs can provide a seed to reproduce a portrait exactly. Each style uses the same SVG/PNG exporters and library workflow.
+**Gorey**
+![Eight Gorey portraits](docs/screenshots/styles-gorey.png)
+
+**Gorey Expanded**
+![Eight Gorey Expanded portraits](docs/screenshots/styles-gorey-expanded.png)
+
+**Picasso**
+![Eight Picasso portraits](docs/screenshots/styles-picasso.png)
+
+**Pebble**
+![Eight Pebble characters](docs/screenshots/styles-pebble.png)
+
+**Companions**
+![Eight Companions portraits](docs/screenshots/styles-companions.png)
+
+**Field Birds**
+![Eight Field Birds](docs/screenshots/styles-field-birds.png)
 
 ## Start the studio
 
-Build with Go 1.27 or newer:
-
 ```sh
-make build
-./bin/avatars serve --open
+avatars serve --open
 ```
 
 The studio opens at `http://127.0.0.1:7447`. It includes a collection browser, portrait grid, and export inspector. Choose a style and batch size, then generate. Companions shows an Animal dropdown for Dogs, Cats, or Mixed; Pebble shows Color. Each saved portrait keeps its selected species or color. Select a portrait to adjust export dimensions, apply a circular crop, download SVG or PNG, or copy its direct link with the selected shape and dimensions.
@@ -29,6 +66,14 @@ The studio opens at `http://127.0.0.1:7447`. It includes a collection browser, p
 The inspector offers Dark, Light, and Gray preview backgrounds. Copied portrait links retain the selected surround, shape, and dimensions. Background choices affect the preview only; SVG and PNG exports keep their original transparency.
 
 The service runs in the foreground until you press Ctrl-C. It serves both the API and the embedded studio. No Node.js runtime or frontend build is needed.
+
+For a background service that starts when something needs it, use `avatars service ensure`. It starts the studio if it is not already running, reuses it if it is, and reports the address. `avatars service status` and `avatars service stop` inspect and shut down the same process.
+
+![Companions collection with the Animal control and a selected cat in the inspector](docs/screenshots/studio-companions.png)
+
+![Mixed pebbles collection with the Color control](docs/screenshots/studio-pebble.png)
+
+![Birds of Elsewhere, a 48-portrait Field Birds collection](docs/screenshots/studio-field-birds.png)
 
 ### Field Birds
 
@@ -48,24 +93,24 @@ In another terminal:
 
 ```sh
 # Save random portraits and return links to the collection and each avatar.
-./bin/avatars generate --count 12 --name "First cast" --json
-./bin/avatars generate --style picasso --count 12 --name "Picasso studies" --json
-./bin/avatars generate --style pebble --color random --count 12 --name "Mixed pebbles" --json
-./bin/avatars generate --style companions --animal mixed --count 12 --name "Mixed companions" --json
+avatars generate --count 12 --name "First cast" --json
+avatars generate --style picasso --count 12 --name "Picasso studies" --json
+avatars generate --style pebble --color random --count 12 --name "Mixed pebbles" --json
+avatars generate --style companions --animal mixed --count 12 --name "Mixed companions" --json
 
 # Browse the same library shown in the studio.
-./bin/avatars list --json
-./bin/avatars show AVATAR_ID --json
+avatars list --json
+avatars show AVATAR_ID --json
 
 # Export a saved portrait as a circular PNG.
-./bin/avatars export AVATAR_ID --format png --size 256 --circle --out icon.png
+avatars export AVATAR_ID --format png --size 256 --circle --out icon.png
 
 # Generate, save, and export a single avatar in one command.
-./bin/avatars generate --out portrait.svg
+avatars generate --out portrait.svg
 
 # Produce a reproducible image without saving a collection.
-./bin/avatars render --seed agent-42 --format svg --out agent.svg
-./bin/avatars render --style companions --animal dog --seed sample --format png --out dog.png
+avatars render --seed agent-42 --format svg --out agent.svg
+avatars render --style companions --animal dog --seed sample --format png --out dog.png
 ```
 
 Replace `AVATAR_ID` with an ID returned by `generate` or `list`. Each saved avatar and collection has a direct studio URL. The studio refreshes when another process creates a collection.
@@ -83,10 +128,10 @@ SVG is the default export format. `--size 256` requests a square canvas; `--size
 ## Agent help and HTTP
 
 ```sh
-./bin/avatars help generate
-./bin/avatars instructions
-./bin/avatars capabilities
-./bin/avatars styles --json
+avatars help generate
+avatars instructions
+avatars capabilities
+avatars styles --json
 ```
 
 Create a saved collection through HTTP:
@@ -155,7 +200,8 @@ Use the Tailscale URL in the browser and with CLI `--url` when sharing links. `A
 ## Development
 
 ```sh
-make fmt-check vet test test-race build
+make build               # ./bin/avatars
+make fmt-check vet test test-race
 make install PREFIX="$HOME/.local"
 ```
 
@@ -168,6 +214,8 @@ make install-status      # inspect the active binary and source checkout
 make use-homebrew        # return to an installed released formula
 ```
 
-Release and Homebrew packaging are prepared in `scripts/` and `packaging/`; this development version has no published release. Reference TypeScript and Svelte code lives in [port/](port/README.md).
+`make screenshots` regenerates the images in `docs/screenshots/` from fixed seeds (requires Playwright; see `scripts/studio-screenshots.mjs`). `make logo` refreshes `docs/images/logo.png` from the project's identity in Ongoing.
+
+Releases are tagged from `main` with `make release`; GitHub Actions builds the archives and the same flow updates the Homebrew formula in `marcus/homebrew-tap`. Reference TypeScript and Svelte code lives in [port/](port/README.md).
 
 MIT License. See [LICENSE](LICENSE).

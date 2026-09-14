@@ -53,8 +53,8 @@ Generate an avatar or a batch from the CLI or studio, see the same saved collect
 - Independent reviews by the generator, library, and studio agents covered code they did not implement. Findings about export framing, cancellation, literal seeds, proxy origins, image recovery, and URL state were repaired and rechecked.
 - Browser proof covers desktop and 390-pixel layouts, generation, live collection refresh, SVG/PNG downloads, copy links, browser history, failed-image recovery, and shape/dimension restoration. Opening a collection selects its style for subsequent generation; refresh preserves an explicit manual choice.
 - Original Gorey, Gorey Expanded, and Picasso each have a 24-portrait collection in the local library. Both new contact sheets received author and independent visual review.
-- The canonical main checkout is installed at `/opt/homebrew/bin/avatars`; the serving code build is `fe8c3cb`. The studio runs in Sidecar shell `sidecar-sh-avatars-2`, using `avatars serve --public-url https://aerie.tail53fd54.ts.net:7447`.
-- Tailscale HTTPS health, CLI collection creation, browser loading, image rendering, and circle links are verified at `https://aerie.tail53fd54.ts.net:7447`. Existing Tailscale routes were preserved. A separate laptop SSH probe timed out, so no second-machine proof is claimed.
+- The canonical main checkout is installed at `/opt/homebrew/bin/avatars`; the serving code build is `fe8c3cb`. The studio runs in Sidecar shell `sidecar-sh-avatars-2`, using `avatars serve --public-url https://YOUR_HOST.YOUR_TAILNET.ts.net:7447`.
+- Tailscale HTTPS health, CLI collection creation, browser loading, image rendering, and circle links are verified at `https://YOUR_HOST.YOUR_TAILNET.ts.net:7447`. Existing Tailscale routes were preserved. A separate laptop SSH probe timed out, so no second-machine proof is claimed.
 - Before/after Tailscale Serve snapshots are retained in `~/.local/state/avatars/rollback/`. Remove only this proxy with `tailscale serve --https=7447 off` if rollback is needed.
 
 ## Handoff
