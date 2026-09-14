@@ -81,7 +81,16 @@ git init --bare --quiet "$remote"
 git init --quiet --initial-branch=main "$guard_repo"
 mkdir "$guard_repo/scripts"
 cp "$repo_root/scripts/check-release-state.sh" "$guard_repo/scripts/"
-cp "$repo_root/CHANGELOG.md" "$guard_repo/"
+# The guard requires a stamped changelog entry for the version under test.
+# Use a fixture so the test does not depend on the repository's real
+# release history.
+cat > "$guard_repo/CHANGELOG.md" <<'EOF'
+# Changelog
+
+## [1.0.0] - 2030-01-01
+
+- Fixture release.
+EOF
 (
   cd "$guard_repo"
   git add CHANGELOG.md scripts/check-release-state.sh
@@ -92,7 +101,7 @@ cp "$repo_root/CHANGELOG.md" "$guard_repo/"
   RELEASE_VERSION=v1.0.0 ./scripts/check-release-state.sh pre-tag >/dev/null
   git -c user.name=release-test -c user.email=release-test@example.invalid \
     tag -a v1.0.0 -m "Release v1.0.0"
-  git push --quiet origin refs/tags/v1.0.0
+  git push --quiet origin refs/tags/v1.0.0 2>/dev/null
   tag_commit=$(git rev-parse "refs/tags/v1.0.0^{commit}")
   git checkout --quiet --detach "$tag_commit"
   git tag -d v1.0.0 >/dev/null
