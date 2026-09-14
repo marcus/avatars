@@ -111,7 +111,7 @@ selected=$(select_release_run "$sample_runs" v1.2.3 commit123)
 verify_release_run "$selected" v1.2.3 commit123 ||
   fail "rejected the successful exact-tag push run"
 
-git init --bare "$temporary/tap.git" >/dev/null
+git init --bare --initial-branch=main "$temporary/tap.git" >/dev/null
 git clone "$temporary/tap.git" "$temporary/seed" >/dev/null 2>&1
 git -C "$temporary/seed" config user.name "Test Committer"
 git -C "$temporary/seed" config user.email "test@example.com"
